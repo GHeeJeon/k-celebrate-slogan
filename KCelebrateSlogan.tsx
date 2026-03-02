@@ -80,7 +80,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 {/* Main Wrapper: gap-6 controls spacing between the 3 columns */}
                 <div className="relative bg-white border-2 border-gray-100 flex flex-row items-stretch justify-between gap-6 shadow-lg select-none rounded-sm min-h-[140px] w-full">
                     <EmblemSection
-                        char="g"
+                        char="경"
                         flipped={false}
                         reverse
                         colors={pinwheelColors}
