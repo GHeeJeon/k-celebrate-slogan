@@ -11,6 +11,7 @@
         "test": "vitest",
         "preview": "vite",
         "demo": "vite --open /demo.html",
+        "build:demo": "vite build",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
         "format": "prettier --write .",
         "prepare": "husky"

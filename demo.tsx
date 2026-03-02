@@ -423,7 +423,7 @@ const DemoApp: React.FC = () => {
             {/* ── Main ── */}
             <main
                 style={{
-                    maxWidth: '1200px',
+                    maxWidth: '1600px',
                     margin: '0 auto',
                     padding: '1.5rem',
                 }}
