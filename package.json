@@ -1,0 +1,50 @@
+{
+    "name": "k-celebrate-slogan",
+    "version": "1.0.1",
+    "description": "A celebratory slogan component with animated pinwheels.",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest",
+        "preview": "vite"
+    },
+    "keywords": [
+        "react",
+        "celebrate",
+        "slogan",
+        "pinwheel",
+        "animation"
+    ],
+    "author": "GHeeJeon",
+    "license": "MIT",
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GHeeJeon/k-celebrate-slogan.git"
+    },
+    "peerDependencies": {
+        "framer-motion": ">=4.0.0",
+        "react": ">=16.0.0",
+        "react-dom": ">=16.0.0"
+    },
+    "devDependencies": {
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "@vitejs/plugin-react": "^5.1.3",
+        "framer-motion": "^10.0.0",
+        "jsdom": "^28.0.0",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "vite": "^7.3.1",
+        "vitest": "^4.0.18"
+    }
+}
