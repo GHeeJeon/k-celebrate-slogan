@@ -1,6 +1,6 @@
 # Celebrate Slogan 🎉
 
-> "Everyone is worthy of celebration, for no reason at all."
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Ubuntu+Mono&weight=600&size=30&duration=1000&pause=3000&color=000000&center=true&vCenter=true&multiline=true&width=700&height=100&lines=Everyone+is+worthy+of+celebration%2C+;for+no+reason+at+all.)](https://git.io/typing-svg)
 
 A festive, animated slogan component for React applications. Features spinning pinwheels and customizable text/colors. Perfect for congratulatory messages!
 
@@ -75,7 +75,8 @@ This project was inspired by a famous Korean meme.
 
 ![Original Meme](https://raw.githubusercontent.com/GHeeJeon/k-celebrate-slogan/main/assets/original-meme.png)
 
-*A celebratory slogan photographed in Korea. It says "Congratulations, Jun-ho Kim, for no reason at all." (축하합니다 김준호 아무 이유 없음)*
+*A celebratory slogan photographed in Korea.  
+It says "Congratulations, Jun-ho Kim, for no reason at all." (축하합니다 김준호 아무 이유 없음)*
 
 ## License
 

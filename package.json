@@ -1,6 +1,6 @@
 {
     "name": "k-celebrate-slogan",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "A celebratory slogan component with animated pinwheels.",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
