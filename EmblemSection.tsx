@@ -60,7 +60,8 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontFamily: '"Nanum Myeongjo", serif',
                             fontWeight: 900,
                             fontSize: charFontSize,
-                            textShadow: '-1.0px -1.0px 0 #000, 1.0px -1.0px 0 #000, -1.0px 1.0px 0 #000, 1.0px 1.0px 0 #000',
+                            textShadow:
+                                '-1.0px -1.0px 0 #000, 1.0px -1.0px 0 #000, -1.0px 1.0px 0 #000, 1.0px 1.0px 0 #000',
                             transform: opticalCenterShift,
                         }}
                     >

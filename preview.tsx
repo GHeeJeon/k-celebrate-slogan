@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { KCelebrateSlogan, PASTEL_THEME, NEON_THEME } from './index';
 
@@ -6,16 +6,18 @@ const App = () => {
     const [animate, setAnimate] = useState(true);
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            padding: '2rem',
-            gap: '3rem',
-            overflow: 'hidden'
-        }}>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+                padding: '2rem',
+                gap: '3rem',
+                overflow: 'hidden',
+            }}
+        >
             <div>
                 <button
                     onClick={() => setAnimate(!animate)}
@@ -23,7 +25,7 @@ const App = () => {
                         padding: '10px 20px',
                         fontSize: '16px',
                         marginBottom: '20px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
                     }}
                 >
                     Toggle Animation: {animate ? 'ON' : 'OFF'}
@@ -32,13 +34,17 @@ const App = () => {
 
             {/* Default Theme */}
             <section style={{ width: '100%', maxWidth: '800px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>Default Theme</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>
+                    Default Theme
+                </h2>
                 <KCelebrateSlogan animate={animate} />
             </section>
 
             {/* Pastel Theme */}
             <section style={{ width: '100%', maxWidth: '800px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>Pastel Theme</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>
+                    Pastel Theme
+                </h2>
                 <KCelebrateSlogan
                     text1="Happy Birthday"
                     text2="Love, Friends"
@@ -52,7 +58,9 @@ const App = () => {
 
             {/* Neon Theme */}
             <section style={{ width: '100%', maxWidth: '800px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>Neon Theme</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '1rem', color: '#666' }}>
+                    Neon Theme
+                </h2>
                 <KCelebrateSlogan
                     text1="GRAND OPENING"
                     text2="Night Club"

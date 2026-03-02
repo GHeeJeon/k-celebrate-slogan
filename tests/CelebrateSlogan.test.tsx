@@ -1,5 +1,5 @@
-import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { KCelebrateSlogan } from '../index';
 import { NEON_THEME } from '../themes';
@@ -16,11 +16,7 @@ describe('CelebrateSlogan', () => {
 
     it('renders custom texts when provided', () => {
         render(
-            <KCelebrateSlogan
-                text1="Happy Anniversary"
-                text2="Company Launch"
-                text3="10th Year"
-            />
+            <KCelebrateSlogan text1="Happy Anniversary" text2="Company Launch" text3="10th Year" />
         );
         expect(screen.getByText('Happy Anniversary')).toBeInTheDocument();
         expect(screen.getByText('Company Launch')).toBeInTheDocument();
@@ -28,13 +24,7 @@ describe('CelebrateSlogan', () => {
     });
 
     it('applies custom text colors', () => {
-        const { container } = render(
-            <KCelebrateSlogan
-                text1Color="#ff0000"
-                text2Color="#00ff00"
-                text3Color="#0000ff"
-            />
-        );
+        render(<KCelebrateSlogan text1Color="#ff0000" text2Color="#00ff00" text3Color="#0000ff" />);
 
         const text1 = screen.getByText('축하합니다');
         expect(text1).toHaveStyle({ color: '#ff0000' });

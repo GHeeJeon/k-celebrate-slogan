@@ -5,19 +5,19 @@ import type { KCelebrateSloganProps } from './types';
 
 // ─── KCelebrateSlogan ────────────────────────────────────────────────────────
 const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
-    text1 = "축하합니다",
-    text2 = "김준호",
-    text3 = "아무 이유 없음",
-    text1Color = "#1c89bf",
-    text2Color = "#222222",
-    text3Color = "#111827",
+    text1 = '축하합니다',
+    text2 = '김준호',
+    text3 = '아무 이유 없음',
+    text1Color = '#1c89bf',
+    text2Color = '#222222',
+    text3Color = '#111827',
     text2StrokeColor,
-    text2StrokeWidth = "2.5px",
+    text2StrokeWidth = '2.5px',
     pinwheelColors,
     animate = true,
     scale = 1,
     emblemScale = 0.75,
-    className = ""
+    className = '',
 }) => {
     const strokeColor = text2StrokeColor || text2Color;
 
@@ -31,7 +31,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
             const vw = window.innerWidth;
             if (vw < 480) setAutoScale(scale * 0.45);
             else if (vw < 640) setAutoScale(scale * 0.55);
-            else if (vw < 768) setAutoScale(scale * 0.70);
+            else if (vw < 768) setAutoScale(scale * 0.7);
             else if (vw < 1024) setAutoScale(scale * 0.85);
             else setAutoScale(scale);
         };
@@ -50,7 +50,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 width: 'fit-content',
                 transformOrigin: 'center',
                 scale: autoScale,
-                rotate: -0.5
+                rotate: -0.5,
             }}
         >
             <style>
@@ -79,7 +79,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
             <div className="k-celebrate-slogan-container w-full">
                 {/* Main Wrapper: gap-6 controls spacing between the 3 columns */}
                 <div className="relative bg-white border-2 border-gray-100 flex flex-row items-stretch justify-between gap-6 shadow-lg select-none rounded-sm min-h-[140px] w-full">
-
                     <EmblemSection
                         char="g"
                         flipped={false}
@@ -107,7 +106,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                 textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
                                 display: 'inline-block',
                                 transform: 'scaleX(1.2)',
-                                whiteSpace: 'nowrap'
+                                whiteSpace: 'nowrap',
                             }}
                         >
                             {text1}
@@ -122,7 +121,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                 fontWeight: 300,
                                 WebkitTextStroke: `${text2StrokeWidth} ${strokeColor}`,
                                 whiteSpace: 'nowrap',
-                                letterSpacing: '0.15em'
+                                letterSpacing: '0.15em',
                             }}
                         >
                             {text2}
@@ -135,7 +134,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                 color: text3Color,
                                 fontFamily: "'Outfit', sans-serif",
                                 fontWeight: 600,
-                                whiteSpace: 'nowrap'
+                                whiteSpace: 'nowrap',
                             }}
                         >
                             ㅡ {text3} ㅡ
@@ -152,7 +151,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     {/* Texture Overlay */}
                     <div
                         className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-multiply rounded-sm"
-                        style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/paper-fibers.png")' }}
+                        style={{
+                            backgroundImage:
+                                'url("https://www.transparenttextures.com/patterns/paper-fibers.png")',
+                        }}
                     />
                 </div>
             </div>

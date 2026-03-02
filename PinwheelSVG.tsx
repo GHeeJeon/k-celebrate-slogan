@@ -20,14 +20,24 @@ const halfDiskPath = (cx: number, cy: number, r: number, startDeg: number) => {
 
 const hexToRgb = (hex: string) => {
     const h = hex.replace('#', '').trim();
-    const v = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    const v =
+        h.length === 3
+            ? h
+                  .split('')
+                  .map((c) => c + c)
+                  .join('')
+            : h;
     const n = parseInt(v, 16);
     return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 };
 
 const rgbToHex = (r: number, g: number, b: number) =>
     `#${[r, g, b]
-        .map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0'))
+        .map((x) =>
+            Math.round(Math.max(0, Math.min(255, x)))
+                .toString(16)
+                .padStart(2, '0')
+        )
         .join('')}`;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -66,7 +76,7 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
     flipped = true,
     className,
     colors,
-    animate = true
+    animate = true,
 }) => {
     const centerX = 50;
     const centerY = 50;
@@ -122,7 +132,9 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
         <div
             className={className ?? 'absolute inset-0 w-full h-full'}
             style={{
-                animation: animate ? `pinwheel-spin 4s linear infinite ${reverse ? 'reverse' : ''}` : 'none'
+                animation: animate
+                    ? `pinwheel-spin 4s linear infinite ${reverse ? 'reverse' : ''}`
+                    : 'none',
             }}
         >
             <style>
@@ -134,7 +146,7 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
                 `}
             </style>
             <svg viewBox="0 0 100 100" className="w-full h-full">
-                <g transform={flipped ? "translate(100 0) scale(-1 1)" : ""}>
+                <g transform={flipped ? 'translate(100 0) scale(-1 1)' : ''}>
                     {blades.map(({ i, fill }) => (
                         <g key={i} transform={`rotate(${i * step} ${centerX} ${centerY})`}>
                             <g transform={`translate(${innerEdgeShiftX} 0)`}>
