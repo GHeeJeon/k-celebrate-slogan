@@ -2,47 +2,47 @@ name: Publish NPM Package
 
 # 이 워크플로우는 `v1.0.0` 같은 버전 태그(tag)가 GitHub에 푸시될 때만 자동으로 실행됩니다.
 on:
-  push:
-    tags:
-      - 'v*'
+    push:
+        tags:
+            - 'v*'
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    # NPM provenance(공급망 보안 검증)를 위해 id-token 권한이 필요합니다.
-    permissions:
-      contents: read
-      id-token: write
+    publish:
+        runs-on: ubuntu-latest
+        # NPM provenance(공급망 보안 검증)를 위해 id-token 권한이 필요합니다.
+        permissions:
+            contents: read
+            id-token: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          # npm publish를 위해 registry-url을 셋업합니다. (나중에 NPM_TOKEN 환경변수를 사용하게 됩니다)
-          registry-url: 'https://registry.npmjs.org'
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.x'
+                  # npm publish를 위해 registry-url을 셋업합니다. (나중에 NPM_TOKEN 환경변수를 사용하게 됩니다)
+                  registry-url: 'https://registry.npmjs.org'
 
-      - name: Install Dependencies (Clean Install)
-        # 패키지 버전이 완벽하게 고정(lock)된 상태로 빠르고 정확하게 설치합니다.
-        run: npm ci
+            - name: Install Dependencies (Clean Install)
+              # 패키지 버전이 완벽하게 고정(lock)된 상태로 빠르고 정확하게 설치합니다.
+              run: npm ci
 
-      - name: Code Quality & Linting
-        # ESLint 등 코드 컨벤션이 통과하는지 검사합니다.
-        run: npm run lint
+            - name: Code Quality & Linting
+              # ESLint 등 코드 컨벤션이 통과하는지 검사합니다.
+              run: npm run lint
 
-      - name: Run Tests
-        # 유닛 테스트가 통과하는지 검사합니다. (실패시 여기서 워크플로우 즉각 중단 & 배포 취소)
-        run: npm run test
+            - name: Run Tests
+              # 유닛 테스트가 통과하는지 검사합니다. (실패시 여기서 워크플로우 즉각 중단 & 배포 취소)
+              run: npm run test
 
-      - name: Build Package
-        # tsup을 사용해 dist/ 폴더를 빌드합니다.
-        run: npm run build
+            - name: Build Package
+              # tsup을 사용해 dist/ 폴더를 빌드합니다.
+              run: npm run build
 
-      - name: Publish to NPM
-        # 실제 레지스트리에 패키지를 배포합니다. (--provenance 는 안전한 출처 증명 추가)
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Publish to NPM
+              # 실제 레지스트리에 패키지를 배포합니다. (--provenance 는 안전한 출처 증명 추가)
+              run: npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

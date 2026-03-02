@@ -2,7 +2,9 @@
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Ubuntu+Mono&weight=600&size=30&duration=1000&pause=3000&color=000000&center=true&vCenter=true&multiline=true&width=700&height=100&lines=Everyone+is+worthy+of+celebration%2C+;for+no+reason+at+all.)](https://git.io/typing-svg)
 
-A festive, animated slogan component for React applications. Features spinning pinwheels and customizable text/colors. Perfect for congratulatory messages!
+A festive, animated slogan component for React applications.  
+Features spinning pinwheels and customizable text/colors.  
+Remember, everyone is worthy of celebration, for no reason at all!
 
 ## Installation
 
