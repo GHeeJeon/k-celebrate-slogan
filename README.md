@@ -69,8 +69,13 @@ const myColors = ['#FF0000', '#00FF00', ...]; // up to 12 colors
 <KCelebrateSlogan pinwheelColors={myColors} />
 ```
 
-### Tips
-- Ensure you have the necessary fonts loaded if you want the exact look (`Nanum Myeongjo`, `Gungsuh`, `Outfit`). The component applies these font families via inline styles, but they must be available in your document or fallback fonts will be used.
+## Inspiration
+
+This project was inspired by a famous Korean meme. 
+
+![Original Meme](https://raw.githubusercontent.com/GHeeJeon/k-celebrate-slogan/main/assets/original-meme.png)
+
+*A celebratory slogan photographed in Korea. It says "Congratulations, Jun-ho Kim, for no reason at all." (축하합니다 김준호 아무 이유 없음)*
 
 ## License
 
