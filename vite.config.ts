@@ -13,7 +13,7 @@ export default defineConfig(({ mode: _mode }) => {
             rollupOptions: {
                 input: {
                     main: 'index.html',
-                    demo: 'demo.html',
+                    test: 'test.html',
                 },
             },
         },
