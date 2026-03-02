@@ -10,6 +10,7 @@
         "dev": "tsup --watch",
         "test": "vitest",
         "preview": "vite",
+        "demo": "vite --open /demo.html",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
         "format": "prettier --write .",
         "prepare": "husky"

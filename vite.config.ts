@@ -11,7 +11,10 @@ export default defineConfig(({ mode: _mode }) => {
         },
         build: {
             rollupOptions: {
-                input: 'index.html',
+                input: {
+                    main: 'index.html',
+                    demo: 'demo.html',
+                },
             },
         },
     };
