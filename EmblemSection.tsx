@@ -32,11 +32,29 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
 
     return (
         <div
-            className="relative flex-shrink-0 flex items-center justify-center p-2"
-            style={{ width: 'var(--emblem-size)', minWidth: '100px' }}
+            style={{
+                position: 'relative',
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.5rem',
+                width: 'var(--emblem-size)',
+                minWidth: '100px',
+            }}
         >
             {/* Inner Square Wrapper: enforces 1:1 aspect ratio so the circle stays perfectly round */}
-            <div className="relative w-full aspect-square flex items-center justify-center overflow-hidden">
+            <div
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                }}
+            >
                 {/* Swirl Pinwheel Decoration */}
                 <PinwheelSVG
                     flipped={flipped}
@@ -47,16 +65,29 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
 
                 {/* Red Disk - Sticker Style */}
                 <div
-                    className="relative w-[55%] h-[55%] bg-[#E11D48] rounded-full flex items-center justify-center z-10 emblem-disk"
+                    className="emblem-disk"
                     style={{
+                        position: 'relative',
+                        width: '55%',
+                        height: '55%',
+                        backgroundColor: '#E11D48',
+                        borderRadius: '9999px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
                         border: '3px solid rgba(255,255,255,0.9)',
                         boxShadow: '0 2px 0 rgba(0,0,0,0.12), inset 0 0 0 1px rgba(0,0,0,0.08)',
                     }}
                 >
                     {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}
                     <div
-                        className="font-black text-[#FDE047] leading-none flex items-center justify-center"
                         style={{
+                            color: '#FDE047',
+                            lineHeight: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             fontFamily: '"Nanum Myeongjo", serif',
                             fontWeight: 900,
                             fontSize: charFontSize,

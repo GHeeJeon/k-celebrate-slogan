@@ -45,8 +45,11 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
             initial={animate ? { y: -50, opacity: 0 } : { y: 0, opacity: 1 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className={`relative z-20 pointer-events-none ${className}`}
+            className={className}
             style={{
+                position: 'relative',
+                zIndex: 20,
+                pointerEvents: 'none',
                 width: 'fit-content',
                 transformOrigin: 'center',
                 scale: autoScale,
@@ -76,9 +79,26 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
             </style>
 
             {/* Inner container */}
-            <div className="k-celebrate-slogan-container w-full">
-                {/* Main Wrapper: gap-6 controls spacing between the 3 columns */}
-                <div className="relative bg-white border-2 border-gray-100 flex flex-row items-stretch justify-between gap-6 shadow-lg select-none rounded-sm min-h-[140px] w-full">
+            <div className="k-celebrate-slogan-container" style={{ width: '100%' }}>
+                {/* Main Wrapper: properties mapped from tailwind classes */}
+                <div
+                    style={{
+                        position: 'relative',
+                        backgroundColor: '#ffffff',
+                        border: '2px solid #f3f4f6',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'stretch',
+                        justifyContent: 'space-between',
+                        gap: '1.5rem',
+                        boxShadow:
+                            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        userSelect: 'none',
+                        borderRadius: '0.125rem',
+                        minHeight: '140px',
+                        width: '100%',
+                    }}
+                >
                     <EmblemSection
                         char="경"
                         flipped={false}
@@ -93,12 +113,25 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         as wide as the longest text line. Since the outer div is
                         width: fit-content, the whole card stretches automatically. */}
                     <div
-                        className="flex-1 flex flex-col items-center justify-center z-10 py-2 px-8"
-                        style={{ minWidth: 'max-content' }}
+                        style={{
+                            flex: '1 1 0%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10,
+                            paddingTop: '0.5rem',
+                            paddingBottom: '0.5rem',
+                            paddingLeft: '2rem',
+                            paddingRight: '2rem',
+                            minWidth: 'max-content',
+                        }}
                     >
                         <span
-                            className="font-black tracking-[0.35em] leading-tight text-center"
                             style={{
+                                letterSpacing: '0.35em',
+                                lineHeight: 1.25,
+                                textAlign: 'center',
                                 fontSize: 'var(--fs-1)',
                                 color: text1Color,
                                 fontFamily: '"Nanum Myeongjo", serif',
@@ -113,8 +146,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         </span>
 
                         <h1
-                            className="font-black leading-tight tracking-normal text-center"
                             style={{
+                                margin: 0,
+                                lineHeight: 1.25,
+                                textAlign: 'center',
                                 fontSize: 'var(--fs-2)',
                                 color: text2Color,
                                 fontFamily: "'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif",
@@ -128,8 +163,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         </h1>
 
                         <span
-                            className="font-normal tracking-[0.4em] uppercase text-center"
                             style={{
+                                letterSpacing: '0.4em',
+                                textTransform: 'uppercase',
+                                textAlign: 'center',
                                 fontSize: 'var(--fs-3)',
                                 color: text3Color,
                                 fontFamily: "'Outfit', sans-serif",
@@ -150,8 +187,16 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
 
                     {/* Texture Overlay */}
                     <div
-                        className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-multiply rounded-sm"
                         style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 0,
+                            opacity: 0.04,
+                            pointerEvents: 'none',
+                            mixBlendMode: 'multiply',
+                            borderRadius: '0.125rem',
                             backgroundImage:
                                 'url("https://www.transparenttextures.com/patterns/paper-fibers.png")',
                         }}

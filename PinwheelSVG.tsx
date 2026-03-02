@@ -130,8 +130,15 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
 
     return (
         <div
-            className={className ?? 'absolute inset-0 w-full h-full'}
+            className={className}
             style={{
+                position: className ? undefined : 'absolute',
+                top: className ? undefined : 0,
+                right: className ? undefined : 0,
+                bottom: className ? undefined : 0,
+                left: className ? undefined : 0,
+                width: className ? undefined : '100%',
+                height: className ? undefined : '100%',
                 animation: animate
                     ? `pinwheel-spin 4s linear infinite ${reverse ? 'reverse' : ''}`
                     : 'none',
@@ -145,7 +152,7 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
                 }
                 `}
             </style>
-            <svg viewBox="0 0 100 100" className="w-full h-full">
+            <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
                 <g transform={flipped ? 'translate(100 0) scale(-1 1)' : ''}>
                     {blades.map(({ i, fill }) => (
                         <g key={i} transform={`rotate(${i * step} ${centerX} ${centerY})`}>
