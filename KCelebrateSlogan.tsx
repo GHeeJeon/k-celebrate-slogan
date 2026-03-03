@@ -156,7 +156,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                 fontWeight: 300,
                                 WebkitTextStroke: `${text2StrokeWidth} ${strokeColor}`,
                                 whiteSpace: 'nowrap',
-                                letterSpacing: '0.15em',
+                                letterSpacing: '0.3em',
                             }}
                         >
                             {text2}

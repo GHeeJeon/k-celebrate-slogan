@@ -144,7 +144,7 @@ export async function getSvgSlogan(options: Record<string, string | undefined>) 
 
     // text1 has scaleX(1.2) applied in SVG
     const w1 = estimate(rawText1, fs1, 0.35) * 1.2;
-    const w2 = estimate(rawText2, fs2, 0.15);
+    const w2 = estimate(rawText2, fs2, 0.3);
     const w3 = estimate(`— ${rawText3} —`, fs3, 0.4);
 
     const maxTextWidth = Math.max(w1, w2, w3, 100 * scale);
@@ -262,11 +262,11 @@ export async function getSvgSlogan(options: Record<string, string | undefined>) 
               fill="${text2Color}" stroke="${text2StrokeColor}"
               stroke-width="${numStrokeW * scale}" stroke-linejoin="round"
               font-size="${fs2}" font-weight="300" font-family="${fontText2}"
-              letter-spacing="0.15em"
+              letter-spacing="0.3em"
               ${w2 > textAreaW ? `textLength="${textAreaW}" lengthAdjust="spacingAndGlyphs"` : ''}>${text2}</text>
         <text x="${centerX}" y="${y2}" dominant-baseline="middle"
               fill="${text2Color}" font-size="${fs2}" font-weight="300"
-              font-family="${fontText2}" letter-spacing="0.15em"
+              font-family="${fontText2}" letter-spacing="0.3em"
               ${w2 > textAreaW ? `textLength="${textAreaW}" lengthAdjust="spacingAndGlyphs"` : ''}>${text2}</text>
 
         <!-- Text 3: Outfit tagline -->
