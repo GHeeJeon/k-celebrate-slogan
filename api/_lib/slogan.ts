@@ -251,7 +251,8 @@ export async function getSvgSlogan(options: Record<string, string | undefined>) 
     <g text-anchor="middle">
         <!-- Text 1: scaleX(1.2) 장평, letter-spacing 0.35em, text-shadow -->
         <text x="${centerX}" y="${y1}" dominant-baseline="middle" text-anchor="middle"
-              fill="${text1Color}" font-size="${fs1}" font-weight="800"
+              fill="${text1Color}" font-size="${fs1}" font-weight="900"
+              stroke="${text1Color}" stroke-width="${0.5 * scale}"
               font-family="${fontText1}"
               style="letter-spacing: 0.35em; text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);"
               transform="translate(${centerX},${y1}) scale(1.2,1) translate(${-centerX},${-y1})">${text1}</text>
