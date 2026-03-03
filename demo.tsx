@@ -238,7 +238,7 @@ const CopyBlock: React.FC<CopyBlockProps> = ({ label, code }) => {
             style={{
                 background: '#f1f5f9',
                 border: '1px solid #e2e8f0',
-                borderRadius: '0.75rem',
+                borderRadius: '0.6rem',
                 overflow: 'hidden',
             }}
         >
@@ -247,42 +247,42 @@ const CopyBlock: React.FC<CopyBlockProps> = ({ label, code }) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '0.6rem 1rem',
+                    padding: '0.4rem 0.8rem',
                     borderBottom: '1px solid #e2e8f0',
                     background: '#f8fafc',
                 }}
             >
-                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700 }}>
                     {label}
                 </span>
                 <button
                     onClick={handleCopy}
                     style={{
-                        padding: '0.3rem 0.8rem',
+                        padding: '0.2rem 0.6rem',
                         background: copied ? '#16a34a' : ACCENT,
                         color: '#fff',
                         border: 'none',
-                        borderRadius: '0.4rem',
-                        fontSize: '0.75rem',
+                        borderRadius: '0.3rem',
+                        fontSize: '0.7rem',
                         fontWeight: 700,
                         cursor: 'pointer',
                         transition: 'background 0.2s',
                         fontFamily: 'inherit',
                     }}
                 >
-                    {copied ? '✓ Copied!' : 'Copy'}
+                    {copied ? '✓' : 'Copy'}
                 </button>
             </div>
             <pre
                 style={{
-                    padding: '1rem',
-                    fontSize: '0.8rem',
+                    padding: '0.75rem',
+                    fontSize: '0.75rem',
                     color: '#0369a1',
                     overflowX: 'auto',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all',
                     fontFamily: '"Fira Code", "Consolas", monospace',
-                    lineHeight: 1.6,
+                    lineHeight: 1.4,
                     margin: 0,
                 }}
             >
@@ -303,22 +303,22 @@ const Section: React.FC<{ title: string; children: React.ReactNode; id?: string 
         style={{
             background: '#ffffff',
             border: '1px solid #e2e8f0',
-            borderRadius: '1rem',
-            padding: '1.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            borderRadius: '0.75rem',
+            padding: '1rem',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
         }}
     >
         <h2
             style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 color: ACCENT,
-                marginBottom: '1.25rem',
+                marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.4rem',
             }}
         >
             {title}
@@ -370,49 +370,72 @@ const DemoApp: React.FC = () => {
             {/* ── Header ── */}
             <header
                 style={{
-                    background: 'rgba(255,255,255,0.9)',
+                    background: 'rgba(255,255,255,0.95)',
                     backdropFilter: 'blur(12px)',
                     borderBottom: '1px solid #e2e8f0',
                     position: 'sticky',
                     top: 0,
                     zIndex: 100,
-                    padding: '0.9rem 1.5rem',
+                    padding: '0.75rem 1.5rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1rem',
                     flexWrap: 'wrap',
                 }}
             >
-                <span style={{ fontSize: '1.4rem' }}>🎉</span>
+                <span style={{ fontSize: '1.2rem' }}>🎉</span>
                 <div>
                     <h1
                         style={{
-                            fontSize: '1rem',
-                            fontWeight: 700,
+                            fontSize: '0.95rem',
+                            fontWeight: 800,
                             color: '#0f172a',
-                            letterSpacing: '0.01em',
+                            letterSpacing: '-0.01em',
+                            margin: 0,
                         }}
                     >
                         k-celebrate-slogan
                     </h1>
-                    <p style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.1rem' }}>
+                    <p
+                        style={{
+                            fontSize: '0.68rem',
+                            color: '#64748b',
+                            marginTop: '0.05rem',
+                            margin: 0,
+                        }}
+                    >
                         Slogan customizer for your GitHub README
                     </p>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
                     <a
+                        href="https://www.npmjs.com/package/k-celebrate-slogan"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                            padding: '0.4rem 0.8rem',
+                            background: '#cb3837',
+                            color: '#fff',
+                            borderRadius: '0.5rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                        }}
+                    >
+                        NPM ↗
+                    </a>
+                    <a
                         href="https://github.com/GHeeJeon/k-celebrate-slogan"
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                            padding: '0.4rem 0.9rem',
-                            background: '#f1f5f9',
-                            color: '#475569',
+                            padding: '0.4rem 0.8rem',
+                            background: '#24292f',
+                            color: '#fff',
                             borderRadius: '0.5rem',
-                            fontSize: '0.78rem',
+                            fontSize: '0.75rem',
                             fontWeight: 600,
                             textDecoration: 'none',
-                            border: '1px solid #e2e8f0',
                         }}
                     >
                         GitHub ↗
@@ -437,25 +460,28 @@ const DemoApp: React.FC = () => {
                     }}
                 >
                     {/* ── Left: Controls ── */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {/* Presets */}
-                        <Section title="🎨 Presets">
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {/* Config */}
+                        <Section title="⚙️ Configuration">
+                            <Label>Presets</Label>
+                            <div
+                                style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem' }}
+                            >
                                 {(['default', 'pastel', 'neon'] as const).map((name) => (
                                     <button
                                         key={name}
                                         onClick={() => applyPreset(name)}
                                         style={{
                                             flex: 1,
-                                            padding: '0.5rem',
+                                            padding: '0.4rem',
                                             background:
                                                 cfg.pinwheelTheme === name ? ACCENT : '#f8fafc',
                                             color: cfg.pinwheelTheme === name ? '#fff' : '#475569',
                                             border: '1px solid',
                                             borderColor:
                                                 cfg.pinwheelTheme === name ? ACCENT : '#e2e8f0',
-                                            borderRadius: '0.5rem',
-                                            fontSize: '0.78rem',
+                                            borderRadius: '0.4rem',
+                                            fontSize: '0.75rem',
                                             fontWeight: 700,
                                             cursor: 'pointer',
                                             textTransform: 'capitalize',
@@ -467,46 +493,39 @@ const DemoApp: React.FC = () => {
                                     </button>
                                 ))}
                             </div>
-                        </Section>
 
-                        {/* Text */}
-                        <Section title="✏️ Text">
                             <div
-                                style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr',
+                                    gap: '0.75rem 0.5rem',
+                                }}
                             >
-                                <div>
-                                    <Label htmlFor="text1">Top Text (text1)</Label>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <Label htmlFor="text1">text1 (Top)</Label>
                                     <TextInput
                                         id="text1"
                                         value={cfg.text1}
                                         onChange={(v) => set('text1', v)}
-                                        placeholder="축하합니다"
                                     />
                                 </div>
-                                <div>
-                                    <Label htmlFor="text2">Main Text (text2)</Label>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <Label htmlFor="text2">text2 (Main)</Label>
                                     <TextInput
                                         id="text2"
                                         value={cfg.text2}
                                         onChange={(v) => set('text2', v)}
-                                        placeholder="김준호"
                                     />
                                 </div>
-                                <div>
-                                    <Label htmlFor="text3">Sub Text (text3)</Label>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <Label htmlFor="text3">text3 (Sub)</Label>
                                     <TextInput
                                         id="text3"
                                         value={cfg.text3}
                                         onChange={(v) => set('text3', v)}
-                                        placeholder="아무 이유 없음"
                                     />
                                 </div>
-                            </div>
-                        </Section>
 
-                        {/* Colors */}
-                        <Section title="🌈 Colors">
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <ColorRow
                                     id="text1Color"
                                     label="text1 Color"
@@ -527,72 +546,67 @@ const DemoApp: React.FC = () => {
                                 />
                                 <ColorRow
                                     id="text2StrokeColor"
-                                    label="text2 Stroke Color"
+                                    label="text2 Stroke"
                                     value={cfg.text2StrokeColor}
                                     onChange={(v) => set('text2StrokeColor', v)}
                                 />
+
                                 <div>
-                                    <Label htmlFor="strokeWidth">text2 Stroke Width</Label>
+                                    <Label htmlFor="strokeWidth">Stroke Width</Label>
                                     <TextInput
                                         id="strokeWidth"
                                         value={cfg.text2StrokeWidth}
                                         onChange={(v) => set('text2StrokeWidth', v)}
-                                        placeholder="2.5px"
                                     />
                                 </div>
-                            </div>
-                        </Section>
-
-                        {/* Layout */}
-                        <Section title="📐 Layout">
-                            <div
-                                style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}
-                            >
-                                <SliderRow
-                                    id="scale"
-                                    label="Scale"
-                                    value={cfg.scale}
-                                    min={0.3}
-                                    max={2}
-                                    step={0.05}
-                                    onChange={(v) => set('scale', v)}
-                                />
-                                <SliderRow
-                                    id="emblemScale"
-                                    label="Emblem Scale"
-                                    value={cfg.emblemScale}
-                                    min={0.3}
-                                    max={1.5}
-                                    step={0.05}
-                                    onChange={(v) => set('emblemScale', v)}
-                                />
-                                {/* Animate toggle */}
                                 <div
                                     style={{
                                         display: 'flex',
-                                        justifyContent: 'space-between',
                                         alignItems: 'center',
+                                        justifyContent: 'space-between',
                                     }}
                                 >
                                     <Label>Animation</Label>
                                     <button
                                         onClick={() => set('animate', !cfg.animate)}
                                         style={{
-                                            padding: '0.3rem 0.8rem',
+                                            padding: '0.2rem 0.6rem',
                                             background: cfg.animate ? ACCENT : '#f1f5f9',
                                             color: cfg.animate ? '#fff' : '#94a3b8',
                                             border: '1px solid',
                                             borderColor: cfg.animate ? ACCENT : '#e2e8f0',
-                                            borderRadius: '2rem',
-                                            fontSize: '0.75rem',
+                                            borderRadius: '1rem',
+                                            fontSize: '0.7rem',
                                             fontWeight: 700,
                                             cursor: 'pointer',
-                                            transition: 'all 0.15s',
-                                            fontFamily: 'inherit',
+                                            transition: 'all 0.1s',
                                         }}
                                     >
                                         {cfg.animate ? 'ON' : 'OFF'}
                                     </button>
+                                </div>
+
+                                <div style={{ gridColumn: 'span 2', marginTop: '0.5rem' }}>
+                                    <SliderRow
+                                        id="scale"
+                                        label="Scale"
+                                        value={cfg.scale}
+                                        min={0.3}
+                                        max={2}
+                                        step={0.05}
+                                        onChange={(v) => set('scale', v)}
+                                    />
+                                </div>
+                                <div style={{ gridColumn: 'span 2' }}>
+                                    <SliderRow
+                                        id="emblemScale"
+                                        label="Emblem Scale"
+                                        value={cfg.emblemScale}
+                                        min={0.3}
+                                        max={1.5}
+                                        step={0.05}
+                                        onChange={(v) => set('emblemScale', v)}
+                                    />
                                 </div>
                             </div>
                         </Section>
@@ -702,19 +716,15 @@ const DemoApp: React.FC = () => {
                             </div>
                         </Section>
 
-                        {/* Markdown */}
-                        <Section title="📝 Markdown">
-                            <CopyBlock label="Markdown" code={markdownCode} />
-                        </Section>
-
-                        {/* HTML */}
-                        <Section title="🌐 HTML">
-                            <CopyBlock label="HTML" code={htmlCode} />
-                        </Section>
-
-                        {/* URL */}
-                        <Section title="🔗 URL">
-                            <CopyBlock label="URL" code={sloganUrl} />
+                        {/* Export */}
+                        <Section title="📦 Share & Export">
+                            <div
+                                style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+                            >
+                                <CopyBlock label="Markdown" code={markdownCode} />
+                                <CopyBlock label="HTML" code={htmlCode} />
+                                <CopyBlock label="URL" code={sloganUrl} />
+                            </div>
                         </Section>
                     </div>
                 </div>
