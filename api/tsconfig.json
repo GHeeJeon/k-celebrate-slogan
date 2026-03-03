@@ -1,11 +1,12 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-        "module": "CommonJS",
-        "moduleResolution": "node",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "allowImportingTsExtensions": false,
         "noEmit": false,
         "outDir": "."
     },
-    "include": ["./**/*.ts"]
+    "include": ["./**/*.ts"],
+    "exclude": []
 }
