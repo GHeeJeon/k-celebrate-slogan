@@ -12,6 +12,7 @@
         "test": "vitest",
         "preview": "vite",
         "demo": "vite --open /",
+        "svg:preview": "vite --open /svg-preview.html",
         "build:demo": "vite build",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
         "format": "prettier --write .",

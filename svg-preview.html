@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SVG API Preview | k-celebrate-slogan</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f0f6fa;
+            color: #0f172a;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1c89bf;
+            margin-bottom: 0.4rem;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #1c89bf;
+        }
+
+        .card-params {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .card-img {
+            padding: 1.5rem 1.5rem 1rem;
+            background: #f8fafc;
+            background-image: radial-gradient(#1c89bf22 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+        }
+
+        .card-img img {
+            max-width: 100%;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .card-img .error {
+            color: #ef4444;
+            font-size: 0.8rem;
+        }
+
+        .card-url {
+            padding: 0.6rem 1rem;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #64748b;
+            word-break: break-all;
+            background: white;
+        }
+
+        .open-link {
+            display: inline-block;
+            margin-top: 0.3rem;
+            color: #1c89bf;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .open-link:hover {
+            text-decoration: underline;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.7rem 1.2rem;
+            background: #1c89bf;
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(28, 137, 191, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎉 SVG API Preview</h1>
+    <p class="subtitle">로컬 서버의 <code>/api</code> 엔드포인트가 반환하는 SVG를 실시간으로 확인합니다.</p>
+
+    <div class="grid" id="grid">
+        <p style="color:#64748b;font-size:0.9rem">로딩 중...</p>
+    </div>
+
+    <button class="refresh-btn" onclick="location.reload()">↺ 새로고침</button>
+
+    <script>
+        const BASE = `${location.origin}/api`;
+
+        const CASES = [
+            { label: '기본 (Default)', params: { text1: '축하합니다', text2: '김준호', text3: '아무 이유 없음' } },
+            { label: '영문 (Pastel)', params: { text1: 'Happy Birthday', text2: 'Dear Friend', text3: 'With Best Wishes', text1Color: '#FF6B6B', text2Color: '#4ECDC4', theme: 'pastel' } },
+            { label: '네온 (Neon)', params: { text1: 'GRAND OPENING', text2: 'NIGHT CLUB', text3: 'Tonight Only', text1Color: '#FF00FF', text2Color: '#00FFFF', text3Color: '#FFFFFF', theme: 'neon' } },
+            { label: '스케일 0.7', params: { text1: '축하합니다', text2: '김준호', text3: '아무 이유 없음', scale: '0.7' } },
+            { label: '긴 이름', params: { text1: '축하합니다', text2: '이름이매우긴사람', text3: '아무 이유 없음' } },
+            { label: 'emblemScale 0.5', params: { text1: '축하합니다', text2: '홍길동', text3: '기념일', emblemScale: '0.5' } },
+            { label: '애니메이션 OFF', params: { text1: '축하합니다', text2: '김준호', text3: '아무 이유 없음', animate: 'false' } },
+            { label: '스트로크 커스텀', params: { text1: 'Congratulations', text2: 'John Doe', text3: 'For no reason', text2StrokeColor: '#FF0000', text2StrokeWidth: '4px' } },
+        ];
+
+        function buildUrl(params) {
+            const p = new URLSearchParams(params);
+            return `${BASE}?${p.toString()}`;
+        }
+
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
+
+        CASES.forEach(({ label, params }) => {
+            const url = buildUrl(params);
+            const shortParams = Object.entries(params).slice(0, 3).map(([k, v]) => `${k}=${v}`).join(', ');
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            // ── 인라인 SVG 삽입 ───────────────────────────────────────────────────
+            // <img src="..."> 방식은 브라우저 CSP가 외부 @font-face 요청을 차단합니다.
+            // fetch() 후 SVG 텍스트를 직접 DOM에 삽입하면 일반 DOM과 동일하게
+            // @font-face(JoseonPalace, NanumMyeongjo, Outfit)가 정상 적용됩니다.
+            const svgWrap = document.createElement('div');
+            svgWrap.className = 'card-img';
+
+            fetch(url)
+                .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+                .then(svgText => {
+                    svgWrap.innerHTML = svgText;
+                    const s = svgWrap.querySelector('svg');
+                    if (s) { s.style.maxWidth = '100%'; s.style.height = 'auto'; }
+                })
+                .catch(() => {
+                    svgWrap.innerHTML = '<p class="error">⚠️ 로드 실패 — /api 서버가 실행 중인지 확인하세요.</p>';
+                });
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-label">${label}</span>
+                    <span class="card-params">${shortParams}${Object.keys(params).length > 3 ? ' ...' : ''}</span>
+                </div>
+                <div class="card-url">
+                    ${url}<br>
+                    <a class="open-link" href="${url}" target="_blank">새 탭에서 열기 ↗</a>
+                </div>
+            `;
+            card.insertBefore(svgWrap, card.querySelector('.card-url'));
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+
+</html>

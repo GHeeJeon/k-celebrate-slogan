@@ -35,8 +35,13 @@ function sanitizeStrokeWidth(raw: string, fallback: string): string {
 const estimate = (t: string, s: number, ls: number) => {
     let w = 0;
     for (const c of t) {
-        // Hangul/CJK ~1em, Latin/ASCII ~0.6em
-        w += s * (c.match(/[\u3131-\u318E\uAC00-\uD7A3\u4E00-\u9FFF]/) ? 1.1 : 0.65);
+        if (c.match(/[\u3131-\u318E\uAC00-\uD7A3\u4E00-\u9FFF]/))
+            w += s * 1.1; // Hangul/CJK
+        else if (c.match(/[A-Z]/))
+            w += s * 0.85; // Uppercase Latin
+        else if (c.match(/[a-z0-9]/))
+            w += s * 0.65; // Lowercase/Numbers
+        else w += s * 0.5; // Spaces, etc
     }
     return w + t.length * s * ls;
 };
@@ -62,19 +67,22 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
         ? (options.theme as string)
         : 'default';
 
-    // ── Dimensions ────────────────────────────────────────────────────────────
-    const emblemSize = 90 * emblemScale * scale;
+    // emblemSize base 130: targets ratio ~2.0x vs fs2(48) — closer to React's 2.6x
+    // React: 13rem * 0.75 = 9.75rem ≈ 156px vs fs2 3.75rem=60px → ratio 2.6
+    const emblemSize = 130 * emblemScale * scale;
     const gap = 24 * scale;
 
-    const fs1 = 20 * scale;
-    const fs2 = 48 * scale;
+    // Font sizes match React proportions: fs1/fs2 ≈ 3rem/3.75rem = 0.8
+    const fs1 = 38 * scale; // was 20; React = 3rem ≈ 48px at default scale
+    const fs2 = 48 * scale; // React = 3.75rem — unchanged
     const fs3 = 14 * scale;
 
     const rawText1 = options.text1 || '축하합니다';
     const rawText2 = options.text2 || '김준호';
     const rawText3 = options.text3 || '아무 이유 없음';
 
-    const w1 = estimate(rawText1, fs1, 0.35);
+    // text1 has scaleX(1.2) applied in SVG
+    const w1 = estimate(rawText1, fs1, 0.35) * 1.2;
     const w2 = estimate(rawText2, fs2, 0.15);
     const w3 = estimate(`— ${rawText3} —`, fs3, 0.4);
 
@@ -84,94 +92,128 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
     const padY = 20 * scale;
 
     const totalW = contentWidth + padX * 2;
-    const contentH = 110 * scale;
-    const minHeight = 140 * scale;
+    // Increase content/min height to accommodate larger fs1
+    const contentH = 130 * scale;
+    const minHeight = 160 * scale;
     const totalH = Math.max(minHeight, contentH + padY * 2, emblemSize + padY * 2);
 
     const centerX = totalW / 2;
     const centerY = totalH / 2;
 
-    // Positions
+    // ── Text area available width (between emblems) ────────────────────────────
+    // Used to clamp text2 so it never overlaps the emblem regions.
+    const textAreaW = Math.round(totalW - 2 * padX - 2 * emblemSize - 2 * gap);
+
+    // Positions — adjusted gaps to fit larger fs1
     const leftEmblemX = padX;
     const rightEmblemX = totalW - padX - emblemSize;
     const emblemY = centerY - emblemSize / 2;
 
     const textCenterY = centerY;
-    const y1 = textCenterY - 35 * scale;
-    const y2 = textCenterY + 10 * scale;
-    const y3 = textCenterY + 45 * scale;
+    const y1 = textCenterY - 44 * scale; // moved up a bit for larger text1
+    const y2 = textCenterY + 12 * scale;
+    const y3 = textCenterY + 52 * scale;
 
     const numStrokeW = parseFloat(text2StrokeWidth) || 2.5;
 
     // Emblem SVGs (pinwheels)
-    const e1 = generatePinwheelSvgPaths(theme, true, false, animate);
-    const e2 = generatePinwheelSvgPaths(theme, true, true, animate);
+    // Left 경: reverse=true (counter-clockwise) — matches EmblemSection reverse prop
+    // Right 축: reverse=false (clockwise) — opposite direction
+    // Pass unique ids so each pinwheel uses its own @keyframes & CSS class,
+    // preventing collision when both are embedded in the same SVG document.
+    const e1 = generatePinwheelSvgPaths(theme, true, false, animate, 'gyeong');
+    const e2 = generatePinwheelSvgPaths(theme, false, true, animate, 'chuk');
 
-    // ── Font Setup ────────────────────────────────────────────────────────────
-    // GitHub renders SVGs in a sandboxed <img> — external CSS/fonts are blocked.
-    // We use Google Fonts CSS API via a <style> @import which some renderers DO load,
-    // AND we set a broad fallback chain so CJK glyphs still render via system fonts.
-    const fontFamily =
-        '"Nanum Myeongjo", "Apple SD Gothic Neo", "Malgun Gothic", "나눔명조", "Gungsuh", "Batang", "궁서", "바탕", CJKsc, serif';
-    const monoFontFamily = '"Outfit", "SF Pro Display", "Segoe UI", system-ui, sans-serif';
+    // ── SVG z-order: later elements are rendered ON TOP.
+    // Correct order per emblem: pinwheel blades → red disk → 경/축 text
+    // Disk: red circle + white border + thin dark inner shadow (matches EmblemSection CSS)
+    // Disk size: EmblemSection sets disk at 55% of emblem → r = 55/2 = 27.5 ≈ 27
+    const diskMarkup = `
+        <circle cx="50" cy="50" r="27" fill="#E11D48"/>
+        <circle cx="50" cy="50" r="27" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="3"/>
+        <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
 
-    return `<svg width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    // ── Fonts ──────────────────────────────────────────────────────────────────
+    // @font-face works when SVG is opened directly in a browser (local preview).
+    // GitHub <img> sandboxing blocks external font requests — system fallbacks apply.
+    // Use @font-face (NOT @import) — @import in SVG <style> is unreliable cross-browser.
+    const styleBlock = `
+        @import url('//fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
+        @font-face {
+            font-family: JoseonPalace;
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
+            font-weight: normal;
+    `;
+
+    // Per-role font stacks (NO double-quotes — they break XML attribute parsing)
+    const fontText1 = "'Nanum Myeongjo', serif";
+    const fontText2 = 'JoseonPalace, 궁서, Gungsuh, Batang, serif';
+    const fontText3 = 'Outfit, SF Pro Display, Segoe UI, system-ui, sans-serif';
+    const fontEmblem = "'Nanum Myeongjo', serif";
+
+    return `<svg width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <filter id="card-shadow" x="-5%" y="-5%" width="120%" height="120%">
             <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.08"/>
         </filter>
-        <rect id="center-disk" x="18" y="18" width="64" height="64" rx="32" fill="#E11D48"/>
-        <circle id="inner-disk" cx="50" cy="50" r="30" stroke="white" stroke-width="2" fill="none"/>
     </defs>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;family=Outfit:wght@600&amp;display=swap');
-    </style>
+    <style>${styleBlock}</style>
 
     <!-- Background Card -->
     <rect x="2" y="2" width="${totalW - 4}" height="${totalH - 4}" rx="${4 * scale}" fill="white" stroke="#f3f4f6" stroke-width="2" filter="url(#card-shadow)"/>
 
-    <!-- Left Emblem (경) -->
-    <svg x="${leftEmblemX}" y="${emblemY}" width="${emblemSize}" height="${emblemSize}" viewBox="0 0 100 100">
-        <use href="#center-disk"/>
-        <use href="#inner-disk"/>
-        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
-              font-family="${fontFamily}" font-size="28" font-weight="800"
-              fill="#f8bf01" stroke="#f8bf01" stroke-width="1.5">경</text>
+    <!-- Left Emblem (경): pinwheel BEHIND disk, disk BEHIND text -->
+    <svg x="${leftEmblemX}" y="${emblemY}" width="${emblemSize}" height="${emblemSize}" viewBox="0 0 100 100" overflow="visible">
         ${e1}
+        ${diskMarkup}
+        <!-- Char: black outline (4-dir text-shadow → SVG stroke trick), then yellow fill -->
+        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
+              font-family="${fontEmblem}" font-size="28" font-weight="900"
+              fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round">경</text>
+        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
+              font-family="${fontEmblem}" font-size="28" font-weight="900"
+              fill="#FDE047">경</text>
     </svg>
 
     <!-- Texts -->
     <g text-anchor="middle">
-        <!-- Text 1: top label -->
-        <text x="${centerX}" y="${y1}" dominant-baseline="middle"
-              fill="${text1Color}" font-size="${fs1}" font-weight="900"
-              font-family="${fontFamily}" letter-spacing="${(0.35 * fs1) / 16}em">${text1}</text>
+        <!-- Text 1: scaleX(1.2) 장평, letter-spacing 0.35em, text-shadow -->
+        <text x="${centerX}" y="${y1}" dominant-baseline="middle" text-anchor="middle"
+              fill="${text1Color}" font-size="${fs1}" font-weight="800"
+              font-family="${fontText1}"
+              style="letter-spacing: 0.35em; text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);"
+              transform="translate(${centerX},${y1}) scale(1.2,1) translate(${-centerX},${-y1})">${text1}</text>
 
-        <!-- Text 2: main name — stroke pass first, then fill pass (matches -webkit-text-stroke) -->
+        <!-- Text 2: JoseonPalace — textLength clamped to textAreaW to prevent emblem overlap -->
         <text x="${centerX}" y="${y2}" dominant-baseline="middle"
               fill="${text2Color}" stroke="${text2StrokeColor}"
               stroke-width="${numStrokeW * scale}" stroke-linejoin="round"
-              font-size="${fs2}" font-weight="300" font-family="${fontFamily}"
-              letter-spacing="${(0.15 * fs2) / 16}em">${text2}</text>
+              font-size="${fs2}" font-weight="300" font-family="${fontText2}"
+              letter-spacing="0.15em"
+              ${w2 > textAreaW ? `textLength="${textAreaW}" lengthAdjust="spacingAndGlyphs"` : ''}>${text2}</text>
         <text x="${centerX}" y="${y2}" dominant-baseline="middle"
               fill="${text2Color}" font-size="${fs2}" font-weight="300"
-              font-family="${fontFamily}" letter-spacing="${(0.15 * fs2) / 16}em">${text2}</text>
+              font-family="${fontText2}" letter-spacing="0.15em"
+              ${w2 > textAreaW ? `textLength="${textAreaW}" lengthAdjust="spacingAndGlyphs"` : ''}>${text2}</text>
 
-        <!-- Text 3: tagline -->
+        <!-- Text 3: Outfit tagline -->
         <text x="${centerX}" y="${y3}" dominant-baseline="middle"
               fill="${text3Color}" font-size="${fs3}" font-weight="600"
-              font-family="${monoFontFamily}" letter-spacing="${(0.4 * fs3) / 16}em">— ${text3} —</text>
+              font-family="${fontText3}" letter-spacing="0.4em">— ${text3} —</text>
     </g>
 
-    <!-- Right Emblem (축) -->
-    <svg x="${rightEmblemX}" y="${emblemY}" width="${emblemSize}" height="${emblemSize}" viewBox="0 0 100 100">
-        <use href="#center-disk"/>
-        <use href="#inner-disk"/>
-        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
-              font-family="${fontFamily}" font-size="28" font-weight="800"
-              fill="#f8bf01" stroke="#f8bf01" stroke-width="1.5">축</text>
+    <!-- Right Emblem (축): pinwheel BEHIND disk, disk BEHIND text -->
+    <svg x="${rightEmblemX}" y="${emblemY}" width="${emblemSize}" height="${emblemSize}" viewBox="0 0 100 100" overflow="visible">
         ${e2}
+        ${diskMarkup}
+        <!-- Char: black outline then yellow fill -->
+        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
+              font-family="${fontEmblem}" font-size="28" font-weight="900"
+              fill="none" stroke="#000000" stroke-width="3" stroke-linejoin="round">축</text>
+        <text x="50" y="53" dominant-baseline="middle" text-anchor="middle"
+              font-family="${fontEmblem}" font-size="28" font-weight="900"
+              fill="#FDE047">축</text>
     </svg>
 </svg>`.trim();
 }

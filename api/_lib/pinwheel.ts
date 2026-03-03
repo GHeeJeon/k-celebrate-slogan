@@ -74,7 +74,8 @@ export function generatePinwheelSvgPaths(
     theme: string,
     reverse: boolean = false,
     flipped: boolean = true,
-    animate: boolean = true
+    animate: boolean = true,
+    id: string = 'pw' // unique per emblem — prevents CSS class collision in same SVG doc
 ) {
     let colors: string[] | undefined;
     if (theme === 'pastel') colors = PASTEL_THEME;
@@ -128,21 +129,24 @@ export function generatePinwheelSvgPaths(
     }
     pathStrs += `</g>`;
 
-    // We can't easily animate SVG using CSS without the stylesheet applied if it's an img tag, BUT wait, GitHub allows <style> inside SVG for animations!
+    // Each instance uses a unique keyframe name and class name (id-scoped)
+    // to prevent CSS conflicts when two pinwheels are embedded in the same SVG.
+    const kfName = `pw-spin-${id}`;
+    const cls = `spin-group-${id}`;
+
     return `
         <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <style>
-                @keyframes pinwheel-spin {
+                @keyframes ${kfName} {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
                 }
-                .spin-group {
+                .${cls} {
                     transform-origin: 50px 50px;
-                    ${animate ? `animation: pinwheel-spin 4s linear infinite ${reverse ? 'alternate' : 'normal'};` : ''}
+                    ${animate ? `animation: ${kfName} 4s linear infinite ${reverse ? 'reverse' : 'normal'};` : ''}
                 }
             </style>
-            <!-- Wrapping animation group around the static paths -->
-            <g class="spin-group" style="transform-origin: 50px 50px;">
+            <g class="${cls}" style="transform-origin: 50px 50px;">
                 ${pathStrs}
             </g>
         </svg>
