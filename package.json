@@ -1,6 +1,6 @@
 {
     "name": "k-celebrate-slogan",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "A celebratory slogan component with animated pinwheels.",
     "homepage": "https://k-celebrate-slogan.vercel.app/",
     "main": "dist/index.js",
