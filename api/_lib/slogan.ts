@@ -1,4 +1,4 @@
-import { generatePinwheelSvgPaths } from './pinwheel';
+import { generatePinwheelSvgPaths } from './pinwheel.js';
 
 // ─── Sanitize ─────────────────────────────────────────────────────────────────
 // Prevent XSS / SVG injection from user-provided query params.

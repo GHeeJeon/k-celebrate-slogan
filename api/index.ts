@@ -1,4 +1,4 @@
-import { getSvgSlogan } from './_lib/slogan';
+import { getSvgSlogan } from './_lib/slogan.js';
 
 interface VercelRequest {
     query: Record<string, string | string[] | undefined>;
