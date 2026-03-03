@@ -15,12 +15,17 @@ Remember, everyone is worthy of celebration, for no reason at all!
 ## Installation
 
 ```bash
-npm install k-celebrate-slogan framer-motion
+npm install k-celebrate-slogan framer-motion react react-dom
 # or
-yarn add k-celebrate-slogan framer-motion
+yarn add k-celebrate-slogan framer-motion react react-dom
 ```
 
-This component uses `framer-motion` for entrance animations.
+> **Note:** `react`, `react-dom`, and `framer-motion` are peer dependencies.  
+> If your project already has them installed, you only need:
+>
+> ```bash
+> npm install k-celebrate-slogan
+> ```
 
 ## Usage
 
