@@ -34,3 +34,5 @@ build/
 .agent/
 _agents/
 _agent/
+.vercel
+.env*.local

@@ -143,6 +143,7 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
             font-family: JoseonPalace;
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
             font-weight: normal;
+        }
     `;
 
     // Per-role font stacks (NO double-quotes — they break XML attribute parsing)
