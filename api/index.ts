@@ -10,7 +10,7 @@ interface VercelResponse {
     send(body: string): void;
 }
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         // Normalize query params — Vercel passes them as string | string[] | undefined
         const raw: Record<string, string | undefined> = {};
@@ -19,7 +19,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
             raw[key] = Array.isArray(v) ? v[0] : v;
         }
 
-        const svg = getSvgSlogan(raw);
+        const svg = await getSvgSlogan(raw);
 
         res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
         // Revalidate every hour; CDN can cache for 24h

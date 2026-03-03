@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import { generatePinwheelSvgPaths } from './pinwheel.js';
 
 // ─── Sanitize ─────────────────────────────────────────────────────────────────
@@ -46,12 +47,52 @@ const estimate = (t: string, s: number, ls: number) => {
     return w + t.length * s * ls;
 };
 
+// ─── Font Subsetting ────────────────────────────────────────────────────────────
+async function getGoogleFontBase64Css(family: string, text: string): Promise<string> {
+    if (!text) return '';
+    try {
+        const chars = Array.from(new Set(text.replace(/\s+/g, '').split('')))
+            .sort()
+            .join('');
+        const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}&text=${encodeURIComponent(chars)}`;
+
+        const cssRes = await fetch(url, {
+            headers: {
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            },
+        });
+        if (!cssRes.ok) return '';
+        const css = await cssRes.text();
+
+        const match = css.match(/src:\s*url\((https:\/\/[^)]+)\)/);
+        if (!match) return '';
+
+        const fontRes = await fetch(match[1]);
+        if (!fontRes.ok) return '';
+        const buffer = await fontRes.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+
+        return `@font-face {
+            font-family: '${family}';
+            src: url(data:font/woff2;base64,${base64}) format('woff2');
+            font-weight: normal;
+        }`;
+    } catch (e) {
+        return '';
+    }
+}
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
-export function getSvgSlogan(options: Record<string, string | undefined>) {
+export async function getSvgSlogan(options: Record<string, string | undefined>) {
     // Text — escape to prevent SVG injection
-    const text1 = escapeXml(options.text1 || '축하합니다');
-    const text2 = escapeXml(options.text2 || '김준호');
-    const text3 = escapeXml(options.text3 || '아무 이유 없음');
+    const rawText1 = options.text1 || '축하합니다';
+    const rawText2 = options.text2 || '김준호';
+    const rawText3 = options.text3 || '아무 이유 없음';
+
+    const text1 = escapeXml(rawText1);
+    const text2 = escapeXml(rawText2);
+    const text3 = escapeXml(rawText3);
 
     // Colors — sanitize
     const text1Color = sanitizeColor(options.text1Color || '', '#1c89bf');
@@ -76,10 +117,6 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
     const fs1 = 38 * scale; // was 20; React = 3rem ≈ 48px at default scale
     const fs2 = 48 * scale; // React = 3.75rem — unchanged
     const fs3 = 14 * scale;
-
-    const rawText1 = options.text1 || '축하합니다';
-    const rawText2 = options.text2 || '김준호';
-    const rawText3 = options.text3 || '아무 이유 없음';
 
     // text1 has scaleX(1.2) applied in SVG
     const w1 = estimate(rawText1, fs1, 0.35) * 1.2;
@@ -133,11 +170,19 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
         <circle cx="50" cy="50" r="27" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="3"/>
         <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
 
-    // ── Fonts ──────────────────────────────────────────────────────────────────
-    // @font-face works when SVG is opened directly in a browser (local preview).
+    // ─── Fonts ──────────────────────────────────────────────────────────────────
+    // Fetch dynamic lightweight subset fonts for the specific characters used.
+    const fontCss1 = await getGoogleFontBase64Css('Nanum Myeongjo', rawText1 + '경축');
+    const fontCss2 = await getGoogleFontBase64Css('Gowun Batang', rawText2);
+    const fontCss3 = await getGoogleFontBase64Css('Outfit', rawText3);
+
     // GitHub <img> sandboxing blocks external font requests — system fallbacks apply.
-    // Use @font-face (NOT @import) — @import in SVG <style> is unreliable cross-browser.
+    // By embedding base64 subset fonts directly into the SVG, we bypass the proxy block.
+    // For environments out of proxy scope, the external URLs act as fallback.
     const styleBlock = `
+        ${fontCss1}
+        ${fontCss2}
+        ${fontCss3}
         @import url('//fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
         @font-face {
             font-family: JoseonPalace;
@@ -147,8 +192,9 @@ export function getSvgSlogan(options: Record<string, string | undefined>) {
     `;
 
     // Per-role font stacks (NO double-quotes — they break XML attribute parsing)
+    // For text2, we prepend Gowun Batang (dynamically embedded) before JoseonPalace
     const fontText1 = "'Nanum Myeongjo', serif";
-    const fontText2 = 'JoseonPalace, 궁서, Gungsuh, Batang, serif';
+    const fontText2 = "'Gowun Batang', JoseonPalace, 궁서, Gungsuh, Batang, serif";
     const fontText3 = 'Outfit, SF Pro Display, Segoe UI, system-ui, sans-serif';
     const fontEmblem = "'Nanum Myeongjo', serif";
 
