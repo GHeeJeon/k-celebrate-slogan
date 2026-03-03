@@ -10,7 +10,7 @@ Remember, everyone is worthy of celebration, for no reason at all!
 
 ## Preview
 
-[![k-celebrate-slogan](https://k-celebrate-slogan.vercel.app/api?text1=%EC%B6%95%ED%95%98%ED%95%A9%EB%8B%88%EB%8B%A4&text2=%EA%B9%80%EC%A4%80%ED%98%B8&text3=%EC%95%84%EB%AC%B4+%EC%9D%B4%EC%9C%A0+%EC%97%86%EC%9D%8C)](https://github.com/GHeeJeon/k-celebrate-slogan)
+[![k-celebrate-slogan](https://k-celebrate-slogan.vercel.app/api?text1=%EC%B6%95%ED%95%98%ED%95%A9%EB%8B%88%EB%8B%A4&text2=%EA%B9%80%EC%A4%80%ED%98%B8&text3=%EC%95%84%EB%AC%B4+%EC%9D%B4%EC%9C%A0+%EC%97%86%EC%9D%8C&text1Color=%231c89bf&text2Color=%23222222&text3Color=%23111827&text2StrokeColor=%23222222&text2StrokeWidth=2.5px&scale=1&emblemScale=0.8&theme=default)](https://github.com/GHeeJeon/k-celebrate-slogan)
 
 ## Installation
 
@@ -118,4 +118,4 @@ It says "Congratulations, Jun-ho Kim, for no reason at all." (축하합니다 �
 
 ## License
 
-MIT
+[MIT](./LICENSE)
