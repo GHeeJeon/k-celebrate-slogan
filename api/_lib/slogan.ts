@@ -47,7 +47,31 @@ const estimate = (t: string, s: number, ls: number) => {
     return w + t.length * s * ls;
 };
 
-// ─── Font Subsetting ────────────────────────────────────────────────────────────
+// ─── 폰트 임베딩 함수 (핵심) ───────────────────────────────────────────────────
+
+// 1. 외부 일반 폰트용 (조선궁서체 등)
+async function getExternalFontBase64Css(
+    family: string,
+    url: string,
+    format: string
+): Promise<string> {
+    try {
+        const res = await fetch(url);
+        if (!res.ok) return '';
+        const buffer = await res.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        return `@font-face {
+            font-family: '${family}';
+            src: url(data:font/${format};base64,${base64}) format('${format}');
+            font-weight: normal;
+            font-style: normal;
+        }`;
+    } catch (e) {
+        return '';
+    }
+}
+
+// 2. 구글 폰트 서브셋용
 async function getGoogleFontBase64Css(family: string, text: string): Promise<string> {
     if (!text) return '';
     try {
@@ -171,30 +195,30 @@ export async function getSvgSlogan(options: Record<string, string | undefined>) 
         <circle cx="50" cy="50" r="26" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
 
     // ─── Fonts ──────────────────────────────────────────────────────────────────
-    // Fetch dynamic lightweight subset fonts for the specific characters used.
+    // Fetch dynamic lightweight subset fonts and external fonts.
+    const fontCssJoseon = await getExternalFontBase64Css(
+        'JoseonPalace',
+        'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff',
+        'woff'
+    );
     const fontCss1 = await getGoogleFontBase64Css('Nanum Myeongjo', rawText1 + '경축');
     const fontCss2 = await getGoogleFontBase64Css('Gowun Batang', rawText2);
     const fontCss3 = await getGoogleFontBase64Css('Outfit', rawText3);
 
     // GitHub <img> sandboxing blocks external font requests — system fallbacks apply.
     // By embedding base64 subset fonts directly into the SVG, we bypass the proxy block.
-    // For environments out of proxy scope, the external URLs act as fallback.
     const styleBlock = `
+        ${fontCssJoseon}
         ${fontCss1}
         ${fontCss2}
         ${fontCss3}
         @import url('//fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
-        @font-face {
-            font-family: JoseonPalace;
-            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
-            font-weight: normal;
-        }
     `;
 
     // Per-role font stacks (NO double-quotes — they break XML attribute parsing)
-    // For text2, we prepend Gowun Batang (dynamically embedded) before JoseonPalace
+    // text2: JoseonPalace is priority 1, Gowun Batang is priority 2.
     const fontText1 = "'Nanum Myeongjo', serif";
-    const fontText2 = "'Gowun Batang', JoseonPalace, 궁서, Gungsuh, Batang, serif";
+    const fontText2 = "JoseonPalace, 'Gowun Batang', serif";
     const fontText3 = 'Outfit, SF Pro Display, Segoe UI, system-ui, sans-serif';
     const fontEmblem = "'Nanum Myeongjo', serif";
 
