@@ -22,35 +22,59 @@ interface Props {
 export const Preview = React.forwardRef<HTMLDivElement, Props>(
     ({ cfg, animKey, replayAnim }, ref) => {
         const [isExporting, setIsExporting] = useState<string | null>(null);
+        const [exportProgress, setExportProgress] = useState<number>(0);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
-            // ref is a forwardRef, we need to access its current value.
-            // Since it's passed from parent as sloganRef, we expect it to be a RefObject.
             const node = (ref as React.RefObject<HTMLDivElement>).current;
             if (!node) return;
 
             setIsExporting(format);
+            setExportProgress(0);
 
             try {
                 const filename = `slogan.${format}`;
-                const filter = () => true;
+                const filter = (el: HTMLElement) => !el.classList?.contains('no-export');
+
+                // Explicitly embed critical font to bypass CORS issues with html-to-image scanning
+                const joseonPalaceCSS = `
+                    @font-face {
+                        font-family: 'JoseonPalace';
+                        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
+                        font-weight: normal;
+                        font-display: swap;
+                    }
+                `;
+
+                const commonOptions = {
+                    backgroundColor: '#ffffff',
+                    filter,
+                    pixelRatio: 1.5, // Balance quality and speed
+                    fontEmbedCSS: joseonPalaceCSS,
+                };
 
                 if (format === 'jpg') {
+                    setExportProgress(30);
                     const dataUrl = await htmlToImage.toJpeg(node, {
-                        quality: 0.95,
-                        backgroundColor: '#ffffff',
-                        filter,
+                        ...commonOptions,
+                        quality: 0.9,
                     });
+                    setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'png') {
-                    const dataUrl = await htmlToImage.toPng(node, { filter });
+                    setExportProgress(30);
+                    const dataUrl = await htmlToImage.toPng(node, commonOptions);
+                    setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'svg') {
-                    const dataUrl = await htmlToImage.toSvg(node, { filter });
+                    setExportProgress(50);
+                    // Revert to simple dataUrl as requested
+                    const dataUrl = await htmlToImage.toSvg(node, commonOptions);
+                    setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'gif') {
-                    const durationMs = 4000;
-                    const fps = 10;
+                    // Optimized for speed: 1.2s total @ 8fps
+                    const durationMs = 1200;
+                    const fps = 8;
                     const msPerFrame = 1000 / fps;
                     const frameCount = Math.floor(durationMs / msPerFrame);
 
@@ -58,21 +82,21 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     let width = 0;
                     let height = 0;
 
+                    // Lower pixel ratio for faster GIF encoding
+                    const gifOptions = { ...commonOptions, pixelRatio: 1 };
+
                     for (let i = 0; i < frameCount; i++) {
-                        const canvas = await htmlToImage.toCanvas(node, {
-                            backgroundColor: '#ffffff',
-                            filter,
-                        });
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
+                        const canvas = await htmlToImage.toCanvas(node, gifOptions);
+                        if (i === 0) {
                             width = canvas.width;
                             height = canvas.height;
-                            framesData.push({ data: canvas, delay: msPerFrame });
                         }
-                        await new Promise((r) => setTimeout(r, msPerFrame));
+                        framesData.push({ data: canvas, delay: msPerFrame });
+                        setExportProgress(Math.floor((i / frameCount) * 85));
+                        await new Promise((r) => setTimeout(r, 20)); // UI breathing room
                     }
 
-                    if (framesData.length > 0 && width > 0 && height > 0) {
+                    if (framesData.length > 0) {
                         const buffer = await encode({
                             workerUrl: undefined,
                             width,
@@ -82,12 +106,14 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         const blob = new Blob([buffer], { type: 'image/gif' });
                         saveAs(blob, filename);
                     }
+                    setExportProgress(100);
                 }
             } catch (err) {
                 console.error('Export error:', err);
-                alert('Failed to export. Check console for details.');
+                alert('An error occurred during export. Check terminal/console for details.');
             } finally {
                 setIsExporting(null);
+                setTimeout(() => setExportProgress(0), 800);
             }
         };
 
@@ -153,6 +179,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
 
                     {/* Replay Button */}
                     <div
+                        className="no-export"
                         style={{
                             position: 'relative',
                             zIndex: 1,
@@ -191,6 +218,28 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     </div>
                 </div>
 
+                {/* Progress Bar */}
+                {exportProgress > 0 && (
+                    <div
+                        style={{
+                            marginTop: '1.25rem',
+                            height: '2px',
+                            background: '#e2e8f0',
+                            borderRadius: '1px',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: `${exportProgress}%`,
+                                height: '100%',
+                                background: ACCENT,
+                                transition: 'width 0.2s ease',
+                            }}
+                        />
+                    </div>
+                )}
+
                 {/* Export Buttons */}
                 <div
                     style={{
@@ -198,9 +247,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         justifyContent: 'center',
                         gap: '0.6rem',
                         flexWrap: 'wrap',
-                        marginTop: '1.25rem',
-                        paddingTop: '1.25rem',
-                        borderTop: '1px dotted #e2e8f0',
+                        marginTop: exportProgress > 0 ? '0.75rem' : '1.25rem',
+                        paddingTop: exportProgress > 0 ? '0' : '1.25rem',
+                        borderTop: exportProgress > 0 ? 'none' : '1px dotted #e2e8f0',
                     }}
                 >
                     {(['jpg', 'png', 'svg', 'gif'] as const).map((fmt) => (
