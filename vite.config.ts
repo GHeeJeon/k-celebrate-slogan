@@ -7,13 +7,17 @@ export default defineConfig(({ mode: _mode }) => {
         publicDir: false, // Don't serve public folder
         server: {
             open: true, // open browser on server start
-            port: 3000,
+            proxy: {
+                '/api': {
+                    target: 'https://k-celebrate-slogan.vercel.app',
+                    changeOrigin: true,
+                },
+            },
         },
         build: {
             rollupOptions: {
                 input: {
                     main: 'index.html',
-                    demo: 'demo.html',
                 },
             },
         },

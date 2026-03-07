@@ -1,0 +1,19 @@
+{
+    "redirects": [
+        {
+            "source": "/demo(?:\\.html)?",
+            "destination": "/",
+            "permanent": true
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "https://k-celebrate-slogan.vercel.app/api/$1"
+        },
+        {
+            "source": "/api",
+            "destination": "https://k-celebrate-slogan.vercel.app/api"
+        }
+    ]
+}
