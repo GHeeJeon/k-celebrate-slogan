@@ -35,7 +35,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 const filename = `slogan.${format}`;
                 const filter = (el: HTMLElement) => !el.classList?.contains('no-export');
 
-                // Explicitly embed critical font to bypass CORS issues with html-to-image scanning
+                // Explicitly embed critical fonts to bypass CORS issues with html-to-image scanning stylesheets
                 const joseonPalaceCSS = `
                     @font-face {
                         font-family: 'JoseonPalace';
@@ -45,11 +45,23 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     }
                 `;
 
+                let googleFontsCSS = '';
+                try {
+                    const fontRes = await fetch(
+                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap'
+                    );
+                    if (fontRes.ok) {
+                        googleFontsCSS = await fontRes.text();
+                    }
+                } catch (e) {
+                    console.warn('Failed to fetch Google Fonts CSS', e);
+                }
+
                 const commonOptions = {
                     backgroundColor: '#ffffff',
                     filter,
                     pixelRatio: 1.5, // Balance quality and speed
-                    fontEmbedCSS: joseonPalaceCSS,
+                    fontEmbedCSS: googleFontsCSS + joseonPalaceCSS,
                 };
 
                 if (format === 'jpg') {
@@ -72,9 +84,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'gif') {
-                    // Optimized for speed: 1.2s total @ 8fps
-                    const durationMs = 1200;
-                    const fps = 8;
+                    // Optimized capture for 2s GIF @ 10fps
+                    const durationMs = 2000;
+                    const fps = 10;
                     const msPerFrame = 1000 / fps;
                     const frameCount = Math.floor(durationMs / msPerFrame);
 
@@ -85,7 +97,21 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     // Lower pixel ratio for faster GIF encoding
                     const gifOptions = { ...commonOptions, pixelRatio: 1 };
 
+                    // Find pinwheels to manually rotate them since html-to-image freezes CSS animations on clone
+                    const pinwheels = node.querySelectorAll(
+                        '.k-celebrate-pinwheel'
+                    ) as NodeListOf<HTMLElement>;
+
                     for (let i = 0; i < frameCount; i++) {
+                        const progress = i / frameCount;
+                        const degrees = progress * 360; // 1 full rotation over the duration
+
+                        pinwheels.forEach((pw) => {
+                            const isReverse = pw.getAttribute('data-reverse') === 'true';
+                            pw.style.animation = 'none'; // Disable CSS
+                            pw.style.transform = `rotate(${isReverse ? -degrees : degrees}deg)`;
+                        });
+
                         const canvas = await htmlToImage.toCanvas(node, gifOptions);
                         if (i === 0) {
                             width = canvas.width;
@@ -93,8 +119,14 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         }
                         framesData.push({ data: canvas, delay: msPerFrame });
                         setExportProgress(Math.floor((i / frameCount) * 85));
-                        await new Promise((r) => setTimeout(r, 20)); // UI breathing room
+                        await new Promise((r) => setTimeout(r, 10)); // UI breathing room
                     }
+
+                    // Restore pinwheels
+                    pinwheels.forEach((pw) => {
+                        pw.style.animation = '';
+                        pw.style.transform = '';
+                    });
 
                     if (framesData.length > 0) {
                         const buffer = await encode({
@@ -156,9 +188,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         style={{
                             position: 'relative',
                             zIndex: 1,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            paddingBottom: '1rem',
+                            margin: '0 auto',
+                            width: 'max-content',
+                            padding: '1.5rem',
                         }}
                     >
                         <KCelebrateSlogan

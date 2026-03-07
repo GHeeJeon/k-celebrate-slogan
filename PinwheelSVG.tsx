@@ -130,7 +130,8 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
 
     return (
         <div
-            className={className}
+            className={`k-celebrate-pinwheel ${className || ''}`}
+            data-reverse={reverse ? 'true' : 'false'}
             style={{
                 position: className ? undefined : 'absolute',
                 top: className ? undefined : 0,
