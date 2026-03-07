@@ -31,6 +31,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             setIsExporting(format);
             setExportProgress(0);
 
+            // Wait for React to apply 'isExporting' rules to the DOM (like removing padding and restoring scale: 1)
+            await new Promise((r) => setTimeout(r, 150));
+
             try {
                 const filename = `slogan.${format}`;
                 const filter = (el: HTMLElement) => !el.classList?.contains('no-export');
@@ -68,7 +71,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     setExportProgress(30);
                     const dataUrl = await htmlToImage.toJpeg(node, {
                         ...commonOptions,
-                        quality: 0.9,
+                        quality: 0.95,
                     });
                     setExportProgress(100);
                     saveAs(dataUrl, filename);
@@ -84,9 +87,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'gif') {
-                    // Optimized capture for 2s GIF @ 10fps
-                    const durationMs = 2000;
-                    const fps = 10;
+                    // Smoother and longer GIF: 4s total @ 15fps
+                    const durationMs = 4000;
+                    const fps = 15;
                     const msPerFrame = 1000 / fps;
                     const frameCount = Math.floor(durationMs / msPerFrame);
 
@@ -119,7 +122,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         }
                         framesData.push({ data: canvas, delay: msPerFrame });
                         setExportProgress(Math.floor((i / frameCount) * 85));
-                        await new Promise((r) => setTimeout(r, 10)); // UI breathing room
+
+                        // Small wait to unblock UI thread occasionally
+                        if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10));
                     }
 
                     // Restore pinwheels
@@ -190,7 +195,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             zIndex: 1,
                             margin: '0 auto',
                             width: 'max-content',
-                            padding: '1.5rem',
+                            padding: isExporting ? '0.2rem' : '1.5rem',
                         }}
                     >
                         <KCelebrateSlogan
@@ -206,6 +211,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             emblemScale={cfg.emblemScale}
                             animate={cfg.animate}
                             pinwheelColors={getPinwheelColors(cfg.pinwheelTheme)}
+                            exportMode={isExporting !== null}
                         />
                     </div>
 

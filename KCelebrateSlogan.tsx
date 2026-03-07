@@ -18,6 +18,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     scale = 1,
     emblemScale = 0.75,
     className = '',
+    exportMode = false,
 }) => {
     const strokeColor = text2StrokeColor || text2Color;
 
@@ -52,8 +53,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 pointerEvents: 'none',
                 width: 'fit-content',
                 transformOrigin: 'center',
-                scale: autoScale,
-                rotate: -0.5,
+                scale: exportMode ? scale : autoScale,
             }}
         >
             <style>

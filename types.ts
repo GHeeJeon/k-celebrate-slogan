@@ -63,14 +63,18 @@ export interface KCelebrateSloganProps {
     scale?: number;
 
     /**
-     * Scale factor specifically for the left and right emblems.
-     * @default 1
+     * Scale factor specifically to resize the side emblems (pinwheels + characters).
+     * @default 0.75
      */
     emblemScale?: number;
 
     /**
-
-     * Additional CSS classes for the container.
+     * A CSS class forwarded to the root element.
      */
     className?: string;
+
+    /**
+     * Internal prop used to bypass auto-scaling during image export.
+     */
+    exportMode?: boolean;
 }
