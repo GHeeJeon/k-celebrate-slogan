@@ -141,10 +141,14 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     saveAs(dataUrl, filename);
                 } else if (format === 'svg') {
                     setExportProgress(50);
-                    // Revert to simple dataUrl as requested
                     const dataUrl = await htmlToImage.toSvg(node, commonOptions);
+
+                    // Decode the URI component to handle Korean/UTF-8 characters properly
+                    const svgData = decodeURIComponent(dataUrl.split(',')[1]);
+                    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+
                     setExportProgress(100);
-                    saveAs(dataUrl, filename);
+                    saveAs(blob, filename);
                 } else if (format === 'gif') {
                     // Smoother and longer GIF: 4s total @ 15fps
                     const durationMs = 4000;
