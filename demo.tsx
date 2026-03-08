@@ -56,6 +56,25 @@ const DemoApp: React.FC = () => {
         // reserved for future sync logic
     }, [cfg.text2Color]);
 
+    const shareContent = (
+        <Section title="📤 Share">
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '0.75rem',
+                    maxHeight: '400px',
+                    overflowY: 'auto',
+                    paddingRight: '0.5rem',
+                }}
+            >
+                <CopyBlock label="Markdown" code={markdownCode} />
+                <CopyBlock label="HTML" code={htmlCode} />
+                <CopyBlock label="URL" code={sloganUrl} />
+            </div>
+        </Section>
+    );
+
     return (
         <>
             <style>{`
@@ -91,7 +110,7 @@ const DemoApp: React.FC = () => {
                     display: flex;
                     overflow-x: auto;
                     gap: 0.25rem;
-                    background: #fff;
+                    background: transparent;
                     padding: 0.4rem 0.5rem;
                     border-bottom: 1px solid #e2e8f0;
                     position: relative;
@@ -120,6 +139,7 @@ const DemoApp: React.FC = () => {
 
                 /* PC-specific Compact View */
                 .desktop-compact { display: none; }
+                .desktop-share { display: none; }
 
                 @media (max-width: 899.98px) {
                     .tab-content:not(.active) { display: none !important; }
@@ -129,7 +149,8 @@ const DemoApp: React.FC = () => {
 
                 @media (min-width: 900px) {
                     .desktop-compact { display: block !important; }
-                    .tab-content, .mobile-tabs { display: none !important; }
+                    .tab-content, .mobile-tabs, .mobile-share { display: none !important; }
+                    .desktop-share { display: block !important; margin-top: 1rem; }
                     .demo-layout {
                         display: grid !important;
                         grid-template-columns: 340px 1fr;
@@ -218,6 +239,11 @@ const DemoApp: React.FC = () => {
                         <div className={`tab-content ${activeTab === 'layout' ? 'active' : ''}`}>
                             <LayoutControls cfg={cfg} set={set} />
                         </div>
+                        <div
+                            className={`tab-content mobile-share ${activeTab === 'share' ? 'active' : ''}`}
+                        >
+                            {shareContent}
+                        </div>
                     </div>
 
                     {/* PC View: Right, Mobile View: Top (Sticky Preview) */}
@@ -230,26 +256,7 @@ const DemoApp: React.FC = () => {
                                 replayAnim={replayAnim}
                             />
                         </div>
-                        <div
-                            className={`tab-content snippet-row ${activeTab === 'share' ? 'active' : ''}`}
-                        >
-                            <Section title="📤 Share">
-                                <div
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                                        gap: '0.75rem',
-                                        maxHeight: '400px',
-                                        overflowY: 'auto',
-                                        paddingRight: '0.5rem',
-                                    }}
-                                >
-                                    <CopyBlock label="Markdown" code={markdownCode} />
-                                    <CopyBlock label="HTML" code={htmlCode} />
-                                    <CopyBlock label="URL" code={sloganUrl} />
-                                </div>
-                            </Section>
-                        </div>
+                        <div className="desktop-share">{shareContent}</div>
                     </div>
                 </div>
             </main>

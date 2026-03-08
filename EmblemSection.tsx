@@ -40,7 +40,6 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                 justifyContent: 'center',
                 padding: 'calc(0.5rem * var(--active-scale))',
                 width: 'var(--emblem-size)',
-                minWidth: '100px',
             }}
         >
             {/* Inner Square Wrapper: enforces 1:1 aspect ratio so the circle stays perfectly round */}

@@ -121,9 +121,9 @@ const StrokeWidthInput: React.FC<{ value: string; onChange: (v: string) => void 
             return;
         }
         let parsed = parseInt(v, 10);
-        if (isNaN(parsed) || parsed <= 0) {
+        if (isNaN(parsed) || parsed < 0) {
             parsed = parseInt(DEFAULT_CONFIG.text2StrokeWidth.replace(/[^0-9]/g, ''), 10);
-            if (isNaN(parsed) || parsed <= 0) parsed = 3; // safe fallback
+            if (isNaN(parsed) || parsed < 0) parsed = 3; // safe fallback
         }
         const valWithPx = `${parsed}px`;
         setLocal(parsed.toString());
