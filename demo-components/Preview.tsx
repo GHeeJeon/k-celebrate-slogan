@@ -174,6 +174,10 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         '.k-celebrate-pinwheel'
                     ) as NodeListOf<HTMLElement>;
 
+                    // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
+                    // before we start capturing the sequence of frames
+                    await htmlToImage.toCanvas(node, gifOptions);
+
                     for (let i = 0; i < frameCount; i++) {
                         const progress = i / frameCount;
                         const degrees = progress * 360; // 1 full rotation over the duration
