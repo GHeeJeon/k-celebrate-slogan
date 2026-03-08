@@ -70,7 +70,7 @@ const DemoApp: React.FC = () => {
                 /* ── Layout ── */
                 .demo-layout { display: flex; flex-direction: column; gap: 1rem; }
                 .control-col { order: 2; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
-                .preview-col { order: 1; min-width: 0; }
+                .preview-col { order: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
                 .sticky-preview { position: sticky; top: 60px; z-index: 50; }
 
                 /* ── Header ── */
@@ -131,7 +131,6 @@ const DemoApp: React.FC = () => {
                 @media (min-width: 900px) {
                     .desktop-compact { display: block !important; }
                     .tab-content, .mobile-tabs { display: none !important; }
-                    .mobile-tabs { display: none !important; }
                     .demo-layout {
                         display: grid !important;
                         grid-template-columns: 340px 1fr;
@@ -140,7 +139,7 @@ const DemoApp: React.FC = () => {
                     }
                     .control-col { order: 1; }
                     .preview-col { order: 2; }
-                    .sticky-preview { top: 80px; }
+                    .sticky-preview { position: relative; top: 0; z-index: 1; }
                     .snippet-row { flex-direction: row; display: flex !important; gap: 1rem; }
                     .snippet-row > * { flex: 1; min-width: 0; }
                 }
@@ -220,20 +219,6 @@ const DemoApp: React.FC = () => {
                         <div className={`tab-content ${activeTab === 'layout' ? 'active' : ''}`}>
                             <LayoutControls cfg={cfg} set={set} />
                         </div>
-
-                        <div
-                            className={`tab-content snippet-row ${activeTab === 'share' ? 'active' : ''}`}
-                        >
-                            <Section title="📝 Markdown">
-                                <CopyBlock label="Markdown" code={markdownCode} />
-                            </Section>
-                            <Section title="🌐 HTML">
-                                <CopyBlock label="HTML" code={htmlCode} />
-                            </Section>
-                            <Section title="🔗 URL">
-                                <CopyBlock label="URL" code={sloganUrl} />
-                            </Section>
-                        </div>
                     </div>
 
                     {/* PC View: Right, Mobile View: Top (Sticky Preview) */}
@@ -245,6 +230,26 @@ const DemoApp: React.FC = () => {
                                 animKey={animKey}
                                 replayAnim={replayAnim}
                             />
+                        </div>
+                        <div
+                            className={`tab-content snippet-row ${activeTab === 'share' ? 'active' : ''}`}
+                        >
+                            <Section title="� Share">
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '0.75rem',
+                                        maxHeight: '400px',
+                                        overflowY: 'auto',
+                                        paddingRight: '0.5rem',
+                                    }}
+                                >
+                                    <CopyBlock label="Markdown" code={markdownCode} />
+                                    <CopyBlock label="HTML" code={htmlCode} />
+                                    <CopyBlock label="URL" code={sloganUrl} />
+                                </div>
+                            </Section>
                         </div>
                     </div>
                 </div>

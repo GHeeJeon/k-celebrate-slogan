@@ -190,15 +190,18 @@ export const CopyBlock: React.FC<CopyBlockProps> = ({ label, code }) => {
             </div>
             <pre
                 style={{
-                    padding: '1rem',
-                    fontSize: '0.8rem',
+                    padding: '0.75rem 1rem',
+                    fontSize: '0.75rem',
                     color: '#0369a1',
                     overflowX: 'auto',
+                    overflowY: 'auto',
+                    maxHeight: '80px',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-all',
                     fontFamily: '"Fira Code", "Consolas", monospace',
-                    lineHeight: 1.6,
+                    lineHeight: 1.5,
                     margin: 0,
+                    background: '#f8fafc',
                 }}
             >
                 {code}
