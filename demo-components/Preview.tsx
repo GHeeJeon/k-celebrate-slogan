@@ -371,14 +371,18 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
 
                 {/* Export Buttons */}
                 <div
+                    className="export-btns"
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
-                        gap: '0.6rem',
-                        flexWrap: 'wrap',
-                        marginTop: exportProgress > 0 ? '0.75rem' : '1.25rem',
-                        paddingTop: exportProgress > 0 ? '0' : '1.25rem',
+                        gap: '0.4rem',
+                        flexWrap: 'nowrap',
+                        marginTop: exportProgress > 0 ? '0.6rem' : '1rem',
+                        paddingTop: exportProgress > 0 ? '0' : '1rem',
                         borderTop: exportProgress > 0 ? 'none' : '1px dotted #e2e8f0',
+                        overflowX: 'auto',
+                        paddingBottom: '0.25rem',
+                        scrollbarWidth: 'none',
                     }}
                 >
                     {(['jpg', 'png', 'svg', 'gif'] as const).map((fmt) => (
@@ -386,19 +390,21 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             key={fmt}
                             onClick={() => handleExport(fmt)}
                             disabled={isExporting !== null}
+                            className="export-btn"
                             style={{
-                                padding: '0.5rem 0.9rem',
+                                padding: '0.4rem 0.6rem',
                                 background: isExporting === fmt ? '#f1f5f9' : '#fff',
                                 color: isExporting === fmt ? '#94a3b8' : ACCENT,
                                 border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
-                                borderRadius: '0.5rem',
-                                fontSize: '0.75rem',
+                                borderRadius: '0.4rem',
+                                fontSize: '0.68rem',
                                 fontWeight: 600,
                                 cursor: isExporting !== null ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.15s ease',
                                 fontFamily: 'inherit',
                                 textTransform: 'uppercase',
-                                minWidth: '85px',
+                                minWidth: '70px',
+                                flexShrink: 0,
                                 boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
                             }}
                             onMouseEnter={(e) => {
@@ -406,7 +412,6 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                                     e.currentTarget.style.background = ACCENT;
                                     e.currentTarget.style.color = '#fff';
                                     e.currentTarget.style.borderColor = ACCENT;
-                                    e.currentTarget.style.transform = 'translateY(-1px)';
                                 }
                             }}
                             onMouseLeave={(e) => {
@@ -414,11 +419,10 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                                     e.currentTarget.style.background = '#fff';
                                     e.currentTarget.style.color = ACCENT;
                                     e.currentTarget.style.borderColor = ACCENT + '44';
-                                    e.currentTarget.style.transform = 'translateY(0)';
                                 }
                             }}
                         >
-                            {isExporting === fmt ? 'Saving...' : `Save ${fmt}`}
+                            {isExporting === fmt ? '...' : `Save ${fmt}`}
                         </button>
                     ))}
                 </div>

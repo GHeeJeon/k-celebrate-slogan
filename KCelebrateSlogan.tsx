@@ -30,10 +30,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     useEffect(() => {
         const computeScale = () => {
             const vw = window.innerWidth;
-            if (vw < 480) setAutoScale(scale * 0.45);
-            else if (vw < 640) setAutoScale(scale * 0.55);
-            else if (vw < 768) setAutoScale(scale * 0.7);
-            else if (vw < 1024) setAutoScale(scale * 0.85);
+            if (vw < 480) setAutoScale(scale * 0.35);
+            else if (vw < 640) setAutoScale(scale * 0.45);
+            else if (vw < 768) setAutoScale(scale * 0.6);
+            else if (vw < 1024) setAutoScale(scale * 0.8);
             else setAutoScale(scale);
         };
         computeScale();
@@ -104,10 +104,13 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-size: var(--fs-2);
                     color: var(--text2-color);
                     font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
-                    font-weight: 400; /* Must be 400 to match @font-face */
+                    font-weight: 400;
                     -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
                     white-space: nowrap;
                     letter-spacing: 0.3em;
+                    text-rendering: optimizeLegibility;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
                 }
 
                 .text3-style {

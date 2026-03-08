@@ -1,7 +1,12 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Config, DEFAULT_CONFIG, PRESETS, ACCENT } from './demo-components/types';
-import { ConfigurationControls } from './demo-components/ConfigurationControls';
+import {
+    PresetControls,
+    TextControls,
+    ColorControls,
+    LayoutControls,
+} from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { Section, CopyBlock } from './demo-components/UI';
 
@@ -26,6 +31,9 @@ function buildUrl(cfg: Config): string {
 const DemoApp: React.FC = () => {
     const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG);
     const [animKey, setAnimKey] = useState(0);
+    const [activeTab, setActiveTab] = useState<'preset' | 'text' | 'colors' | 'layout' | 'share'>(
+        'preset'
+    );
     const sloganRef = useRef<HTMLDivElement>(null);
 
     const set = useCallback(<K extends keyof Config>(key: K, value: Config[K]) => {
@@ -59,34 +67,17 @@ const DemoApp: React.FC = () => {
                 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
                 /* ── Layout ── */
-                .demo-layout { display: flex; flex-direction: column; gap: 1.5rem; }
-                .control-col { order: 2; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; }
-                .preview-col { order: 1; flex: 1; min-width: 0; }
-                .sticky-preview { position: sticky; top: 56px; z-index: 50; }
+                .demo-layout { display: flex; flex-direction: column; gap: 1rem; }
+                .control-col { order: 2; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
+                .preview-col { order: 1; min-width: 0; }
+                .sticky-preview { position: sticky; top: 60px; z-index: 50; }
 
-                /* ── Code snippets: stacked on mobile, row on desktop ── */
-                .snippet-row { display: flex; flex-direction: column; gap: 0.75rem; }
-
-                /* ── Mobile header: single compact line ── */
-                .header-inner {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.6rem;
-                    width: 100%;
-                    flex-wrap: nowrap;
-                }
+                /* ── Header ── */
+                .header-inner { display: flex; align-items: center; gap: 0.6rem; width: 100%; flex-wrap: nowrap; }
                 .header-title { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 .header-subtitle { display: none; }
                 .header-links { display: flex; gap: 0.35rem; margin-left: auto; flex-shrink: 0; }
-                .header-link-btn {
-                    padding: 0.28rem 0.55rem;
-                    border-radius: 0.4rem;
-                    font-size: 0.68rem;
-                    font-weight: 600;
-                    text-decoration: none;
-                    white-space: nowrap;
-                    color: #fff;
-                }
+                .header-link-btn { padding: 0.28rem 0.55rem; border-radius: 0.4rem; font-size: 0.68rem; font-weight: 600; text-decoration: none; color: #fff; white-space: nowrap; }
 
                 @media (min-width: 600px) {
                     .header-subtitle { display: block; font-size: 0.66rem; color: #64748b; margin: 0.05rem 0 0; }
@@ -94,7 +85,37 @@ const DemoApp: React.FC = () => {
                     .header-link-btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
                 }
 
+                /* ── Tabs ── */
+                .mobile-tabs {
+                    display: flex;
+                    overflow-x: auto;
+                    gap: 0.25rem;
+                    background: #fff;
+                    padding: 0.4rem 0.5rem;
+                    border-bottom: 1px solid #e2e8f0;
+                    position: sticky;
+                    top: 300px; /* Default top - Will be adjusted if possible */
+                    z-index: 45;
+                    scrollbar-width: none;
+                    margin: 0 -1rem; /* Full width bleed on mobile */
+                }
+                .mobile-tabs::-webkit-scrollbar { display: none; }
+                .tab-btn {
+                    padding: 0.4rem 0.75rem;
+                    border: none;
+                    background: transparent;
+                    font-size: 0.72rem;
+                    font-weight: 600;
+                    color: #64748b;
+                    border-radius: 0.4rem;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .tab-btn.active { background: ${ACCENT}15; color: ${ACCENT}; }
+
                 @media (min-width: 900px) {
+                    .mobile-tabs { display: none !important; }
                     .demo-layout {
                         display: grid !important;
                         grid-template-columns: 340px 1fr;
@@ -103,15 +124,22 @@ const DemoApp: React.FC = () => {
                     }
                     .control-col { order: 1; }
                     .preview-col { order: 2; }
-                    .sticky-preview { top: 75px; }
-                    .snippet-row { flex-direction: row; }
+                    .sticky-preview { top: 80px; }
+                    .snippet-row { flex-direction: row; display: flex !important; gap: 1rem; }
                     .snippet-row > * { flex: 1; min-width: 0; }
-                    .header-title { font-size: 1rem; }
-                    .header-link-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+                }
+
+                /* ── Tab Content Visibility ── */
+                .tab-content { display: block; }
+                .tab-content Section { margin-bottom: 0; border: none; box-shadow: none; border-radius: 0; background: transparent; padding: 1rem 0; }
+
+                @media (max-width: 899.98px) {
+                    .tab-content:not(.active) { display: none !important; }
+                    .control-col { gap: 0; }
+                    .snippet-row { display: flex !important; flex-direction: column; gap: 0; }
                 }
             `}</style>
 
-            {/* ── Header ── */}
             <header
                 style={{
                     background: 'rgba(255,255,255,0.93)',
@@ -120,10 +148,10 @@ const DemoApp: React.FC = () => {
                     position: 'sticky',
                     top: 0,
                     zIndex: 100,
-                    padding: '0.5rem 1rem',
+                    padding: '0.45rem 1rem',
                 }}
             >
-                <div className="header-inner">
+                <div className="header-inner" style={{ display: 'flex', alignItems: 'center' }}>
                     <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>🎉</span>
                     <div style={{ minWidth: 0, overflow: 'hidden' }}>
                         <h1 className="header-title">k-celebrate-slogan</h1>
@@ -137,7 +165,7 @@ const DemoApp: React.FC = () => {
                             className="header-link-btn"
                             style={{ background: '#cb3837' }}
                         >
-                            NPM ↗
+                            NPM
                         </a>
                         <a
                             href="https://github.com/GHeeJeon/k-celebrate-slogan"
@@ -146,25 +174,44 @@ const DemoApp: React.FC = () => {
                             className="header-link-btn"
                             style={{ background: '#24292f' }}
                         >
-                            GitHub ↗
+                            GitHub
                         </a>
                     </div>
                 </div>
             </header>
 
-            <main
-                style={{
-                    maxWidth: '1600px',
-                    margin: '0 auto',
-                    padding: '1.25rem 1rem',
-                }}
-            >
+            <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem' }}>
                 <div className="demo-layout">
-                    {/* Controls & Snippets — Left col on desktop, below preview on mobile */}
+                    {/* PC View: Left, Mobile View: Bottom (Tab Contents) */}
                     <div className="control-col">
-                        <ConfigurationControls cfg={cfg} set={set} applyPreset={applyPreset} />
-                        {/* Horizontal on desktop (via .snippet-row CSS), stacked on mobile */}
-                        <div className="snippet-row">
+                        <div className="mobile-tabs">
+                            {(['preset', 'text', 'colors', 'layout', 'share'] as const).map((t) => (
+                                <button
+                                    key={t}
+                                    className={`tab-btn ${activeTab === t ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(t)}
+                                >
+                                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className={`tab-content ${activeTab === 'preset' ? 'active' : ''}`}>
+                            <PresetControls cfg={cfg} applyPreset={applyPreset} set={set} />
+                        </div>
+                        <div className={`tab-content ${activeTab === 'text' ? 'active' : ''}`}>
+                            <TextControls cfg={cfg} set={set} />
+                        </div>
+                        <div className={`tab-content ${activeTab === 'colors' ? 'active' : ''}`}>
+                            <ColorControls cfg={cfg} set={set} />
+                        </div>
+                        <div className={`tab-content ${activeTab === 'layout' ? 'active' : ''}`}>
+                            <LayoutControls cfg={cfg} set={set} />
+                        </div>
+
+                        <div
+                            className={`tab-content snippet-row ${activeTab === 'share' ? 'active' : ''}`}
+                        >
                             <Section title="📝 Markdown">
                                 <CopyBlock label="Markdown" code={markdownCode} />
                             </Section>
@@ -177,7 +224,7 @@ const DemoApp: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Preview — Right col on desktop, sticky top on mobile */}
+                    {/* PC View: Right, Mobile View: Top (Sticky Preview) */}
                     <div className="preview-col">
                         <div className="sticky-preview">
                             <Preview
