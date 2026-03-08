@@ -1,10 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Config, DEFAULT_CONFIG, PRESETS, ACCENT } from './demo-components/types';
-import { Presets } from './demo-components/Presets';
-import { TextControls } from './demo-components/Text';
-import { ColorControls } from './demo-components/Colors';
-import { LayoutControls } from './demo-components/Layout';
+import { ConfigurationControls } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { CodeSnippets } from './demo-components/CodeSnippets';
 
@@ -35,12 +32,29 @@ const DemoApp: React.FC = () => {
                 * { box-sizing: border-box; }
                 body { margin: 0; background: #f0f6fa; font-family: 'Inter', sans-serif; color: #0f172a; }
                 input[type=range] { accent-color: ${ACCENT}; }
-                ::-webkit-scrollbar { width: 6px; }
-                ::-webkit-scrollbar-track { background: #f1f5f9; }
-                ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+                .demo-layout {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+                .control-col { order: 2; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; }
+                .preview-col { order: 1; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; min-width: 0; }
+                
+                .sticky-preview {
+                    position: sticky;
+                    top: 80px; 
+                    z-index: 50;
+                }
 
                 @media (min-width: 900px) {
-                    .demo-layout { display: grid !important; grid-template-columns: 340px 1fr; gap: 1.5rem; }
+                    .demo-layout { 
+                        display: grid !important; 
+                        grid-template-columns: 340px 1fr; 
+                        gap: 1.5rem; 
+                        align-items: flex-start;
+                    }
+                    .control-col { order: 1; }
+                    .preview-col { order: 2; }
                 }
             `}</style>
 
@@ -78,18 +92,33 @@ const DemoApp: React.FC = () => {
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
                     <a
+                        href="https://www.npmjs.com/package/k-celebrate-slogan"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                            padding: '0.4rem 0.8rem',
+                            background: '#cb3837',
+                            color: '#fff',
+                            borderRadius: '0.5rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                        }}
+                    >
+                        NPM ↗
+                    </a>
+                    <a
                         href="https://github.com/GHeeJeon/k-celebrate-slogan"
                         target="_blank"
                         rel="noreferrer"
                         style={{
-                            padding: '0.4rem 0.9rem',
-                            background: '#f1f5f9',
-                            color: '#475569',
+                            padding: '0.4rem 0.8rem',
+                            background: '#24292f',
+                            color: '#fff',
                             borderRadius: '0.5rem',
-                            fontSize: '0.78rem',
+                            fontSize: '0.75rem',
                             fontWeight: 600,
                             textDecoration: 'none',
-                            border: '1px solid #e2e8f0',
                         }}
                     >
                         GitHub ↗
@@ -104,36 +133,23 @@ const DemoApp: React.FC = () => {
                     padding: '1.5rem',
                 }}
             >
-                <div
-                    className="demo-layout"
-                    style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-                >
-                    <div
-                        style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}
-                    >
-                        <Presets cfg={cfg} applyPreset={applyPreset} />
-                        <TextControls cfg={cfg} set={set} />
-                        <ColorControls cfg={cfg} set={set} />
-                        <LayoutControls cfg={cfg} set={set} />
+                <div className="demo-layout">
+                    {/* Controls & Snippets (Left Col on Desktop, Bottom on Mobile) */}
+                    <div className="control-col">
+                        <ConfigurationControls cfg={cfg} set={set} applyPreset={applyPreset} />
+                        <CodeSnippets cfg={cfg} />
                     </div>
 
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '1.5rem',
-                            minWidth: 0,
-                            flex: 1, // Stretch to match left column height
-                        }}
-                    >
-                        <Preview
-                            ref={sloganRef}
-                            cfg={cfg}
-                            animKey={animKey}
-                            replayAnim={replayAnim}
-                        />
-
-                        <CodeSnippets cfg={cfg} />
+                    {/* Preview (Right Col on Desktop, Top/Sticky on Mobile) */}
+                    <div className="preview-col">
+                        <div className="sticky-preview">
+                            <Preview
+                                ref={sloganRef}
+                                cfg={cfg}
+                                animKey={animKey}
+                                replayAnim={replayAnim}
+                            />
+                        </div>
                     </div>
                 </div>
             </main>
