@@ -6,6 +6,7 @@ import {
     TextControls,
     ColorControls,
     LayoutControls,
+    CompactConfiguration,
 } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { Section, CopyBlock } from './demo-components/UI';
@@ -114,7 +115,22 @@ const DemoApp: React.FC = () => {
                 }
                 .tab-btn.active { background: ${ACCENT}15; color: ${ACCENT}; }
 
+                /* ── Tab Content Visibility ── */
+                .tab-content { display: block; }
+                .tab-content Section { margin-bottom: 0; border: none; box-shadow: none; border-radius: 0; background: transparent; padding: 1rem 0; }
+
+                /* PC-specific Compact View */
+                .desktop-compact { display: none; }
+
+                @media (max-width: 899.98px) {
+                    .tab-content:not(.active) { display: none !important; }
+                    .control-col { gap: 0; }
+                    .snippet-row { display: flex !important; flex-direction: column; gap: 0; }
+                }
+
                 @media (min-width: 900px) {
+                    .desktop-compact { display: block !important; }
+                    .tab-content, .mobile-tabs { display: none !important; }
                     .mobile-tabs { display: none !important; }
                     .demo-layout {
                         display: grid !important;
@@ -127,16 +143,6 @@ const DemoApp: React.FC = () => {
                     .sticky-preview { top: 80px; }
                     .snippet-row { flex-direction: row; display: flex !important; gap: 1rem; }
                     .snippet-row > * { flex: 1; min-width: 0; }
-                }
-
-                /* ── Tab Content Visibility ── */
-                .tab-content { display: block; }
-                .tab-content Section { margin-bottom: 0; border: none; box-shadow: none; border-radius: 0; background: transparent; padding: 1rem 0; }
-
-                @media (max-width: 899.98px) {
-                    .tab-content:not(.active) { display: none !important; }
-                    .control-col { gap: 0; }
-                    .snippet-row { display: flex !important; flex-direction: column; gap: 0; }
                 }
             `}</style>
 
@@ -184,6 +190,12 @@ const DemoApp: React.FC = () => {
                 <div className="demo-layout">
                     {/* PC View: Left, Mobile View: Bottom (Tab Contents) */}
                     <div className="control-col">
+                        {/* Compact view only for Desktop */}
+                        <div className="desktop-compact">
+                            <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
+                        </div>
+
+                        {/* Mobile Tabs & Content (Hidden on Desktop) */}
                         <div className="mobile-tabs">
                             {(['preset', 'text', 'colors', 'layout', 'share'] as const).map((t) => (
                                 <button
