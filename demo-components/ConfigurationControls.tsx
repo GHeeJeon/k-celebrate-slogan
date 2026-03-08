@@ -1,5 +1,5 @@
 import React from 'react';
-import { Config, ACCENT } from './types';
+import { Config, ACCENT, DEFAULT_CONFIG } from './types';
 import { Section, Label, TextInput, ColorRow, SliderRow } from './UI';
 
 interface BaseProps {
@@ -43,15 +43,30 @@ const TextContent: React.FC<BaseProps> = ({ cfg, set }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         <div>
             <Label htmlFor="text1">Top Text (text1)</Label>
-            <TextInput id="text1" value={cfg.text1} onChange={(v) => set('text1', v)} />
+            <TextInput
+                id="text1"
+                value={cfg.text1}
+                onChange={(v) => set('text1', v)}
+                placeholder="Congratulations!"
+            />
         </div>
         <div>
             <Label htmlFor="text2">Main Text (text2)</Label>
-            <TextInput id="text2" value={cfg.text2} onChange={(v) => set('text2', v)} />
+            <TextInput
+                id="text2"
+                value={cfg.text2}
+                onChange={(v) => set('text2', v)}
+                placeholder="Name"
+            />
         </div>
         <div>
             <Label htmlFor="text3">Sub Text (text3)</Label>
-            <TextInput id="text3" value={cfg.text3} onChange={(v) => set('text3', v)} />
+            <TextInput
+                id="text3"
+                value={cfg.text3}
+                onChange={(v) => set('text3', v)}
+                placeholder="No reason at all"
+            />
         </div>
     </div>
 );
@@ -62,25 +77,25 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
             id="text1Color"
             label="text1 Color"
             value={cfg.text1Color}
-            onChange={(v) => set('text1Color', v)}
+            onChange={(v) => set('text1Color', v || DEFAULT_CONFIG.text1Color)}
         />
         <ColorRow
             id="text2Color"
             label="text2 Color"
             value={cfg.text2Color}
-            onChange={(v) => set('text2Color', v)}
+            onChange={(v) => set('text2Color', v || DEFAULT_CONFIG.text2Color)}
         />
         <ColorRow
             id="text3Color"
             label="text3 Color"
             value={cfg.text3Color}
-            onChange={(v) => set('text3Color', v)}
+            onChange={(v) => set('text3Color', v || DEFAULT_CONFIG.text3Color)}
         />
         <ColorRow
             id="text2StrokeColor"
             label="text2 Stroke"
             value={cfg.text2StrokeColor}
-            onChange={(v) => set('text2StrokeColor', v)}
+            onChange={(v) => set('text2StrokeColor', v || DEFAULT_CONFIG.text2StrokeColor)}
         />
     </div>
 );
@@ -93,7 +108,8 @@ const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => (
                 <TextInput
                     id="strokeWidth"
                     value={cfg.text2StrokeWidth}
-                    onChange={(v) => set('text2StrokeWidth', v)}
+                    onChange={(v) => set('text2StrokeWidth', v || DEFAULT_CONFIG.text2StrokeWidth)}
+                    placeholder={DEFAULT_CONFIG.text2StrokeWidth}
                 />
             </div>
             <div
