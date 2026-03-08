@@ -18,6 +18,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     scale = 1,
     emblemScale = 0.75,
     className = '',
+    exportMode = false,
 }) => {
     const strokeColor = text2StrokeColor || text2Color;
 
@@ -44,7 +45,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
         <motion.div
             initial={animate ? { y: -50, opacity: 0 } : { y: 0, opacity: 1 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: exportMode || !animate ? 0 : 0.5 }}
             className={className}
             style={{
                 position: 'relative',
@@ -52,8 +53,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 pointerEvents: 'none',
                 width: 'fit-content',
                 transformOrigin: 'center',
-                scale: autoScale,
-                rotate: -0.5,
+                scale: exportMode ? scale : autoScale,
             }}
         >
             <style>

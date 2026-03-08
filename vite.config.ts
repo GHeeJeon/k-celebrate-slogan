@@ -63,7 +63,6 @@ export default defineConfig(({ mode: _mode }) => {
             rollupOptions: {
                 input: {
                     main: 'index.html',
-                    test: 'test.html',
                     svgPreview: 'svg-preview.html',
                 },
             },
