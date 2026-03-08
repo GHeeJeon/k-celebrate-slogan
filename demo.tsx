@@ -71,7 +71,7 @@ const DemoApp: React.FC = () => {
                 .demo-layout { display: flex; flex-direction: column; gap: 1rem; }
                 .control-col { order: 2; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
                 .preview-col { order: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
-                .sticky-preview { position: sticky; top: 60px; z-index: 50; }
+                .sticky-preview { position: relative; z-index: 50; }
 
                 /* ── Header ── */
                 .header-inner { display: flex; align-items: center; gap: 0.6rem; width: 100%; flex-wrap: nowrap; }
@@ -94,8 +94,7 @@ const DemoApp: React.FC = () => {
                     background: #fff;
                     padding: 0.4rem 0.5rem;
                     border-bottom: 1px solid #e2e8f0;
-                    position: sticky;
-                    top: 300px; /* Default top - Will be adjusted if possible */
+                    position: relative;
                     z-index: 45;
                     scrollbar-width: none;
                     margin: 0 -1rem; /* Full width bleed on mobile */

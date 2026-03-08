@@ -100,16 +100,51 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
     </div>
 );
 
+const StrokeWidthInput: React.FC<{ value: string; onChange: (v: string) => void }> = ({
+    value,
+    onChange,
+}) => {
+    const [local, setLocal] = React.useState(value.replace(/[^0-9]/g, ''));
+
+    React.useEffect(() => {
+        setLocal(value.replace(/[^0-9]/g, ''));
+    }, [value]);
+
+    const handleBlur = () => {
+        const v = local.trim();
+        if (!v) {
+            onChange(''); // Let parent handle fallback
+            return;
+        }
+        let parsed = parseInt(v, 10);
+        if (isNaN(parsed) || parsed <= 0) {
+            parsed = parseInt(DEFAULT_CONFIG.text2StrokeWidth.replace(/[^0-9]/g, ''), 10);
+            if (isNaN(parsed) || parsed <= 0) parsed = 3; // safe fallback
+        }
+        const valWithPx = `${parsed}px`;
+        setLocal(parsed.toString());
+        onChange(valWithPx);
+    };
+
+    return (
+        <TextInput
+            id="strokeWidth"
+            value={local}
+            onChange={setLocal}
+            onBlur={handleBlur}
+            placeholder={DEFAULT_CONFIG.text2StrokeWidth.replace(/[^0-9]/g, '')}
+        />
+    );
+};
+
 const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
             <div>
-                <Label htmlFor="strokeWidth">Stroke Width</Label>
-                <TextInput
-                    id="strokeWidth"
+                <Label htmlFor="strokeWidth">Stroke Width (px)</Label>
+                <StrokeWidthInput
                     value={cfg.text2StrokeWidth}
                     onChange={(v) => set('text2StrokeWidth', v || DEFAULT_CONFIG.text2StrokeWidth)}
-                    placeholder={DEFAULT_CONFIG.text2StrokeWidth}
                 />
             </div>
             <div

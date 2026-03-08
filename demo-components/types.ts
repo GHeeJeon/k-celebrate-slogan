@@ -25,7 +25,7 @@ export const PRESETS: Record<string, Partial<Config>> = {
         text2Color: '#222222',
         text3Color: '#111827',
         text2StrokeColor: '#222222',
-        text2StrokeWidth: '2.5px',
+        text2StrokeWidth: '3px',
         pinwheelTheme: 'default',
     },
     pastel: {
@@ -36,7 +36,7 @@ export const PRESETS: Record<string, Partial<Config>> = {
         text2Color: '#4ECDC4',
         text3Color: '#111827',
         text2StrokeColor: '#4ECDC4',
-        text2StrokeWidth: '2.5px',
+        text2StrokeWidth: '3px',
         pinwheelTheme: 'pastel',
     },
     neon: {

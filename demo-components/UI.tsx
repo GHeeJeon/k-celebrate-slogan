@@ -27,8 +27,15 @@ export interface TextInputProps {
     value: string;
     onChange: (v: string) => void;
     placeholder?: string;
+    onBlur?: () => void;
 }
-export const TextInput: React.FC<TextInputProps> = ({ id, value, onChange, placeholder }) => (
+export const TextInput: React.FC<TextInputProps> = ({
+    id,
+    value,
+    onChange,
+    placeholder,
+    onBlur,
+}) => (
     <input
         id={id}
         type="text"
@@ -53,6 +60,7 @@ export const TextInput: React.FC<TextInputProps> = ({ id, value, onChange, place
         onBlur={(e) => {
             e.target.style.borderColor = '#e2e8f0';
             e.target.style.boxShadow = 'none';
+            if (onBlur) onBlur();
         }}
     />
 );
@@ -63,30 +71,64 @@ export interface ColorRowProps {
     value: string;
     onChange: (v: string) => void;
 }
-export const ColorRow: React.FC<ColorRowProps> = ({ id, label, value, onChange }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-        <Label htmlFor={id}>{label}</Label>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <input
-                id={id}
-                type="color"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                style={{
-                    width: '2.2rem',
-                    height: '2.2rem',
-                    padding: '0.1rem',
-                    borderRadius: '0.4rem',
-                    border: '1px solid #e2e8f0',
-                    cursor: 'pointer',
-                    background: 'transparent',
-                    flexShrink: 0,
-                }}
-            />
-            <TextInput id={`${id}-text`} value={value} onChange={onChange} />
+export const ColorRow: React.FC<ColorRowProps> = ({ id, label, value, onChange }) => {
+    const [local, setLocal] = React.useState(value);
+
+    React.useEffect(() => {
+        setLocal(value);
+    }, [value]);
+
+    const handleBlur = () => {
+        let v = local.trim();
+        if (!v) {
+            onChange(''); // Let parent fallback
+            return;
+        }
+        if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) {
+            if (/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) {
+                v = '#' + v;
+            } else {
+                v = value; // Revert if invalid
+            }
+        }
+        setLocal(v);
+        onChange(v);
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <Label htmlFor={id}>{label}</Label>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input
+                    id={id}
+                    type="color"
+                    value={/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(local) ? local : value}
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        setLocal(val);
+                        onChange(val);
+                    }}
+                    style={{
+                        width: '2.2rem',
+                        height: '2.2rem',
+                        padding: '0.1rem',
+                        borderRadius: '0.4rem',
+                        border: '1px solid #e2e8f0',
+                        cursor: 'pointer',
+                        background: 'transparent',
+                        flexShrink: 0,
+                    }}
+                />
+                <TextInput
+                    id={`${id}-text`}
+                    value={local}
+                    onChange={setLocal}
+                    onBlur={handleBlur}
+                />
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export interface SliderRowProps {
     id: string;
