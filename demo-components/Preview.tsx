@@ -13,6 +13,62 @@ function getPinwheelColors(theme: Config['pinwheelTheme']): string[] | undefined
     return undefined;
 }
 
+// Global cache for font base64 to avoid refetching on every export
+const fontBase64Cache = new Map<string, string>();
+
+const fetchAndEncodeFont = async (url: string): Promise<string> => {
+    if (fontBase64Cache.has(url)) return fontBase64Cache.get(url)!;
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result as string;
+                fontBase64Cache.set(url, base64);
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (e) {
+        console.warn('Failed to encode font:', url, e);
+        return url; // fallback to original url
+    }
+};
+
+const getBase64CSS = async (cssText: string): Promise<string> => {
+    const urlRegex = /url\((['"]?)(.*?)\1\)/g;
+    let match;
+    let result = cssText;
+    const urls: string[] = [];
+
+    while ((match = urlRegex.exec(cssText)) !== null) {
+        urls.push(match[2]);
+    }
+
+    // Process all URLs in parallel
+    const encodingPromises = urls.map(async (url) => {
+        const base64 = await fetchAndEncodeFont(url);
+        return { url, base64 };
+    });
+
+    const encodedUrls = await Promise.all(encodingPromises);
+
+    // Replace urls with base64
+    for (const { url, base64 } of encodedUrls) {
+        result = result
+            .split(`url('${url}')`)
+            .join(`url('${base64}')`)
+            .split(`url("${url}")`)
+            .join(`url('${base64}')`)
+            .split(`url(${url})`)
+            .join(`url('${base64}')`);
+    }
+
+    return result;
+};
+
 interface Props {
     cfg: Config;
     animKey: number;
@@ -48,23 +104,26 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     }
                 `;
 
-                let googleFontsCSS = '';
+                let combinedCSS = joseonPalaceCSS;
                 try {
                     const fontRes = await fetch(
                         'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap'
                     );
                     if (fontRes.ok) {
-                        googleFontsCSS = await fontRes.text();
+                        combinedCSS += await fontRes.text();
                     }
                 } catch (e) {
                     console.warn('Failed to fetch Google Fonts CSS', e);
                 }
 
+                // Convert all external URLs in the CSS to base64 to prevent canvas taint issues
+                const embeddedCSS = await getBase64CSS(combinedCSS);
+
                 const commonOptions = {
                     backgroundColor: '#ffffff',
                     filter,
                     pixelRatio: 1.5, // Balance quality and speed
-                    fontEmbedCSS: googleFontsCSS + joseonPalaceCSS,
+                    fontEmbedCSS: embeddedCSS,
                 };
 
                 if (format === 'jpg') {
