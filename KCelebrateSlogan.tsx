@@ -30,10 +30,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     useEffect(() => {
         const computeScale = () => {
             const vw = window.innerWidth;
-            if (vw < 480) setAutoScale(scale * 0.35);
-            else if (vw < 640) setAutoScale(scale * 0.45);
-            else if (vw < 768) setAutoScale(scale * 0.6);
-            else if (vw < 1024) setAutoScale(scale * 0.8);
+            if (vw < 480) setAutoScale(scale * 0.28);
+            else if (vw < 640) setAutoScale(scale * 0.38);
+            else if (vw < 768) setAutoScale(scale * 0.5);
+            else if (vw < 1024) setAutoScale(scale * 0.75);
             else setAutoScale(scale);
         };
         computeScale();

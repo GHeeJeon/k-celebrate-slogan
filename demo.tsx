@@ -234,11 +234,11 @@ const DemoApp: React.FC = () => {
                         <div
                             className={`tab-content snippet-row ${activeTab === 'share' ? 'active' : ''}`}
                         >
-                            <Section title="� Share">
+                            <Section title="📤 Share">
                                 <div
                                     style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                                         gap: '0.75rem',
                                         maxHeight: '400px',
                                         overflowY: 'auto',

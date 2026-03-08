@@ -286,7 +286,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             zIndex: 1,
                             margin: '0 auto',
                             width: 'max-content',
-                            padding: isExporting ? '0.2rem' : '1.5rem',
+                            padding: '1.5rem',
                         }}
                     >
                         <KCelebrateSlogan
