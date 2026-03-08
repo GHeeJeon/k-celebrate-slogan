@@ -144,7 +144,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     const dataUrl = await htmlToImage.toSvg(node, commonOptions);
 
                     // Decode the URI component to handle Korean/UTF-8 characters properly
-                    const svgData = decodeURIComponent(dataUrl.split(',')[1]);
+                    let svgData = decodeURIComponent(dataUrl.split(',')[1]);
+
+                    // QuickLook/Finder on macOS requires the XML UTF-8 declaration to not break Korean characters
+                    if (!svgData.startsWith('<?xml')) {
+                        svgData = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgData;
+                    }
+
                     const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
 
                     setExportProgress(100);
