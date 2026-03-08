@@ -77,25 +77,29 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
             id="text1Color"
             label="text1 Color"
             value={cfg.text1Color}
-            onChange={(v) => set('text1Color', v || DEFAULT_CONFIG.text1Color)}
+            onChange={(v) => set('text1Color', v)}
+            fallbackValue={DEFAULT_CONFIG.text1Color}
         />
         <ColorRow
             id="text2Color"
             label="text2 Color"
             value={cfg.text2Color}
-            onChange={(v) => set('text2Color', v || DEFAULT_CONFIG.text2Color)}
+            onChange={(v) => set('text2Color', v)}
+            fallbackValue={DEFAULT_CONFIG.text2Color}
         />
         <ColorRow
             id="text3Color"
             label="text3 Color"
             value={cfg.text3Color}
-            onChange={(v) => set('text3Color', v || DEFAULT_CONFIG.text3Color)}
+            onChange={(v) => set('text3Color', v)}
+            fallbackValue={DEFAULT_CONFIG.text3Color}
         />
         <ColorRow
             id="text2StrokeColor"
             label="text2 Stroke"
             value={cfg.text2StrokeColor}
-            onChange={(v) => set('text2StrokeColor', v || DEFAULT_CONFIG.text2StrokeColor)}
+            onChange={(v) => set('text2StrokeColor', v)}
+            fallbackValue={DEFAULT_CONFIG.text2StrokeColor}
         />
     </div>
 );
@@ -155,7 +159,7 @@ const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => (
                     paddingTop: '1.2rem',
                 }}
             >
-                <Label>Animation</Label>
+                <Label style={{ marginBottom: 0 }}>Animation</Label>
                 <button
                     onClick={() => set('animate', !cfg.animate)}
                     style={{

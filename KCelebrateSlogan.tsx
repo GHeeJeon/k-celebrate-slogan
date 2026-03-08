@@ -41,6 +41,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
         return () => window.removeEventListener('resize', computeScale);
     }, [scale]);
 
+    const activeScale = exportMode ? scale : autoScale;
+
     return (
         <motion.div
             initial={animate ? { y: -50, opacity: 0 } : { y: 0, opacity: 1 }}
@@ -53,7 +55,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 pointerEvents: 'none',
                 width: 'fit-content',
                 transformOrigin: 'center',
-                zoom: exportMode ? scale : autoScale,
             }}
         >
             <style>
@@ -66,21 +67,22 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 }
 
                 .k-celebrate-slogan-container {
-                  /* Emblem column width, taking emblemScale prop into account */
-                  --emblem-size: calc(13rem * ${emblemScale});
-                  /* Char size tracks emblem: about 35% of emblem width */
+                  --active-scale: ${activeScale};
+                  --emblem-size: calc(13rem * ${emblemScale} * var(--active-scale));
                   --char-size: calc(var(--emblem-size) * 0.35);
-                  /* Text font sizes */
-                  --fs-1: 3rem;
-                  --fs-2: 3.75rem;
-                  --fs-3: 1.25rem;
+                  --fs-1: calc(3rem * var(--active-scale));
+                  --fs-2: calc(3.75rem * var(--active-scale));
+                  --fs-3: calc(1.25rem * var(--active-scale));
 
-                  /* Dynamic Colors & Styles */
                   --text1-color: ${text1Color};
                   --text2-color: ${text2Color};
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
-                  --stroke-width: ${text2StrokeWidth};
+                  --stroke-width: calc(${text2StrokeWidth.replace(/[^0-9]/g, '')}px * var(--active-scale));
+                  
+                  --main-gap: calc(1.5rem * var(--active-scale));
+                  --padding-tb: calc(0.5rem * var(--active-scale));
+                  --padding-lr: calc(2rem * var(--active-scale));
                 }
 
                 .text1-style {
@@ -90,7 +92,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-size: var(--fs-1);
                     color: var(--text1-color);
                     font-family: "Nanum Myeongjo", serif;
-                    font-weight: 800; /* Max 800 available on GM */
+                    font-weight: 800;
                     text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);
                     display: inline-block;
                     transform: scaleX(1.2);
@@ -126,9 +128,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 `}
             </style>
 
-            {/* Inner container */}
             <div className="k-celebrate-slogan-container" style={{ width: '100%' }}>
-                {/* Main Wrapper: properties mapped from tailwind classes */}
                 <div
                     style={{
                         position: 'relative',
@@ -138,7 +138,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         flexDirection: 'row',
                         alignItems: 'stretch',
                         justifyContent: 'space-between',
-                        gap: '1.5rem',
+                        gap: 'var(--main-gap)',
                         boxShadow:
                             '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                         userSelect: 'none',
@@ -168,10 +168,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             zIndex: 10,
-                            paddingTop: '0.5rem',
-                            paddingBottom: '0.5rem',
-                            paddingLeft: '2rem',
-                            paddingRight: '2rem',
+                            paddingTop: 'var(--padding-tb)',
+                            paddingBottom: 'var(--padding-tb)',
+                            paddingLeft: 'var(--padding-lr)',
+                            paddingRight: 'var(--padding-lr)',
                             minWidth: 'max-content',
                         }}
                     >

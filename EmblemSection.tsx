@@ -38,7 +38,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '0.5rem',
+                padding: 'calc(0.5rem * var(--active-scale))',
                 width: 'var(--emblem-size)',
                 minWidth: '100px',
             }}
@@ -92,7 +92,10 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontWeight: 900,
                             fontSize: charFontSize,
                             textShadow:
-                                '-1.0px -1.0px 0 #000, 1.0px -1.0px 0 #000, -1.0px 1.0px 0 #000, 1.0px 1.0px 0 #000',
+                                'calc(-1.0px * var(--active-scale)) calc(-1.0px * var(--active-scale)) 0 #000, ' +
+                                'calc(1.0px * var(--active-scale)) calc(-1.0px * var(--active-scale)) 0 #000, ' +
+                                'calc(-1.0px * var(--active-scale)) calc(1.0px * var(--active-scale)) 0 #000, ' +
+                                'calc(1.0px * var(--active-scale)) calc(1.0px * var(--active-scale)) 0 #000',
                             transform: opticalCenterShift,
                         }}
                     >

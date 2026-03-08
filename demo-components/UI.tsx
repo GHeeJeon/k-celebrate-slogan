@@ -4,8 +4,9 @@ import { ACCENT } from './types';
 export interface LabelProps {
     children: React.ReactNode;
     htmlFor?: string;
+    style?: React.CSSProperties;
 }
-export const Label: React.FC<LabelProps> = ({ children, htmlFor }) => (
+export const Label: React.FC<LabelProps> = ({ children, htmlFor, style }) => (
     <label
         htmlFor={htmlFor}
         style={{
@@ -16,6 +17,7 @@ export const Label: React.FC<LabelProps> = ({ children, htmlFor }) => (
             textTransform: 'uppercase',
             color: '#64748b',
             marginBottom: '0.35rem',
+            ...style,
         }}
     >
         {children}
@@ -62,6 +64,9 @@ export const TextInput: React.FC<TextInputProps> = ({
             e.target.style.boxShadow = 'none';
             if (onBlur) onBlur();
         }}
+        onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+        }}
     />
 );
 
@@ -70,8 +75,15 @@ export interface ColorRowProps {
     label: string;
     value: string;
     onChange: (v: string) => void;
+    fallbackValue: string;
 }
-export const ColorRow: React.FC<ColorRowProps> = ({ id, label, value, onChange }) => {
+export const ColorRow: React.FC<ColorRowProps> = ({
+    id,
+    label,
+    value,
+    onChange,
+    fallbackValue,
+}) => {
     const [local, setLocal] = React.useState(value);
 
     React.useEffect(() => {
@@ -81,7 +93,8 @@ export const ColorRow: React.FC<ColorRowProps> = ({ id, label, value, onChange }
     const handleBlur = () => {
         let v = local.trim();
         if (!v) {
-            onChange(''); // Let parent fallback
+            setLocal(fallbackValue);
+            onChange(fallbackValue);
             return;
         }
         if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) {
