@@ -255,13 +255,14 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         background: '#f8fafc',
                         border: '1px solid #e2e8f0',
                         borderRadius: '0.75rem',
-                        padding: '3rem 2rem 2rem',
+                        padding: '2rem 1rem',
                         position: 'relative',
                         overflowX: 'auto',
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
+                        minHeight: '220px',
                     }}
                 >
                     <div

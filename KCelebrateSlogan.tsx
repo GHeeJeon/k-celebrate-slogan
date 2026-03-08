@@ -53,7 +53,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 pointerEvents: 'none',
                 width: 'fit-content',
                 transformOrigin: 'center',
-                scale: exportMode ? scale : autoScale,
+                zoom: exportMode ? scale : autoScale,
             }}
         >
             <style>
@@ -74,6 +74,51 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --fs-1: 3rem;
                   --fs-2: 3.75rem;
                   --fs-3: 1.25rem;
+
+                  /* Dynamic Colors & Styles */
+                  --text1-color: ${text1Color};
+                  --text2-color: ${text2Color};
+                  --text3-color: ${text3Color};
+                  --stroke-color: ${strokeColor};
+                  --stroke-width: ${text2StrokeWidth};
+                }
+
+                .text1-style {
+                    letter-spacing: 0.35em;
+                    line-height: 1.25;
+                    text-align: center;
+                    font-size: var(--fs-1);
+                    color: var(--text1-color);
+                    font-family: "Nanum Myeongjo", serif;
+                    font-weight: 800; /* Max 800 available on GM */
+                    text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);
+                    display: inline-block;
+                    transform: scaleX(1.2);
+                    white-space: nowrap;
+                }
+
+                .text2-style {
+                    margin: 0;
+                    line-height: 1.25;
+                    text-align: center;
+                    font-size: var(--fs-2);
+                    color: var(--text2-color);
+                    font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
+                    font-weight: 400; /* Must be 400 to match @font-face */
+                    -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
+                    white-space: nowrap;
+                    letter-spacing: 0.3em;
+                }
+
+                .text3-style {
+                    letter-spacing: 0.4em;
+                    text-transform: uppercase;
+                    text-align: center;
+                    font-size: var(--fs-3);
+                    color: var(--text3-color);
+                    font-family: 'Outfit', sans-serif;
+                    font-weight: 600;
+                    white-space: nowrap;
                 }
                 `}
             </style>
@@ -127,55 +172,9 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                             minWidth: 'max-content',
                         }}
                     >
-                        <span
-                            style={{
-                                letterSpacing: '0.35em',
-                                lineHeight: 1.25,
-                                textAlign: 'center',
-                                fontSize: 'var(--fs-1)',
-                                color: text1Color,
-                                fontFamily: '"Nanum Myeongjo", serif',
-                                fontWeight: 900,
-                                textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
-                                display: 'inline-block',
-                                transform: 'scaleX(1.2)',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {text1}
-                        </span>
-
-                        <h1
-                            style={{
-                                margin: 0,
-                                lineHeight: 1.25,
-                                textAlign: 'center',
-                                fontSize: 'var(--fs-2)',
-                                color: text2Color,
-                                fontFamily: "'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif",
-                                fontWeight: 300,
-                                WebkitTextStroke: `${text2StrokeWidth} ${strokeColor}`,
-                                whiteSpace: 'nowrap',
-                                letterSpacing: '0.3em',
-                            }}
-                        >
-                            {text2}
-                        </h1>
-
-                        <span
-                            style={{
-                                letterSpacing: '0.4em',
-                                textTransform: 'uppercase',
-                                textAlign: 'center',
-                                fontSize: 'var(--fs-3)',
-                                color: text3Color,
-                                fontFamily: "'Outfit', sans-serif",
-                                fontWeight: 600,
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            ㅡ {text3} ㅡ
-                        </span>
+                        <span className="text1-style">{text1}</span>
+                        <h1 className="text2-style">{text2}</h1>
+                        <span className="text3-style">ㅡ {text3} ㅡ</span>
                     </div>
 
                     <EmblemSection

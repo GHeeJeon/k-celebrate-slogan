@@ -3,7 +3,25 @@ import { createRoot } from 'react-dom/client';
 import { Config, DEFAULT_CONFIG, PRESETS, ACCENT } from './demo-components/types';
 import { ConfigurationControls } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
-import { CodeSnippets } from './demo-components/CodeSnippets';
+import { Section, CopyBlock } from './demo-components/UI';
+
+function buildUrl(cfg: Config): string {
+    const base = 'https://k-celebrate-slogan.vercel.app/api';
+    const params = new URLSearchParams({
+        text1: cfg.text1,
+        text2: cfg.text2,
+        text3: cfg.text3,
+        text1Color: cfg.text1Color,
+        text2Color: cfg.text2Color,
+        text3Color: cfg.text3Color,
+        text2StrokeColor: cfg.text2StrokeColor,
+        text2StrokeWidth: cfg.text2StrokeWidth,
+        scale: String(cfg.scale),
+        emblemScale: String(cfg.emblemScale),
+        theme: cfg.pinwheelTheme,
+    });
+    return `${base}?${params.toString()}`;
+}
 
 const DemoApp: React.FC = () => {
     const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG);
@@ -21,6 +39,10 @@ const DemoApp: React.FC = () => {
 
     const replayAnim = () => setAnimKey((k) => k + 1);
 
+    const sloganUrl = buildUrl(cfg);
+    const markdownCode = `[![k-celebrate-slogan](${sloganUrl})](https://github.com/GHeeJeon/k-celebrate-slogan)`;
+    const htmlCode = `<a href="https://github.com/GHeeJeon/k-celebrate-slogan">\n  <img src="${sloganUrl}" alt="k-celebrate-slogan" />\n</a>`;
+
     useEffect(() => {
         // reserved for future sync logic
     }, [cfg.text2Color]);
@@ -32,97 +54,101 @@ const DemoApp: React.FC = () => {
                 * { box-sizing: border-box; }
                 body { margin: 0; background: #f0f6fa; font-family: 'Inter', sans-serif; color: #0f172a; }
                 input[type=range] { accent-color: ${ACCENT}; }
-                .demo-layout {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.5rem;
-                }
+                ::-webkit-scrollbar { width: 6px; }
+                ::-webkit-scrollbar-track { background: #f1f5f9; }
+                ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+                /* ── Layout ── */
+                .demo-layout { display: flex; flex-direction: column; gap: 1.5rem; }
                 .control-col { order: 2; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; }
-                .preview-col { order: 1; display: flex; flex-direction: column; gap: 1.5rem; flex: 1; min-width: 0; }
-                
-                .sticky-preview {
-                    position: sticky;
-                    top: 80px; 
-                    z-index: 50;
+                .preview-col { order: 1; flex: 1; min-width: 0; }
+                .sticky-preview { position: sticky; top: 56px; z-index: 50; }
+
+                /* ── Code snippets: stacked on mobile, row on desktop ── */
+                .snippet-row { display: flex; flex-direction: column; gap: 0.75rem; }
+
+                /* ── Mobile header: single compact line ── */
+                .header-inner {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.6rem;
+                    width: 100%;
+                    flex-wrap: nowrap;
+                }
+                .header-title { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .header-subtitle { display: none; }
+                .header-links { display: flex; gap: 0.35rem; margin-left: auto; flex-shrink: 0; }
+                .header-link-btn {
+                    padding: 0.28rem 0.55rem;
+                    border-radius: 0.4rem;
+                    font-size: 0.68rem;
+                    font-weight: 600;
+                    text-decoration: none;
+                    white-space: nowrap;
+                    color: #fff;
+                }
+
+                @media (min-width: 600px) {
+                    .header-subtitle { display: block; font-size: 0.66rem; color: #64748b; margin: 0.05rem 0 0; }
+                    .header-title { font-size: 0.95rem; }
+                    .header-link-btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
                 }
 
                 @media (min-width: 900px) {
-                    .demo-layout { 
-                        display: grid !important; 
-                        grid-template-columns: 340px 1fr; 
-                        gap: 1.5rem; 
+                    .demo-layout {
+                        display: grid !important;
+                        grid-template-columns: 340px 1fr;
+                        gap: 1.5rem;
                         align-items: flex-start;
                     }
                     .control-col { order: 1; }
                     .preview-col { order: 2; }
+                    .sticky-preview { top: 75px; }
+                    .snippet-row { flex-direction: row; }
+                    .snippet-row > * { flex: 1; min-width: 0; }
+                    .header-title { font-size: 1rem; }
+                    .header-link-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
                 }
             `}</style>
 
+            {/* ── Header ── */}
             <header
                 style={{
-                    background: 'rgba(255,255,255,0.9)',
+                    background: 'rgba(255,255,255,0.93)',
                     backdropFilter: 'blur(12px)',
                     borderBottom: '1px solid #e2e8f0',
                     position: 'sticky',
                     top: 0,
                     zIndex: 100,
-                    padding: '0.9rem 1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    flexWrap: 'wrap',
+                    padding: '0.5rem 1rem',
                 }}
             >
-                <span style={{ fontSize: '1.4rem' }}>🎉</span>
-                <div>
-                    <h1
-                        style={{
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                            color: '#0f172a',
-                            letterSpacing: '0.01em',
-                            margin: 0,
-                        }}
-                    >
-                        k-celebrate-slogan
-                    </h1>
-                    <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '0.1rem 0 0 0' }}>
-                        Slogan customizer for your GitHub README
-                    </p>
-                </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-                    <a
-                        href="https://www.npmjs.com/package/k-celebrate-slogan"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                            padding: '0.4rem 0.8rem',
-                            background: '#cb3837',
-                            color: '#fff',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                        }}
-                    >
-                        NPM ↗
-                    </a>
-                    <a
-                        href="https://github.com/GHeeJeon/k-celebrate-slogan"
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                            padding: '0.4rem 0.8rem',
-                            background: '#24292f',
-                            color: '#fff',
-                            borderRadius: '0.5rem',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                        }}
-                    >
-                        GitHub ↗
-                    </a>
+                <div className="header-inner">
+                    <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>🎉</span>
+                    <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                        <h1 className="header-title">k-celebrate-slogan</h1>
+                        <p className="header-subtitle">Slogan customizer for your GitHub README</p>
+                    </div>
+                    <div className="header-links">
+                        <a
+                            href="https://www.npmjs.com/package/k-celebrate-slogan"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="header-link-btn"
+                            style={{ background: '#cb3837' }}
+                        >
+                            NPM ↗
+                        </a>
+                        <a
+                            href="https://github.com/GHeeJeon/k-celebrate-slogan"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="header-link-btn"
+                            style={{ background: '#24292f' }}
+                        >
+                            GitHub ↗
+                        </a>
+                    </div>
                 </div>
             </header>
 
@@ -130,17 +156,28 @@ const DemoApp: React.FC = () => {
                 style={{
                     maxWidth: '1600px',
                     margin: '0 auto',
-                    padding: '1.5rem',
+                    padding: '1.25rem 1rem',
                 }}
             >
                 <div className="demo-layout">
-                    {/* Controls & Snippets (Left Col on Desktop, Bottom on Mobile) */}
+                    {/* Controls & Snippets — Left col on desktop, below preview on mobile */}
                     <div className="control-col">
                         <ConfigurationControls cfg={cfg} set={set} applyPreset={applyPreset} />
-                        <CodeSnippets cfg={cfg} />
+                        {/* Horizontal on desktop (via .snippet-row CSS), stacked on mobile */}
+                        <div className="snippet-row">
+                            <Section title="📝 Markdown">
+                                <CopyBlock label="Markdown" code={markdownCode} />
+                            </Section>
+                            <Section title="🌐 HTML">
+                                <CopyBlock label="HTML" code={htmlCode} />
+                            </Section>
+                            <Section title="🔗 URL">
+                                <CopyBlock label="URL" code={sloganUrl} />
+                            </Section>
+                        </div>
                     </div>
 
-                    {/* Preview (Right Col on Desktop, Top/Sticky on Mobile) */}
+                    {/* Preview — Right col on desktop, sticky top on mobile */}
                     <div className="preview-col">
                         <div className="sticky-preview">
                             <Preview
