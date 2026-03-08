@@ -75,8 +75,9 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10,
-                        border: '3px solid rgba(255,255,255,0.9)',
-                        boxShadow: '0 2px 0 rgba(0,0,0,0.12), inset 0 0 0 1px rgba(0,0,0,0.08)',
+                        border: 'calc(3px * var(--active-scale)) solid rgba(255,255,255,0.9)',
+                        boxShadow:
+                            '0 calc(2px * var(--active-scale)) 0 rgba(0,0,0,0.12), inset 0 0 0 calc(1px * var(--active-scale)) rgba(0,0,0,0.08)',
                     }}
                 >
                     {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}

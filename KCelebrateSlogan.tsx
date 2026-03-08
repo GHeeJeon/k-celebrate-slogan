@@ -67,6 +67,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                 }
 
                 .k-celebrate-slogan-container {
+                  -webkit-text-size-adjust: none;
+                  text-size-adjust: none;
                   --active-scale: ${activeScale};
                   --emblem-size: calc(13rem * ${emblemScale} * var(--active-scale));
                   --char-size: calc(var(--emblem-size) * 0.35);

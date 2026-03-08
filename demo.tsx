@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import './demo.css';
 import { createRoot } from 'react-dom/client';
-import { Config, DEFAULT_CONFIG, PRESETS, ACCENT } from './demo-components/types';
+import { Config, DEFAULT_CONFIG, PRESETS } from './demo-components/types';
 import {
     PresetControls,
     TextControls,
@@ -76,95 +77,7 @@ const DemoApp: React.FC = () => {
     );
 
     return (
-        <>
-            <style>{`
-                :root { color-scheme: light; }
-                * { box-sizing: border-box; }
-                body { margin: 0; background: #f0f6fa; font-family: 'Inter', sans-serif; color: #0f172a; }
-                input[type=range] { accent-color: ${ACCENT}; }
-                ::-webkit-scrollbar { width: 6px; }
-                ::-webkit-scrollbar-track { background: #f1f5f9; }
-                ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-                /* ── Layout ── */
-                .demo-layout { display: flex; flex-direction: column; gap: 1rem; }
-                .control-col { order: 2; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
-                .preview-col { order: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
-                .sticky-preview { position: relative; z-index: 50; }
-
-                /* ── Header ── */
-                .header-inner { display: flex; align-items: center; gap: 0.6rem; width: 100%; flex-wrap: nowrap; }
-                .header-title { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin: 0; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                .header-subtitle { display: none; }
-                .header-links { display: flex; gap: 0.35rem; margin-left: auto; flex-shrink: 0; }
-                .header-link-btn { padding: 0.28rem 0.55rem; border-radius: 0.4rem; font-size: 0.68rem; font-weight: 600; text-decoration: none; color: #fff; white-space: nowrap; }
-
-                @media (min-width: 600px) {
-                    .header-subtitle { display: block; font-size: 0.66rem; color: #64748b; margin: 0.05rem 0 0; }
-                    .header-title { font-size: 0.95rem; }
-                    .header-link-btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
-                }
-
-                /* ── Tabs ── */
-                .mobile-tabs {
-                    display: flex;
-                    overflow-x: auto;
-                    gap: 0.25rem;
-                    background: transparent;
-                    padding: 0.4rem 0.5rem;
-                    border-bottom: 1px solid #e2e8f0;
-                    position: relative;
-                    z-index: 45;
-                    scrollbar-width: none;
-                    margin: 0 -1rem; /* Full width bleed on mobile */
-                }
-                .mobile-tabs::-webkit-scrollbar { display: none; }
-                .tab-btn {
-                    padding: 0.4rem 0.75rem;
-                    border: none;
-                    background: transparent;
-                    font-size: 0.72rem;
-                    font-weight: 600;
-                    color: #64748b;
-                    border-radius: 0.4rem;
-                    white-space: nowrap;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                }
-                .tab-btn.active { background: ${ACCENT}15; color: ${ACCENT}; }
-
-                /* ── Tab Content Visibility ── */
-                .tab-content { display: block; }
-                .tab-content Section { margin-bottom: 0; border: none; box-shadow: none; border-radius: 0; background: transparent; padding: 1rem 0; }
-
-                /* PC-specific Compact View */
-                .desktop-compact { display: none; }
-                .desktop-share { display: none; }
-
-                @media (max-width: 899.98px) {
-                    .tab-content:not(.active) { display: none !important; }
-                    .control-col { gap: 0; }
-                    .snippet-row { display: flex !important; flex-direction: column; gap: 0; }
-                }
-
-                @media (min-width: 900px) {
-                    .desktop-compact { display: block !important; }
-                    .tab-content, .mobile-tabs, .mobile-share { display: none !important; }
-                    .desktop-share { display: block !important; margin-top: 1rem; }
-                    .demo-layout {
-                        display: grid !important;
-                        grid-template-columns: 340px 1fr;
-                        gap: 1.5rem;
-                        align-items: flex-start;
-                    }
-                    .control-col { order: 1; }
-                    .preview-col { order: 2; }
-                    .sticky-preview { position: relative; top: 0; z-index: 1; }
-                    .snippet-row { flex-direction: row; display: flex !important; gap: 1rem; }
-                    .snippet-row > * { flex: 1; min-width: 0; }
-                }
-            `}</style>
-
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <header
                 style={{
                     background: 'rgba(255,255,255,0.93)',
@@ -271,7 +184,7 @@ const DemoApp: React.FC = () => {
             >
                 k-celebrate-slogan © 2025 GHeeJeon · MIT License
             </footer>
-        </>
+        </div>
     );
 };
 
