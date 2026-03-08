@@ -119,11 +119,19 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 // Convert all external URLs in the CSS to base64 to prevent canvas taint issues
                 const embeddedCSS = await getBase64CSS(combinedCSS);
 
+                // Capture the exact layout dimensions to prevent html-to-image from miscalculating
+                // the bounding box due to spinning CSS animations inside the node.
+                const width = node.offsetWidth;
+                const height = node.offsetHeight;
+
                 const commonOptions = {
                     backgroundColor: '#ffffff',
                     filter,
                     pixelRatio: 1.5, // Balance quality and speed
                     fontEmbedCSS: embeddedCSS,
+                    width,
+                    height,
+                    style: { margin: '0' },
                 };
 
                 // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image

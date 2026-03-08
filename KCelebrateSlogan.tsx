@@ -104,7 +104,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         flipped={false}
                         reverse
                         colors={pinwheelColors}
-                        animate={animate && !exportMode}
+                        animate={animate}
                         charFontSize="var(--char-size)"
                     />
 
@@ -181,7 +181,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     <EmblemSection
                         char="축"
                         colors={pinwheelColors}
-                        animate={animate && !exportMode}
+                        animate={animate}
                         charFontSize="var(--char-size)"
                     />
 
