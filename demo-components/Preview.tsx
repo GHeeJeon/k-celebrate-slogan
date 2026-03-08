@@ -126,6 +126,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     fontEmbedCSS: embeddedCSS,
                 };
 
+                // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
+                // This prevents FOUT (Flash of Unstyled Text) across all export formats, not just GIF.
+                await htmlToImage.toCanvas(node, { ...commonOptions, pixelRatio: 1 });
+
+                // Wait an extra tick to ensure the browser has fully processed the injected CSS from the dummy render
+                await new Promise((r) => setTimeout(r, 50));
+
                 if (format === 'jpg') {
                     setExportProgress(30);
                     const dataUrl = await htmlToImage.toJpeg(node, {
@@ -160,7 +167,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     const durationMs = 4000;
                     const fps = 15;
                     const msPerFrame = 1000 / fps;
-                    const frameCount = Math.floor(durationMs / msPerFrame);
+                    const frameCount = cfg.animate ? Math.floor(durationMs / msPerFrame) : 1;
 
                     const framesData = [];
                     let width = 0;
@@ -179,10 +186,6 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     pinwheels.forEach((pw) => {
                         originalAnims.push(pw.style.animation);
                     });
-
-                    // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
-                    // before we start capturing the sequence of frames
-                    await htmlToImage.toCanvas(node, gifOptions);
 
                     for (let i = 0; i < frameCount; i++) {
                         const progress = i / frameCount;
