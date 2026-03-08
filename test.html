@@ -1,37 +1,36 @@
 <!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>k-celebrate-slogan | Test Lobby</title>
+        <!-- Preconnect for performance -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <!-- Fonts -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Fallback for local fonts if not installed */
+            @font-face {
+                font-family: 'Gungsuh';
+                src: local('Gungsuh'), local('GungSeo'), local('Batang');
+            }
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>k-celebrate-slogan | Test Lobby</title>
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&display=swap"
-        rel="stylesheet" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Fallback for local fonts if not installed */
-        @font-face {
-            font-family: 'Gungsuh';
-            src: local('Gungsuh'), local('GungSeo'), local('Batang');
-        }
+            body {
+                margin: 0;
+                font-family: sans-serif;
+                background-color: #f3f4f6;
+            }
+        </style>
+    </head>
 
-        body {
-            margin: 0;
-            font-family: sans-serif;
-            background-color: #f3f4f6;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="root"></div>
-    <script type="module" src="/Lobby.tsx"></script>
-</body>
-
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/Lobby.tsx"></script>
+    </body>
 </html>

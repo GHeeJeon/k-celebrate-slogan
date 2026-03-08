@@ -14,6 +14,8 @@ export interface EmblemSectionProps {
     animate?: boolean;
     /** Font size of the center character (CSS value, e.g. '3rem') */
     charFontSize?: string;
+    /** Current scale factor for adjusting non-scalable properties */
+    activeScale?: number;
 }
 
 const EmblemSection: React.FC<EmblemSectionProps> = ({
@@ -23,6 +25,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
     colors,
     animate = true,
     charFontSize = '3rem',
+    activeScale = 1,
 }) => {
     // 소문자 g, j, p, q, y 처럼 기준선 아래로 내려가는 꼬리(Descender)가 있는지 정규식으로 판별합니다.
     // 꼬리가 있는 소문자는 위쪽 여백(Ascender 공간)이 비어보이므로 위로 살짝 올려주고,
@@ -38,7 +41,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: 'calc(0.5rem * var(--active-scale))',
+                padding: `${0.5 * activeScale}rem`,
                 width: 'var(--emblem-size)',
             }}
         >
@@ -75,9 +78,8 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10,
-                        border: 'calc(3px * var(--active-scale)) solid rgba(255,255,255,0.9)',
-                        boxShadow:
-                            '0 calc(2px * var(--active-scale)) 0 rgba(0,0,0,0.12), inset 0 0 0 calc(1px * var(--active-scale)) rgba(0,0,0,0.08)',
+                        border: `${3 * activeScale}px solid rgba(255,255,255,0.9)`,
+                        boxShadow: `0 ${2 * activeScale}px 0 rgba(0,0,0,0.12), inset 0 0 0 ${1 * activeScale}px rgba(0,0,0,0.08)`,
                     }}
                 >
                     {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}
@@ -92,10 +94,10 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontWeight: 900,
                             fontSize: charFontSize,
                             textShadow:
-                                'calc(-1.0px * var(--active-scale)) calc(-1.0px * var(--active-scale)) 0 #000, ' +
-                                'calc(1.0px * var(--active-scale)) calc(-1.0px * var(--active-scale)) 0 #000, ' +
-                                'calc(-1.0px * var(--active-scale)) calc(1.0px * var(--active-scale)) 0 #000, ' +
-                                'calc(1.0px * var(--active-scale)) calc(1.0px * var(--active-scale)) 0 #000',
+                                `-${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
+                                `${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
+                                `-${1 * activeScale}px ${1 * activeScale}px 0 #000, ` +
+                                `${1 * activeScale}px ${1 * activeScale}px 0 #000`,
                             transform: opticalCenterShift,
                         }}
                     >

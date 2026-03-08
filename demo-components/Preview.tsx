@@ -77,11 +77,12 @@ interface Props {
 
 export const Preview = React.forwardRef<HTMLDivElement, Props>(
     ({ cfg, animKey, replayAnim }, ref) => {
+        const exportRef = React.useRef<HTMLDivElement>(null);
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
-            const node = (ref as React.RefObject<HTMLDivElement>).current;
+            const node = exportRef.current;
             if (!node) return;
 
             setIsExporting(format);
@@ -277,7 +278,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         }}
                     />
 
-                    {/* Slogan Container */}
+                    {/* Slogan Container (Display - Normal View) */}
                     <div
                         key={animKey}
                         ref={ref}
@@ -302,8 +303,45 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             emblemScale={cfg.emblemScale}
                             animate={cfg.animate}
                             pinwheelColors={getPinwheelColors(cfg.pinwheelTheme)}
-                            exportMode={isExporting !== null}
+                            exportMode={false} // NEVER export mode on the display version
                         />
+                    </div>
+
+                    {/* Slogan Container (Hidden - Used for pure 1:1 image exporting) */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            opacity: 0.001,
+                            zIndex: -1,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <div
+                            ref={exportRef}
+                            style={{
+                                padding: '1.5rem',
+                                width: 'max-content',
+                                backgroundColor: '#ffffff',
+                            }}
+                        >
+                            <KCelebrateSlogan
+                                text1={cfg.text1 || undefined}
+                                text2={cfg.text2 || undefined}
+                                text3={cfg.text3 || undefined}
+                                text1Color={cfg.text1Color}
+                                text2Color={cfg.text2Color}
+                                text3Color={cfg.text3Color}
+                                text2StrokeColor={cfg.text2StrokeColor}
+                                text2StrokeWidth={cfg.text2StrokeWidth}
+                                scale={cfg.scale}
+                                emblemScale={cfg.emblemScale}
+                                animate={cfg.animate} // Pinwheel spins via CSS!
+                                pinwheelColors={getPinwheelColors(cfg.pinwheelTheme)}
+                                exportMode={true} // Forces exact scale proportions
+                            />
+                        </div>
                     </div>
 
                     {/* Replay Button */}

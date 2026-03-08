@@ -42,6 +42,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     }, [scale]);
 
     const activeScale = exportMode ? scale : autoScale;
+    const numericStroke = parseInt(text2StrokeWidth.replace(/[^0-9]/g, '')) || 3;
 
     return (
         <motion.div
@@ -80,7 +81,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --text2-color: ${text2Color};
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
-                  --stroke-width: calc(${text2StrokeWidth.replace(/[^0-9]/g, '')}px * var(--active-scale));
+                  --stroke-width: ${numericStroke * activeScale}px;
                   
                   --main-gap: calc(1.5rem * var(--active-scale));
                   --padding-tb: calc(0.5rem * var(--active-scale));
@@ -145,7 +146,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                             '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                         userSelect: 'none',
                         borderRadius: '0.125rem',
-                        minHeight: '140px',
+                        minHeight: 'calc(140px * var(--active-scale))',
                         width: '100%',
                     }}
                 >
@@ -156,6 +157,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         colors={pinwheelColors}
                         animate={animate}
                         charFontSize="var(--char-size)"
+                        activeScale={activeScale}
                     />
 
                     {/* Main Text Area:
@@ -187,6 +189,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         colors={pinwheelColors}
                         animate={animate}
                         charFontSize="var(--char-size)"
+                        activeScale={activeScale}
                     />
 
                     {/* Texture Overlay */}
