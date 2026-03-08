@@ -174,13 +174,19 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         '.k-celebrate-pinwheel'
                     ) as NodeListOf<HTMLElement>;
 
+                    // Backup original animations before overriding them for manual frame advancing
+                    const originalAnims: string[] = [];
+                    pinwheels.forEach((pw) => {
+                        originalAnims.push(pw.style.animation);
+                    });
+
                     // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
                     // before we start capturing the sequence of frames
                     await htmlToImage.toCanvas(node, gifOptions);
 
                     for (let i = 0; i < frameCount; i++) {
                         const progress = i / frameCount;
-                        const degrees = progress * 360; // 1 full rotation over the duration
+                        const degrees = cfg.animate ? progress * 360 : 0; // Fix Issue 2: respect animate off
 
                         pinwheels.forEach((pw) => {
                             const isReverse = pw.getAttribute('data-reverse') === 'true';
@@ -201,8 +207,8 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     }
 
                     // Restore pinwheels
-                    pinwheels.forEach((pw) => {
-                        pw.style.animation = '';
+                    pinwheels.forEach((pw, idx) => {
+                        pw.style.animation = originalAnims[idx] || '';
                         pw.style.transform = '';
                     });
 

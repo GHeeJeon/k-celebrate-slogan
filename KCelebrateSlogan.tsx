@@ -45,7 +45,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
         <motion.div
             initial={animate ? { y: -50, opacity: 0 } : { y: 0, opacity: 1 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: exportMode || !animate ? 0 : 0.5 }}
             className={className}
             style={{
                 position: 'relative',
@@ -104,7 +104,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         flipped={false}
                         reverse
                         colors={pinwheelColors}
-                        animate={animate}
+                        animate={animate && !exportMode}
                         charFontSize="var(--char-size)"
                     />
 
@@ -181,7 +181,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     <EmblemSection
                         char="축"
                         colors={pinwheelColors}
-                        animate={animate}
+                        animate={animate && !exportMode}
                         charFontSize="var(--char-size)"
                     />
 
