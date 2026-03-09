@@ -54,7 +54,7 @@ function localApiPlugin() {
 export default defineConfig(({ mode: _mode }) => {
     return {
         plugins: [react(), localApiPlugin()],
-        publicDir: false,
+        publicDir: 'public',
         server: {
             open: true,
             port: 3000,
