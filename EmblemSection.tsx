@@ -73,13 +73,14 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         width: '55%',
                         height: '55%',
                         backgroundColor: '#E11D48',
-                        borderRadius: '9999px',
+                        borderRadius: '50%', // 50% is more stable for canvas rendering than 9999px
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10,
                         border: `${3 * activeScale}px solid rgba(255,255,255,0.9)`,
-                        boxShadow: `0 ${2 * activeScale}px 0 rgba(0,0,0,0.12), inset 0 0 0 ${1 * activeScale}px rgba(0,0,0,0.08)`,
+                        // Remove complex inset shadows that cause black stains on mobile canvas
+                        boxShadow: `0 ${2 * activeScale}px 0 rgba(0,0,0,0.12)`,
                     }}
                 >
                     {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}
@@ -93,6 +94,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontFamily: '"Nanum Myeongjo", serif',
                             fontWeight: 900,
                             fontSize: charFontSize,
+                            WebkitTextStroke: `${0.5 * activeScale}px #000`, // Better browser fallback
                             textShadow:
                                 `-${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
                                 `${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +

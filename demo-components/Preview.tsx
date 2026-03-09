@@ -82,6 +82,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
         const exportRef = React.useRef<HTMLDivElement>(null);
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
+        const [gifFps, setGifFps] = useState<number>(10);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
             const node = exportRef.current;
@@ -183,9 +184,8 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     setExportProgress(100);
                     saveAs(blob, filename);
                 } else if (format === 'gif') {
-                    // Speed up: 4s total @ 10fps (40 frames instead of 60)
                     const durationMs = 4000;
-                    const fps = 10;
+                    const fps = gifFps;
                     const msPerFrame = 1000 / fps;
                     const frameCount = cfg.animate ? Math.floor(durationMs / msPerFrame) : 1;
 
@@ -316,6 +316,53 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             borderRadius: '0.75rem',
                         }}
                     />
+
+                    {isExporting && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: 'rgba(255,255,255,0.85)',
+                                backdropFilter: 'blur(4px)',
+                                zIndex: 100,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '0.75rem',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    border: `3px solid ${ACCENT}22`,
+                                    borderTop: `3px solid ${ACCENT}`,
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite',
+                                    marginBottom: '1rem',
+                                }}
+                            />
+                            <style>{`
+                                @keyframes spin {
+                                    from { transform: rotate(0deg); }
+                                    to { transform: rotate(360deg); }
+                                }
+                            `}</style>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: ACCENT }}>
+                                Exporting {isExporting.toUpperCase()}...
+                            </span>
+                            <span
+                                style={{
+                                    fontSize: '0.75rem',
+                                    color: '#64748b',
+                                    marginTop: '0.25rem',
+                                }}
+                            >
+                                {exportProgress}%
+                            </span>
+                        </div>
+                    )}
 
                     {/* Slogan Container (Display - Normal View) */}
                     <div
@@ -466,44 +513,71 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     }}
                 >
                     {(['jpg', 'png', 'svg', 'gif'] as const).map((fmt) => (
-                        <button
+                        <div
                             key={fmt}
-                            onClick={() => handleExport(fmt)}
-                            disabled={isExporting !== null}
-                            className="export-btn"
-                            style={{
-                                padding: '0.4rem 0.6rem',
-                                background: isExporting === fmt ? '#f1f5f9' : '#fff',
-                                color: isExporting === fmt ? '#94a3b8' : ACCENT,
-                                border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
-                                borderRadius: '0.4rem',
-                                fontSize: '0.68rem',
-                                fontWeight: 600,
-                                cursor: isExporting !== null ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.15s ease',
-                                fontFamily: 'inherit',
-                                textTransform: 'uppercase',
-                                minWidth: '70px',
-                                flexShrink: 0,
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isExporting) {
-                                    e.currentTarget.style.background = ACCENT;
-                                    e.currentTarget.style.color = '#fff';
-                                    e.currentTarget.style.borderColor = ACCENT;
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isExporting) {
-                                    e.currentTarget.style.background = '#fff';
-                                    e.currentTarget.style.color = ACCENT;
-                                    e.currentTarget.style.borderColor = ACCENT + '44';
-                                }
-                            }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                         >
-                            {isExporting === fmt ? '...' : `Save ${fmt}`}
-                        </button>
+                            <button
+                                onClick={() => handleExport(fmt)}
+                                disabled={isExporting !== null}
+                                className="export-btn"
+                                style={{
+                                    padding: '0.4rem 0.6rem',
+                                    background: isExporting === fmt ? '#f1f5f9' : '#fff',
+                                    color: isExporting === fmt ? '#94a3b8' : ACCENT,
+                                    border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
+                                    borderRadius: '0.4rem',
+                                    fontSize: '0.68rem',
+                                    fontWeight: 600,
+                                    cursor: isExporting !== null ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    fontFamily: 'inherit',
+                                    textTransform: 'uppercase',
+                                    minWidth: '70px',
+                                    flexShrink: 0,
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isExporting) {
+                                        e.currentTarget.style.background = ACCENT;
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.borderColor = ACCENT;
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isExporting) {
+                                        e.currentTarget.style.background = '#fff';
+                                        e.currentTarget.style.color = ACCENT;
+                                        e.currentTarget.style.borderColor = ACCENT + '44';
+                                    }
+                                }}
+                            >
+                                {isExporting === fmt ? '...' : `Save ${fmt}`}
+                            </button>
+                            {fmt === 'gif' && (
+                                <select
+                                    value={gifFps}
+                                    onChange={(e) => setGifFps(Number(e.target.value))}
+                                    disabled={isExporting !== null}
+                                    style={{
+                                        fontSize: '0.6rem',
+                                        padding: '0.1rem',
+                                        borderRadius: '0.2rem',
+                                        border: '1px solid #e2e8f0',
+                                        color: '#64748b',
+                                        background: '#fff',
+                                        cursor: 'pointer',
+                                    }}
+                                    title="GIF FPS"
+                                >
+                                    {[20, 15, 10, 5].map((fps) => (
+                                        <option key={fps} value={fps}>
+                                            {fps} FPS
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
                     ))}
                 </div>
             </Section>
