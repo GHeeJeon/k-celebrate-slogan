@@ -43,26 +43,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
 
     const activeScale = exportMode ? scale : autoScale;
     const numericStroke = parseInt(text2StrokeWidth.replace(/[^0-9]/g, '')) || 3;
-    const strokeWidthPx = numericStroke * activeScale;
-
-    // Polyfill for -webkit-text-stroke (html-to-image missing support in some environments)
-    // Generates a multi-directional text-shadow that perfectly mimics a stroke
-    const generateStrokeShadow = (width: number, color: string) => {
-        if (width <= 0) return 'none';
-        const shadow = [];
-        const steps = 16;
-        for (let r = 0.5; r <= width; r += 0.5) {
-            for (let i = 0; i < steps; i++) {
-                const angle = (i * 2 * Math.PI) / steps;
-                const x = (Math.cos(angle) * r).toFixed(2);
-                const y = (Math.sin(angle) * r).toFixed(2);
-                shadow.push(`${x}px ${y}px 0 ${color}`);
-            }
-        }
-        return shadow.join(', ');
-    };
-
-    const textStrokeShadow = generateStrokeShadow(strokeWidthPx, strokeColor);
 
     return (
         <motion.div
@@ -101,8 +81,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --text2-color: ${text2Color};
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
-                  --stroke-width: ${strokeWidthPx}px;
-                  --stroke-shadow: ${textStrokeShadow};
+                  --stroke-width: ${numericStroke * activeScale}px;
                   
                   --main-gap: calc(1.5rem * var(--active-scale));
                   --padding-tb: calc(0.5rem * var(--active-scale));
@@ -133,7 +112,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
                     font-weight: 400;
                     -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
-                    text-shadow: var(--stroke-shadow);
                     white-space: nowrap;
                     letter-spacing: 0.3em;
                     text-rendering: optimizeLegibility;
