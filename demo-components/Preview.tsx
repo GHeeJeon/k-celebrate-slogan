@@ -563,73 +563,81 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         scrollbarWidth: 'none',
                     }}
                 >
-                    {(['jpg', 'png', 'gif', 'svg'] as const).map((fmt) => (
-                        <div
-                            key={fmt}
-                            style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
-                        >
-                            <button
-                                onClick={() => handleExport(fmt)}
-                                disabled={isExporting !== null}
-                                className="export-btn"
-                                style={{
-                                    padding: '0.4rem 0.6rem',
-                                    background: isExporting === fmt ? '#f1f5f9' : '#fff',
-                                    color: isExporting === fmt ? '#94a3b8' : ACCENT,
-                                    border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
-                                    borderRadius: '0.4rem',
-                                    fontSize: '0.68rem',
-                                    fontWeight: 600,
-                                    cursor: isExporting !== null ? 'not-allowed' : 'pointer',
-                                    transition: 'all 0.15s ease',
-                                    fontFamily: 'inherit',
-                                    textTransform: 'uppercase',
-                                    minWidth: '70px',
-                                    flexShrink: 0,
-                                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!isExporting) {
-                                        e.currentTarget.style.background = ACCENT;
-                                        e.currentTarget.style.color = '#fff';
-                                        e.currentTarget.style.borderColor = ACCENT;
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isExporting) {
-                                        e.currentTarget.style.background = '#fff';
-                                        e.currentTarget.style.color = ACCENT;
-                                        e.currentTarget.style.borderColor = ACCENT + '44';
-                                    }
-                                }}
+                    {(['jpg', 'png', 'gif', 'svg'] as const)
+                        .filter((fmt) => {
+                            if (fmt !== 'svg') return true;
+                            if (typeof navigator === 'undefined') return true;
+                            return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                                navigator.userAgent
+                            );
+                        })
+                        .map((fmt) => (
+                            <div
+                                key={fmt}
+                                style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                             >
-                                {isExporting === fmt ? '...' : `Save ${fmt}`}
-                            </button>
-                            {fmt === 'gif' && (
-                                <select
-                                    value={gifFps}
-                                    onChange={(e) => setGifFps(Number(e.target.value))}
+                                <button
+                                    onClick={() => handleExport(fmt)}
                                     disabled={isExporting !== null}
+                                    className="export-btn"
                                     style={{
-                                        fontSize: '0.6rem',
-                                        padding: '0.1rem',
-                                        borderRadius: '0.2rem',
-                                        border: '1px solid #e2e8f0',
-                                        color: '#64748b',
-                                        background: '#fff',
-                                        cursor: 'pointer',
+                                        padding: '0.4rem 0.6rem',
+                                        background: isExporting === fmt ? '#f1f5f9' : '#fff',
+                                        color: isExporting === fmt ? '#94a3b8' : ACCENT,
+                                        border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
+                                        borderRadius: '0.4rem',
+                                        fontSize: '0.68rem',
+                                        fontWeight: 600,
+                                        cursor: isExporting !== null ? 'not-allowed' : 'pointer',
+                                        transition: 'all 0.15s ease',
+                                        fontFamily: 'inherit',
+                                        textTransform: 'uppercase',
+                                        minWidth: '70px',
+                                        flexShrink: 0,
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
                                     }}
-                                    title="GIF FPS"
+                                    onMouseEnter={(e) => {
+                                        if (!isExporting) {
+                                            e.currentTarget.style.background = ACCENT;
+                                            e.currentTarget.style.color = '#fff';
+                                            e.currentTarget.style.borderColor = ACCENT;
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isExporting) {
+                                            e.currentTarget.style.background = '#fff';
+                                            e.currentTarget.style.color = ACCENT;
+                                            e.currentTarget.style.borderColor = ACCENT + '44';
+                                        }
+                                    }}
                                 >
-                                    {[20, 15, 10, 5].map((fps) => (
-                                        <option key={fps} value={fps}>
-                                            {fps} FPS
-                                        </option>
-                                    ))}
-                                </select>
-                            )}
-                        </div>
-                    ))}
+                                    {isExporting === fmt ? '...' : `Save ${fmt}`}
+                                </button>
+                                {fmt === 'gif' && (
+                                    <select
+                                        value={gifFps}
+                                        onChange={(e) => setGifFps(Number(e.target.value))}
+                                        disabled={isExporting !== null}
+                                        style={{
+                                            fontSize: '0.6rem',
+                                            padding: '0.1rem',
+                                            borderRadius: '0.2rem',
+                                            border: '1px solid #e2e8f0',
+                                            color: '#64748b',
+                                            background: '#fff',
+                                            cursor: 'pointer',
+                                        }}
+                                        title="GIF FPS"
+                                    >
+                                        {[20, 15, 10, 5].map((fps) => (
+                                            <option key={fps} value={fps}>
+                                                {fps} FPS
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+                        ))}
                 </div>
             </Section>
         );

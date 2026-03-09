@@ -321,9 +321,7 @@ export interface LongPressModalProps {
 export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl, onClose }) => {
     const [isSharing, setIsSharing] = React.useState(false);
 
-    // [Temporary] Always show for styling preview
-    const showForPreview = true;
-    if (!isOpen && !showForPreview) return null;
+    if (!isOpen) return null;
 
     const handleShare = async () => {
         if (!imageUrl) return;
