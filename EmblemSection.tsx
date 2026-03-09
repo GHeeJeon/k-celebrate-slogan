@@ -101,7 +101,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             style={{
                                 fill: '#FDE047',
                                 stroke: 'rgb(0, 0, 0)',
-                                strokeWidth: `${1 * activeScale}px`,
+                                strokeWidth: `${3 * activeScale}px`,
                                 paintOrder: 'stroke fill',
                                 fontFamily: '"Nanum Myeongjo", serif',
                                 fontWeight: 900,
