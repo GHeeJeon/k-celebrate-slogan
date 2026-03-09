@@ -94,14 +94,14 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontFamily: '"Nanum Myeongjo", serif',
-                            fontWeight: 900,
+                            fontWeight: 800,
                             fontSize: charFontSize,
-                            WebkitTextStroke: `${0.5 * activeScale}px #000`,
+                            WebkitTextStroke: `${Math.max(0.6, 1.2 * activeScale)}px #000`,
                             textShadow:
-                                `-${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
-                                `${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
-                                `-${1 * activeScale}px ${1 * activeScale}px 0 #000, ` +
-                                `${1 * activeScale}px ${1 * activeScale}px 0 #000`,
+                                `-${Math.max(0.4, 0.8 * activeScale)}px -${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
+                                `${Math.max(0.4, 0.8 * activeScale)}px -${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
+                                `-${Math.max(0.4, 0.8 * activeScale)}px ${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
+                                `${Math.max(0.4, 0.8 * activeScale)}px ${Math.max(0.4, 0.8 * activeScale)}px 0 #000`,
                             transform: opticalCenterShift,
                         }}
                     >

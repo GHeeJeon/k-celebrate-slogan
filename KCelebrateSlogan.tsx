@@ -81,7 +81,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --text2-color: ${text2Color};
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
-                  --stroke-width: ${numericStroke * activeScale}px;
+                  --stroke-width: ${Math.max(0.6, numericStroke * activeScale)}px;
                   
                   --main-gap: calc(1.5rem * var(--active-scale));
                   --padding-tb: calc(0.5rem * var(--active-scale));
@@ -97,7 +97,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     color: var(--text1-color);
                     font-family: "Nanum Myeongjo", serif;
                     font-weight: 800;
-                    text-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.1);
+                    text-shadow: ${0.5 * activeScale}px ${0.5 * activeScale}px 0px rgba(0,0,0,0.1);
                     display: inline-block;
                     transform: scaleX(1.2);
                     white-space: nowrap;
