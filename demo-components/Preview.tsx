@@ -4,7 +4,6 @@ import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
 import { Config, ACCENT, ACCENT_DARK } from './types';
 import { Section, LongPressModal } from './UI';
-import { executeDownloadOrShare } from './exportUtils';
 import KCelebrateSlogan from '../KCelebrateSlogan';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
 
@@ -90,9 +89,23 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             filename: string,
             mime: string
         ) => {
-            const res = await executeDownloadOrShare(data, filename, mime);
-            if (res.requiresFallback && res.fallbackUrl) {
-                setFallbackModalUrl(res.fallbackUrl);
+            // Prepare Data URL for the success modal
+            let dataUrl: string;
+            if (typeof data === 'string') {
+                dataUrl = data;
+            } else {
+                const { blobToDataURL } = await import('./exportUtils');
+                dataUrl = await blobToDataURL(new Blob([data as any], { type: mime }));
+            }
+
+            // Always show the Success modal for these formats
+            setFallbackModalUrl(dataUrl);
+
+            // On PC, we still trigger the auto-download for convenience,
+            // but the user will see the Success modal on top.
+            const { isMobile, executeDownloadOrShare } = await import('./exportUtils');
+            if (!isMobile()) {
+                await executeDownloadOrShare(data, filename, mime);
             }
         };
 
@@ -542,7 +555,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         scrollbarWidth: 'none',
                     }}
                 >
-                    {(['jpg', 'png', 'svg', 'gif'] as const).map((fmt) => (
+                    {(['jpg', 'png', 'gif', 'svg'] as const).map((fmt) => (
                         <div
                             key={fmt}
                             style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}

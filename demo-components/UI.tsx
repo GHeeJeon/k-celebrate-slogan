@@ -319,7 +319,39 @@ export interface LongPressModalProps {
 }
 
 export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl, onClose }) => {
+    const [isSharing, setIsSharing] = React.useState(false);
+
     if (!isOpen) return null;
+
+    const handleShare = async () => {
+        if (!imageUrl) return;
+        setIsSharing(true);
+        try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            // Determine extension from mime type or default to gif
+            const mime = blob.type || 'image/gif';
+            const ext = mime.split('/')[1]?.split(';')[0] || 'gif';
+            const filename = `slogan.${ext}`;
+            const file = new File([blob], filename, { type: mime });
+
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: filename,
+                });
+            } else {
+                // Fallback to direct download for PC or unsupported mobile browsers
+                const { saveAs } = await import('file-saver');
+                saveAs(blob, filename);
+            }
+        } catch (err) {
+            console.error('Share/Save failed:', err);
+            alert('An error occurred. Please try long pressing the image to save.');
+        } finally {
+            setIsSharing(false);
+        }
+    };
 
     return (
         <div
@@ -327,80 +359,127 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                 position: 'fixed',
                 inset: 0,
                 zIndex: 9999,
-                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                backdropFilter: 'blur(5px)',
-                WebkitBackdropFilter: 'blur(5px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '1.5rem',
+                padding: '1.25rem',
             }}
             onClick={onClose}
         >
             <div
                 style={{
                     backgroundColor: '#ffffff',
-                    padding: '1rem',
-                    borderRadius: '1rem',
-                    maxWidth: '100%',
-                    boxShadow:
-                        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    padding: '1.5rem',
+                    borderRadius: '1.5rem',
+                    width: '90%',
+                    maxWidth: '420px',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '1rem',
+                    gap: '1.25rem',
                 }}
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inner modal box
+                onClick={(e) => e.stopPropagation()}
             >
                 <div style={{ textAlign: 'center' }}>
-                    <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '1.1rem' }}>
-                        이미지 저장하기
+                    <p
+                        style={{
+                            margin: 0,
+                            fontWeight: 800,
+                            color: '#0f172a',
+                            fontSize: '1.25rem',
+                        }}
+                    >
+                        🎉 Success!
                     </p>
-                    <p style={{ margin: '0.4rem 0 0', color: '#64748b', fontSize: '0.85rem' }}>
-                        아래 이미지를 <strong>길게 눌러</strong> 갤러리/사진 앱에 저장하세요.
+                    <p
+                        style={{
+                            margin: '0.5rem 0 0',
+                            color: '#475569',
+                            fontSize: '0.9rem',
+                            lineHeight: 1.5,
+                        }}
+                    >
+                        Tap <strong>Save</strong> or <strong>Long Press</strong> the image
+                        <br />
+                        to save to your photos.
                     </p>
                 </div>
 
                 <div
                     style={{
                         position: 'relative',
-                        borderRadius: '0.5rem',
+                        borderRadius: '0.75rem',
                         overflow: 'hidden',
                         border: '1px solid #e2e8f0',
                         backgroundColor: '#f8fafc',
+                        width: '100%',
                     }}
                 >
                     <img
                         src={imageUrl}
                         alt="Generated Slogan"
                         style={{
-                            maxWidth: '100%',
-                            maxHeight: '60vh',
+                            width: '100%',
+                            maxHeight: '50vh',
                             display: 'block',
-                            WebkitTouchCallout: 'default', // Extremely important for iOS Safari menu
+                            WebkitTouchCallout: 'default',
                             userSelect: 'none',
                         }}
                     />
                 </div>
 
-                <button
-                    onClick={onClose}
+                <div
                     style={{
-                        padding: '0.6rem 1.5rem',
-                        backgroundColor: '#f1f5f9',
-                        color: '#334155',
-                        border: 'none',
-                        borderRadius: '2rem',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        marginTop: '0.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.75rem',
                         width: '100%',
                     }}
                 >
-                    닫기
-                </button>
+                    <button
+                        onClick={handleShare}
+                        disabled={isSharing}
+                        style={{
+                            padding: '0.8rem 1.5rem',
+                            backgroundColor: ACCENT,
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '2rem',
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'opacity 0.2s',
+                            opacity: isSharing ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            boxShadow: `0 4px 6px -1px ${ACCENT}44`,
+                        }}
+                    >
+                        {isSharing ? 'Processing...' : '💾 Save'}
+                    </button>
+
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: '0.7rem 1.5rem',
+                            backgroundColor: '#f1f5f9',
+                            color: '#64748b',
+                            border: 'none',
+                            borderRadius: '2rem',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     );
