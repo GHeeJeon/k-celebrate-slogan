@@ -81,7 +81,7 @@ const DemoApp: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                overflowX: 'hidden', // Prevent horizontal scrollbar expanding beyond viewport
+                // Removed overflowX: 'hidden' to allow horizontal scrolling for large slogans
             }}
         >
             <header
@@ -89,11 +89,12 @@ const DemoApp: React.FC = () => {
                     background: 'rgba(255,255,255,0.93)',
                     backdropFilter: 'blur(12px)',
                     borderBottom: '1px solid #e2e8f0',
-                    position: 'fixed', // Lock to viewport
+                    position: 'sticky', // Sticky is better for horizontal content width synchronization
                     top: 0,
                     zIndex: 200,
                     padding: '0.45rem 1rem',
-                    width: '100vw', // Always 100% of viewport width
+                    width: '100%', // Expand with container
+                    minWidth: '100vw', // Ensure it covers at least the viewport
                     left: 0,
                     boxSizing: 'border-box',
                 }}
@@ -132,7 +133,6 @@ const DemoApp: React.FC = () => {
                     maxWidth: '1600px',
                     margin: '0 auto',
                     padding: '1rem',
-                    marginTop: '3.5rem',
                 }}
             >
                 <div className="demo-layout">
