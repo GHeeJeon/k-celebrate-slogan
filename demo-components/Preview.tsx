@@ -297,7 +297,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         </span>
                     </label>
                 }
-                style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                style={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: 0, // Prevents flex container from expanding past viewport
+                    maxWidth: '100%',
+                }}
             >
                 <div
                     style={{
@@ -306,12 +312,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         borderRadius: '0.75rem',
                         padding: '2rem 1rem',
                         position: 'relative',
-                        overflowX: 'auto',
+                        overflowX: 'auto', // Triggers local scrollbar
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         minHeight: '220px',
+                        width: '100%', // Prevents inner content from pushing parent
                     }}
                 >
                     <div

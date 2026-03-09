@@ -91,6 +91,9 @@ input[type='range'] {
 }
 
 .header-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     padding: 0.28rem 0.55rem;
     border-radius: 0.4rem;
     font-size: 0.68rem;
