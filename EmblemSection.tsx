@@ -85,25 +85,34 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         filter: `drop-shadow(0 ${2 * activeScale}px ${1 * activeScale}px rgba(0,0,0,0.15))`,
                     }}
                 >
-                    {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}
-                    <div
+                    {/* Main Character using Inline SVG for perfect Stroke support across all exports */}
+                    <svg
                         style={{
-                            color: '#FDE047',
-                            lineHeight: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontFamily: '"Nanum Myeongjo", serif',
-                            fontWeight: 900,
-                            fontSize: charFontSize,
-                            WebkitTextStroke: '0.5px rgb(0, 0, 0)',
-                            textShadow:
-                                'rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 1px 1px 0px',
-                            transform: opticalCenterShift,
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'visible',
                         }}
                     >
-                        {char}
-                    </div>
+                        <text
+                            x="50%"
+                            y="50%"
+                            dominantBaseline="central"
+                            textAnchor="middle"
+                            style={{
+                                fill: '#FDE047',
+                                stroke: 'rgb(0, 0, 0)',
+                                strokeWidth: `${1 * activeScale}px`,
+                                paintOrder: 'stroke fill',
+                                fontFamily: '"Nanum Myeongjo", serif',
+                                fontWeight: 900,
+                                fontSize: charFontSize,
+                                transform: opticalCenterShift,
+                                transformOrigin: 'center',
+                            }}
+                        >
+                            {char}
+                        </text>
+                    </svg>
                 </div>
             </div>
         </div>

@@ -399,7 +399,7 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                         style={{
                             margin: '0.75rem 0 0',
                             color: '#475569',
-                            fontSize: '1.5rem',
+                            fontSize: '1rem',
                             lineHeight: 1.6,
                         }}
                     >
@@ -451,7 +451,7 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                             color: '#ffffff',
                             border: 'none',
                             borderRadius: '0.4rem',
-                            fontSize: '1.5rem',
+                            fontSize: '1rem',
                             fontWeight: 700,
                             cursor: 'pointer',
                             transition: 'opacity 0.2s',
@@ -475,7 +475,7 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                             color: '#64748b',
                             border: 'none',
                             borderRadius: '0.4rem',
-                            fontSize: '1.5rem',
+                            fontSize: '1rem',
                             fontWeight: 600,
                             cursor: 'pointer',
                         }}
