@@ -185,8 +185,15 @@ export const exportAnimatedSvg = async (
                 ${googleFontsCss}
                 ${cssRules}
                 
-                /* Layout Fixes for SVG Context */
-                .k-celebrate-slogan-container { width: 100% !important; height: 100% !important; margin: 0 !important; }
+                /* Global resets for SVG foreignObject context */
+                * { box-sizing: border-box; }
+                
+                .k-celebrate-slogan-container { 
+                    width: 100% !important; 
+                    height: 100% !important; 
+                    margin: 0 !important; 
+                    font-size: 16px !important; /* Base for rem calculations */
+                }
                 .k-celebrate-slogan-container > div { border: none !important; box-shadow: none !important; }
             /* ]]> */
             </style>
