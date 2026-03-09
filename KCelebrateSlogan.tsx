@@ -42,7 +42,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     }, [scale]);
 
     const activeScale = exportMode ? scale : autoScale;
-    const numericStroke = parseFloat(text2StrokeWidth.replace(/[^0-9.]/g, '')) || 3;
+    const parsedStroke = parseFloat(text2StrokeWidth.replace(/[^0-9.]/g, ''));
+    const numericStroke = isNaN(parsedStroke) ? 3 : parsedStroke;
 
     return (
         <motion.div
@@ -81,7 +82,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --text2-color: ${text2Color};
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
-                  --stroke-width: ${Math.max(0.6, numericStroke * activeScale)}px;
+                  --stroke-width: ${numericStroke === 0 ? 0 : Math.max(0.6, numericStroke * activeScale)}px;
                   
                   --main-gap: calc(1.5rem * var(--active-scale));
                   --padding-tb: calc(0.5rem * var(--active-scale));

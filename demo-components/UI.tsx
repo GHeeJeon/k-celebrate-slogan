@@ -370,6 +370,10 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
             onClick={onClose}
         >
             <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
+                aria-describedby="modal-desc"
                 style={{
                     backgroundColor: '#ffffff',
                     padding: '2rem',
@@ -384,6 +388,41 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* Visually Hidden Title and Description for Accessibility (Radix-style) */}
+                <h2
+                    id="modal-title"
+                    style={{
+                        position: 'absolute',
+                        width: '1px',
+                        height: '1px',
+                        padding: '0',
+                        margin: '-1px',
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: '0',
+                    }}
+                >
+                    Export Success
+                </h2>
+                <p
+                    id="modal-desc"
+                    style={{
+                        position: 'absolute',
+                        width: '1px',
+                        height: '1px',
+                        padding: '0',
+                        margin: '-1px',
+                        overflow: 'hidden',
+                        clip: 'rect(0, 0, 0, 0)',
+                        whiteSpace: 'nowrap',
+                        border: '0',
+                    }}
+                >
+                    Your slogan has been generated. You can save it by long pressing the image or
+                    clicking the save button.
+                </p>
+
                 <div style={{ textAlign: 'center' }}>
                     <p
                         style={{
