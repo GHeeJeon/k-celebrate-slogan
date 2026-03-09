@@ -81,7 +81,7 @@ const DemoApp: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                // Removed overflowX: 'hidden' to allow horizontal scrolling for large slogans
+                minWidth: 'fit-content', // This guarantees the container (and its sticky header) expands with horizontally scrolling content
             }}
         >
             <header

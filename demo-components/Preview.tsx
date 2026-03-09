@@ -3,7 +3,7 @@ import * as htmlToImage from 'html-to-image';
 import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
 import { Config, ACCENT, ACCENT_DARK } from './types';
-import { Section, LongPressModal } from './UI';
+import { Section } from './UI';
 import { executeDownloadOrShare } from './exportUtils';
 import KCelebrateSlogan from '../KCelebrateSlogan';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
@@ -83,7 +83,6 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
         const [gifFps, setGifFps] = useState<number>(10);
-        const [fallbackModalUrl, setFallbackModalUrl] = useState<string | null>(null);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
             const node = exportRef.current;
@@ -160,10 +159,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     data: string | Blob | Uint8Array | ArrayBuffer,
                     mimeType: string
                 ) => {
-                    const res = await executeDownloadOrShare(data, filename, mimeType);
-                    if (res.requiresFallback && res.fallbackUrl) {
-                        setFallbackModalUrl(res.fallbackUrl);
-                    }
+                    await executeDownloadOrShare(data, filename, mimeType);
                 };
 
                 if (format === 'jpg') {
@@ -192,7 +188,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
 
                     setExportProgress(100);
-                    await handleSave(blob, 'image/svg+xml');
+                    // Standard download for SVG regardless of OS (Share usually fails this)
+                    const { saveAs } = await import('file-saver');
+                    saveAs(blob, filename);
                 } else if (format === 'gif') {
                     const durationMs = 4000;
                     const fps = gifFps;
@@ -379,12 +377,6 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             </span>
                         </div>
                     )}
-
-                    <LongPressModal
-                        isOpen={!!fallbackModalUrl}
-                        imageUrl={fallbackModalUrl || ''}
-                        onClose={() => setFallbackModalUrl(null)}
-                    />
 
                     {/* Slogan Container (Display - Normal View) */}
                     <div

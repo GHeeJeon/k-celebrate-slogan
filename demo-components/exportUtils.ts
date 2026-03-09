@@ -5,39 +5,20 @@ export const isMobile = () => {
     );
 };
 
-export const blobToDataURL = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-};
-
-export interface DownloadResult {
-    success: boolean;
-    requiresFallback?: boolean;
-    fallbackUrl?: string;
-}
-
 export const executeDownloadOrShare = async (
     data: string | Blob | Uint8Array | ArrayBuffer,
     filename: string,
     mimeType: string
-): Promise<DownloadResult> => {
+): Promise<{ success: boolean }> => {
     let blob: Blob;
-    let dataUrl: string;
 
     if (typeof data === 'string') {
         const res = await fetch(data);
         blob = await res.blob();
-        dataUrl = data;
     } else if (data instanceof Uint8Array || data instanceof ArrayBuffer) {
         blob = new Blob([data as any], { type: mimeType });
-        dataUrl = await blobToDataURL(blob);
     } else {
         blob = data;
-        dataUrl = await blobToDataURL(blob);
     }
 
     if (isMobile()) {
@@ -52,21 +33,12 @@ export const executeDownloadOrShare = async (
                 });
                 return { success: true };
             } catch (err) {
-                console.warn('Share API failed or user cancelled, falling back to modal', err);
-                // Fall down to step 2
+                console.warn('Share API failed or user cancelled, falling back to saveAs', err);
             }
         }
-
-        // Step 2: Long-press Modal Fallback
-        // On iOS Safari, long pressing a Data URL works best for saving images.
-        return {
-            success: false,
-            requiresFallback: true,
-            fallbackUrl: dataUrl,
-        };
     }
 
-    // PC Environment
+    // Fallback or PC Environment
     const { saveAs } = await import('file-saver');
     saveAs(blob, filename);
     return { success: true };
