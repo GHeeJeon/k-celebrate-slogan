@@ -145,6 +145,9 @@ const DemoApp: React.FC = () => {
                     {/* Unified Configuration Column (PC & Mobile) */}
                     <div className="control-col">
                         <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
+                        <div className="mobile-only-share" style={{ marginTop: '1.5rem' }}>
+                            {shareContent}
+                        </div>
                     </div>
 
                     {/* PC View: Right, Mobile View: Top (Sticky Preview) */}
@@ -158,7 +161,9 @@ const DemoApp: React.FC = () => {
                                 set={set}
                             />
                         </div>
-                        <div className="share-section-wrapper">{shareContent}</div>
+                        <div className="desktop-only-share" style={{ marginTop: '1.5rem' }}>
+                            {shareContent}
+                        </div>
                     </div>
                 </div>
             </main>

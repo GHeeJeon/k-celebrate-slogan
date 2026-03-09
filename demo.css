@@ -180,8 +180,12 @@ input[type='range'] {
     display: none;
 }
 
-.desktop-share {
+.desktop-only-share {
     display: none;
+}
+
+.mobile-only-share {
+    display: block;
 }
 
 @media (max-width: 899.98px) {
@@ -211,9 +215,12 @@ input[type='range'] {
         display: none !important;
     }
 
-    .desktop-share {
-        display: block !important;
-        margin-top: 1rem;
+    .desktop-only-share {
+        display: block;
+    }
+
+    .mobile-only-share {
+        display: none;
     }
 
     .demo-layout {
