@@ -29,6 +29,13 @@ const DemoApp: React.FC = () => {
     const [animKey, setAnimKey] = useState(0);
     const sloganRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        // Handle mobile default scale (0.75) if on a small screen
+        if (window.innerWidth < 900) {
+            setCfg((prev) => ({ ...prev, scale: 0.75 }));
+        }
+    }, []);
+
     const set = useCallback(<K extends keyof Config>(key: K, value: Config[K]) => {
         setCfg((prev) => ({ ...prev, [key]: value }));
     }, []);
@@ -69,20 +76,26 @@ const DemoApp: React.FC = () => {
 
     return (
         <div
-            style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%' }}
+            style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                overflowX: 'hidden', // Prevent horizontal scrollbar expanding beyond viewport
+            }}
         >
             <header
                 style={{
                     background: 'rgba(255,255,255,0.93)',
                     backdropFilter: 'blur(12px)',
                     borderBottom: '1px solid #e2e8f0',
-                    position: 'sticky',
+                    position: 'fixed', // Lock to viewport
                     top: 0,
-                    zIndex: 100,
+                    zIndex: 200,
                     padding: '0.45rem 1rem',
-                    width: '100%',
+                    width: '100vw', // Always 100% of viewport width
                     left: 0,
-                    right: 0,
+                    boxSizing: 'border-box',
                 }}
             >
                 <div className="header-inner" style={{ display: 'flex', alignItems: 'center' }}>
@@ -114,7 +127,14 @@ const DemoApp: React.FC = () => {
                 </div>
             </header>
 
-            <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem' }}>
+            <main
+                style={{
+                    maxWidth: '1600px',
+                    margin: '0 auto',
+                    padding: '1rem',
+                    marginTop: '3.5rem',
+                }}
+            >
                 <div className="demo-layout">
                     {/* Unified Configuration Column (PC & Mobile) */}
                     <div className="control-col">
