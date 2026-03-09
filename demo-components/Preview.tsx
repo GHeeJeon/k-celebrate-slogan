@@ -98,13 +98,12 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 dataUrl = await blobToDataURL(new Blob([data as any], { type: mime }));
             }
 
-            // Always show the Success modal for these formats
-            setFallbackModalUrl(dataUrl);
-
-            // On PC, we still trigger the auto-download for convenience,
-            // but the user will see the Success modal on top.
+            // Always show the Success modal for these formats on Mobile
             const { isMobile, executeDownloadOrShare } = await import('./exportUtils');
-            if (!isMobile()) {
+            if (isMobile()) {
+                setFallbackModalUrl(dataUrl);
+            } else {
+                // On PC, we just trigger the auto-download immediately without the modal
                 await executeDownloadOrShare(data, filename, mime);
             }
         };
