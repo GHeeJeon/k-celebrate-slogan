@@ -232,7 +232,7 @@ export const LayoutControls: React.FC<BaseProps> = (props) => (
 export const CompactConfiguration: React.FC<
     BaseProps & { applyPreset: (name: 'default' | 'pastel' | 'neon') => void }
 > = ({ cfg, set, applyPreset }) => (
-    <Section title="⚙️ Configuration">
+    <Section title="⚙️ Configuration" style={{ height: '100%', boxSizing: 'border-box' }}>
         <Label>Presets</Label>
         <div style={{ marginBottom: '1rem' }}>
             <PresetContent cfg={cfg} set={set} applyPreset={applyPreset} />

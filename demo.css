@@ -220,11 +220,17 @@ input[type='range'] {
         display: grid !important;
         grid-template-columns: 340px 1fr;
         gap: 1.5rem;
-        align-items: flex-start;
+        align-items: stretch;
+        /* Align height of columns */
     }
 
     .control-col {
         order: 1;
+        position: sticky;
+        left: 1.5rem;
+        /* Anchor to the left viewport edge during horizontal scroll */
+        z-index: 50;
+        /* Height matching is handled by align-items: stretch in .demo-layout */
     }
 
     .preview-col {
