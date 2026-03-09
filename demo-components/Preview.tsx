@@ -202,7 +202,11 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     ) as HTMLElement;
 
                     if (firstSlogan) {
-                        await exportAnimatedSvg(firstSlogan, filename);
+                        await exportAnimatedSvg(
+                            firstSlogan,
+                            { t1: cfg.text1, t2: cfg.text2, t3: cfg.text3 },
+                            filename
+                        );
                     } else {
                         // Fallback to htmlToImage if complex selector fails
                         const dataUrl = await htmlToImage.toSvg(node, commonOptions);

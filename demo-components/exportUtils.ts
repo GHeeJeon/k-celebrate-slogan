@@ -76,47 +76,50 @@ export const executeDownloadOrShare = async (
  */
 export const exportAnimatedSvg = async (
     node: HTMLElement,
+    texts: { t1: string; t2: string; t3: string },
     filename: string = 'slogan.svg'
-): Promise<DownloadResult> => {
+) => {
     try {
         const clone = node.cloneNode(true) as HTMLElement;
         const width = node.offsetWidth;
         const height = node.offsetHeight;
 
-        // 1. [개선] 스타일 추출 범위 확대 (엠블럼 및 공통 스타일 포함)
+        // 1. Optimization: Collect unique characters for dynamic Google Font subsetting.
+        const staticChars = '경축'; // Fixed characters in emblem
+        const combinedText = staticChars + texts.t1 + texts.t2 + texts.t3;
+        const uniqueChars = Array.from(new Set(combinedText.split(''))).join('');
+        const encodedText = encodeURIComponent(uniqueChars);
+
+        // 2. Style Extraction: Capture relevant CSS rules and keyframe animations.
         let cssRules = '';
         for (const sheet of Array.from(document.styleSheets)) {
             try {
                 const rules = Array.from(sheet.cssRules);
                 for (const rule of rules) {
-                    const txt = rule.cssText;
                     if (
                         rule instanceof CSSFontFaceRule ||
                         rule instanceof CSSKeyframesRule ||
-                        // 'emblem' 키워드 추가하여 '경', '축' 스타일 확보
-                        /slogan|text|emblem|pinwheel|celebrate|char/i.test(txt)
+                        /slogan|text|emblem|pinwheel|celebrate|char/i.test(rule.cssText)
                     ) {
-                        cssRules += txt + '\n';
+                        cssRules += rule.cssText + '\n';
                     }
                 }
             } catch (e) {
-                console.warn('CORS 이슈로 스타일 시트 스킵:', sheet.href);
+                console.warn('Skipping stylesheet due to CORS restrictions:', sheet.href);
             }
         }
 
-        // 2. [개선] 폰트 인라이닝 (모든 조각/Subset 대응)
+        // 3. Font Inlining: Helper to convert font URLs to Base64 data strings.
         const fetchAndInlineFonts = async (url: string) => {
             try {
                 const response = await fetch(url, {
                     headers: {
-                        // 최신 브라우저 UA를 사용해야 최적화된 조각 데이터(CSS)를 반환받음
+                        // Use a mobile-like UA to get optimized CSS chunks from Google Fonts.
                         'User-Agent':
                             'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
                     },
                 });
                 let cssText = await response.text();
-
-                // CSS 내의 모든 url()을 찾아 Base64로 변환
                 const fontMatches = [...cssText.matchAll(/url\(["']?([^"']+)["']?\)/g)];
 
                 for (const match of fontMatches) {
@@ -128,21 +131,20 @@ export const exportAnimatedSvg = async (
                         reader.onloadend = () => resolve(reader.result as string);
                         reader.readAsDataURL(fontBlob);
                     });
+                    // Global replacement of font URL with its Base64 data.
                     cssText = cssText.split(fontUrl).join(base64);
                 }
                 return cssText;
             } catch (err) {
-                console.error('폰트 변환 실패:', err);
+                console.error('Failed to convert font to Base64:', err);
                 return '';
             }
         };
 
-        // 한글 폰트는 용량이 크므로 필요한 Weight만 정확히 타겟팅
-        const googleFontsCss = await fetchAndInlineFonts(
-            'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800;900&family=Outfit:wght@400;700&display=swap'
-        );
+        // 4. Resource Preparation: Fetch and inline Google and local custom fonts.
+        const googleFontsUrl = `https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800;900&family=Outfit:wght@400;700&display=swap&text=${encodedText}`;
+        const googleFontsCss = await fetchAndInlineFonts(googleFontsUrl);
 
-        // 조선궁서체(커스텀) 처리
         const joseonRes = await fetch(
             'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff'
         );
@@ -153,10 +155,11 @@ export const exportAnimatedSvg = async (
             reader.readAsDataURL(joseonBlob);
         });
 
+        // 5. XML Serialization: Convert HTML clone to a valid XML string for SVG compatibility.
         const serializer = new XMLSerializer();
         const xhtmlContent = serializer.serializeToString(clone);
 
-        // 3. [중요] 스타일 태그 내 폰트 우선 순위 및 렌더링 옵션 조정
+        // 6. SVG Assembly: Wrap content in CDATA to protect special characters from XML parsers.
         const svgString = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <foreignObject width="100%" height="100%">
@@ -168,21 +171,22 @@ export const exportAnimatedSvg = async (
                     src: url('${joseonBase64}') format('woff'); 
                     font-display: block; 
                 }
-                
                 ${googleFontsCss}
                 ${cssRules}
                 
-                /* SVG 렌더링 가독성 향상 */
                 * { 
                     box-sizing: border-box; 
-                    -webkit-font-smoothing: antialiased;
-                    text-rendering: optimizeLegibility;
+                    -webkit-font-smoothing: antialiased; 
+                    text-rendering: optimizeLegibility; 
                 }
-                
                 .k-celebrate-slogan-container { 
                     width: 100% !important; 
                     height: 100% !important; 
                     margin: 0 !important; 
+                }
+                .k-celebrate-slogan-container > div { 
+                    border: none !important; 
+                    box-shadow: none !important; 
                 }
             /* ]]> */
             </style>
@@ -191,10 +195,11 @@ export const exportAnimatedSvg = async (
     </foreignObject>
 </svg>`.trim();
 
+        // 7. Finalization: Create Blob and trigger the download/share sequence.
         const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         return await executeDownloadOrShare(blob, filename, 'image/svg+xml');
     } catch (err) {
-        console.error('SVG 저장 실패:', err);
+        console.error('Critical error during SVG export generation:', err);
         return { success: false };
     }
 };

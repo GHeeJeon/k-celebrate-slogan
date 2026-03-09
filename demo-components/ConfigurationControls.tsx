@@ -106,45 +106,15 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
 
 const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            <div>
-                <SliderRow
-                    id="strokeWidth"
-                    label="Stroke Width (px)"
-                    value={parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0}
-                    min={0}
-                    max={10}
-                    step={0.1}
-                    onChange={(v) => set('text2StrokeWidth', `${v}px`)}
-                />
-            </div>
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingTop: '0.2rem',
-                }}
-            >
-                <Label style={{ marginBottom: 0 }}>Animation</Label>
-                <button
-                    onClick={() => set('animate', !cfg.animate)}
-                    style={{
-                        padding: '0.2rem 0.6rem',
-                        background: cfg.animate ? ACCENT : '#f1f5f9',
-                        color: cfg.animate ? '#fff' : '#94a3b8',
-                        border: '1px solid',
-                        borderColor: cfg.animate ? ACCENT : '#e2e8f0',
-                        borderRadius: '1rem',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                    }}
-                >
-                    {cfg.animate ? 'ON' : 'OFF'}
-                </button>
-            </div>
-        </div>
+        <SliderRow
+            id="strokeWidth"
+            label="Stroke Width (px)"
+            value={parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0}
+            min={0}
+            max={10}
+            step={0.1}
+            onChange={(v) => set('text2StrokeWidth', `${v}px`)}
+        />
         <SliderRow
             id="scale"
             label="Scale"
