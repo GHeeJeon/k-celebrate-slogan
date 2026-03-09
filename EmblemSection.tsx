@@ -96,12 +96,9 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontFamily: '"Nanum Myeongjo", serif',
                             fontWeight: 900,
                             fontSize: charFontSize,
-                            WebkitTextStroke: `${Math.max(0.6, 1.2 * activeScale)}px #000`,
+                            WebkitTextStroke: '0.5px rgb(0, 0, 0)',
                             textShadow:
-                                `-${Math.max(0.4, 0.8 * activeScale)}px -${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
-                                `${Math.max(0.4, 0.8 * activeScale)}px -${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
-                                `-${Math.max(0.4, 0.8 * activeScale)}px ${Math.max(0.4, 0.8 * activeScale)}px 0 #000, ` +
-                                `${Math.max(0.4, 0.8 * activeScale)}px ${Math.max(0.4, 0.8 * activeScale)}px 0 #000`,
+                                'rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 1px 1px 0px',
                             transform: opticalCenterShift,
                         }}
                     >
