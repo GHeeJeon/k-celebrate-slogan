@@ -91,8 +91,12 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             setIsExporting(format);
             setExportProgress(0);
 
-            // Wait for React to apply 'isExporting' rules to the DOM (like removing padding and restoring scale: 1)
-            await new Promise((r) => setTimeout(r, 150));
+            // Use requestAnimationFrame to let React apply 'isExporting' to the DOM instead of setTimeout (which kills Share API gesture tokens)
+            await new Promise<void>((r) =>
+                requestAnimationFrame(() => requestAnimationFrame(() => r()))
+            );
+            // Ensure fonts and styles are loaded
+            await document.fonts.ready;
 
             try {
                 const filename = `slogan.${format}`;
@@ -150,9 +154,8 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
 
                 // Dummy render to ensure fonts and styles are fully loaded
                 await domToCanvas(node, { ...commonOptions, scale: 1 });
-
-                // Wait an extra tick to ensure the browser has fully processed the injected CSS from the dummy render
-                await new Promise((r) => setTimeout(r, 50));
+                // Another non-gestural-killing tick
+                await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
                 // Handle saving with new utility
                 const handleSave = async (
@@ -231,7 +234,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         framesData.push({ data: canvas, delay: msPerFrame });
                         setExportProgress(Math.floor((i / frameCount) * 85));
 
-                        if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10));
+                        // Yield thread purely with RequestAnimationFrame instead of setTimeout to attempt preserving user activation token
+                        if (i % 5 === 0)
+                            await new Promise<void>((r) => requestAnimationFrame(() => r()));
                     }
 
                     // Restore pinwheels for potential subsequent exports or if node reused
