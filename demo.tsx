@@ -68,7 +68,9 @@ const DemoApp: React.FC = () => {
     );
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div
+            style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%' }}
+        >
             <header
                 style={{
                     background: 'rgba(255,255,255,0.93)',
@@ -78,6 +80,9 @@ const DemoApp: React.FC = () => {
                     top: 0,
                     zIndex: 100,
                     padding: '0.45rem 1rem',
+                    width: '100%',
+                    left: 0,
+                    right: 0,
                 }}
             >
                 <div className="header-inner" style={{ display: 'flex', alignItems: 'center' }}>
