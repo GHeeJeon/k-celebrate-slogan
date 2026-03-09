@@ -40,7 +40,7 @@ export const executeDownloadOrShare = async (
         dataUrl = await blobToDataURL(blob);
     }
 
-    if (isMobile()) {
+    if (isMobile() && mimeType !== 'image/svg+xml') {
         const file = new File([blob], filename, { type: mimeType });
 
         // Step 1: Web Share API
@@ -56,8 +56,7 @@ export const executeDownloadOrShare = async (
             }
         }
 
-        // Step 2: Fallback - Long-press Modal
-        // For images, showing a modal for long-press saving is the most robust fallback on mobile.
+        // Step 2: Fallback - Long-press Modal (For PNG/JPG)
         return {
             success: false,
             requiresFallback: true,
@@ -65,7 +64,7 @@ export const executeDownloadOrShare = async (
         };
     }
 
-    // PC Environment
+    // PC Environment or SVG on Mobile
     const { saveAs } = await import('file-saver');
     saveAs(blob, filename);
     return { success: true };
@@ -140,7 +139,7 @@ export const exportAnimatedSvg = async (
         );
 
         // 5. Construct SVG String
-        const svgString = `
+        const svgString = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <foreignObject width="100%" height="100%">
         <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;">
@@ -148,8 +147,9 @@ export const exportAnimatedSvg = async (
                 /* Embedded Font */
                 ${joseonBase64}
                 
-                /* Standard Google Fonts (External) - Note: Some SVG viewers require Base64 for these too */
-                @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&display=swap');
+                /* Standard Google Fonts (External) */
+                /* Escaped & to &amp; for XML parsing compatibility */
+                @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;family=Outfit:wght@100..900&amp;display=swap');
                 
                 ${cssRules}
                 
