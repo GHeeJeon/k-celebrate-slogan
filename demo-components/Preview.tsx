@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
-import { saveAs } from 'file-saver';
 import { Config, ACCENT, ACCENT_DARK } from './types';
-import { Section } from './UI';
+import { Section, LongPressModal } from './UI';
+import { executeDownloadOrShare } from './exportUtils';
 import KCelebrateSlogan from '../KCelebrateSlogan';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
 
@@ -83,6 +83,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
         const [gifFps, setGifFps] = useState<number>(10);
+        const [fallbackModalUrl, setFallbackModalUrl] = useState<string | null>(null);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
             const node = exportRef.current;
@@ -154,6 +155,17 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 // Wait an extra tick to ensure the browser has fully processed the injected CSS from the dummy render
                 await new Promise((r) => setTimeout(r, 50));
 
+                // Handle saving with new utility
+                const handleSave = async (
+                    data: string | Blob | Uint8Array | ArrayBuffer,
+                    mimeType: string
+                ) => {
+                    const res = await executeDownloadOrShare(data, filename, mimeType);
+                    if (res.requiresFallback && res.fallbackUrl) {
+                        setFallbackModalUrl(res.fallbackUrl);
+                    }
+                };
+
                 if (format === 'jpg') {
                     setExportProgress(30);
                     const dataUrl = await domToJpeg(node, {
@@ -161,20 +173,18 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         quality: 0.95,
                     });
                     setExportProgress(100);
-                    saveAs(dataUrl, filename);
+                    await handleSave(dataUrl, 'image/jpeg');
                 } else if (format === 'png') {
                     setExportProgress(30);
                     const dataUrl = await domToPng(node, commonOptions);
                     setExportProgress(100);
-                    saveAs(dataUrl, filename);
+                    await handleSave(dataUrl, 'image/png');
                 } else if (format === 'svg') {
                     setExportProgress(50);
                     const dataUrl = await htmlToImage.toSvg(node, commonOptions);
 
-                    // Decode the URI component to handle Korean/UTF-8 characters properly
                     let svgData = decodeURIComponent(dataUrl.split(',')[1]);
 
-                    // QuickLook/Finder on macOS requires the XML UTF-8 declaration to not break Korean characters
                     if (!svgData.startsWith('<?xml')) {
                         svgData = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgData;
                     }
@@ -182,7 +192,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
 
                     setExportProgress(100);
-                    saveAs(blob, filename);
+                    await handleSave(blob, 'image/svg+xml');
                 } else if (format === 'gif') {
                     const durationMs = 4000;
                     const fps = gifFps;
@@ -244,8 +254,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             height,
                             frames: framesData,
                         });
-                        const blob = new Blob([buffer], { type: 'image/gif' });
-                        saveAs(blob, filename);
+                        await handleSave(buffer, 'image/gif');
                     }
                     setExportProgress(100);
                 }
@@ -363,6 +372,12 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             </span>
                         </div>
                     )}
+
+                    <LongPressModal
+                        isOpen={!!fallbackModalUrl}
+                        imageUrl={fallbackModalUrl || ''}
+                        onClose={() => setFallbackModalUrl(null)}
+                    />
 
                     {/* Slogan Container (Display - Normal View) */}
                     <div
