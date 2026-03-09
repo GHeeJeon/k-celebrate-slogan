@@ -321,7 +321,9 @@ export interface LongPressModalProps {
 export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl, onClose }) => {
     const [isSharing, setIsSharing] = React.useState(false);
 
-    if (!isOpen) return null;
+    // [Temporary] Always show for styling preview
+    const showForPreview = true;
+    if (!isOpen && !showForPreview) return null;
 
     const handleShare = async () => {
         if (!imageUrl) return;
@@ -474,23 +476,24 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                 <div
                     style={{
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.75rem',
+                        flexDirection: 'row',
+                        gap: '1rem',
                         width: '100%',
                         alignItems: 'center',
+                        justifyContent: 'center',
                     }}
                 >
                     <button
                         onClick={handleShare}
                         disabled={isSharing}
                         style={{
-                            width: '50%',
-                            padding: '1rem 1.5rem',
+                            width: '45%',
+                            padding: '0.6rem 1rem',
                             backgroundColor: ACCENT,
                             color: '#ffffff',
                             border: 'none',
                             borderRadius: '0.4rem',
-                            fontSize: '1rem',
+                            fontSize: '0.9rem',
                             fontWeight: 700,
                             cursor: 'pointer',
                             transition: 'opacity 0.2s',
@@ -508,13 +511,13 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                     <button
                         onClick={onClose}
                         style={{
-                            width: '50%',
-                            padding: '0.8rem 1.5rem',
+                            width: '45%',
+                            padding: '0.6rem 1rem',
                             backgroundColor: '#f1f5f9',
                             color: '#64748b',
                             border: 'none',
                             borderRadius: '0.4rem',
-                            fontSize: '1rem',
+                            fontSize: '0.9rem',
                             fontWeight: 600,
                             cursor: 'pointer',
                         }}
