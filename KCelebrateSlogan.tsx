@@ -47,8 +47,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     // Create an 8-point text-shadow for a solid border fallback (essential for mobile SVG export)
     // -webkit-text-stroke is drawn centered (half inside, half outside).
     // We limit shadow offset to ~0.7x to closely emulate the outer thickness.
+    // Make sure we only apply this during export to avoid doubling the thickness in the live preview.
     const shadowD = numericStroke * activeScale * 0.7;
-    const fallbackShadow = `
+    const fallbackShadow = exportMode
+        ? `
         -${shadowD}px -${shadowD}px 0 ${strokeColor},
          0px -${shadowD}px 0 ${strokeColor},
          ${shadowD}px -${shadowD}px 0 ${strokeColor},
@@ -57,7 +59,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
          0px ${shadowD}px 0 ${strokeColor},
         -${shadowD}px ${shadowD}px 0 ${strokeColor},
         -${shadowD}px 0px 0 ${strokeColor}
-    `;
+    `
+        : 'none';
 
     return (
         <motion.div
