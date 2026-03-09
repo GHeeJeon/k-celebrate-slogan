@@ -183,9 +183,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     setExportProgress(100);
                     saveAs(blob, filename);
                 } else if (format === 'gif') {
-                    // Smoother and longer GIF: 4s total @ 15fps
+                    // Speed up: 4s total @ 10fps (40 frames instead of 60)
                     const durationMs = 4000;
-                    const fps = 15;
+                    const fps = 10;
                     const msPerFrame = 1000 / fps;
                     const frameCount = cfg.animate ? Math.floor(durationMs / msPerFrame) : 1;
 
@@ -363,7 +363,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         <div
                             ref={exportRef}
                             style={{
-                                padding: '1.5rem',
+                                padding: 0, // Removed 1.5rem padding to avoid blank space outside the border
                                 width: 'max-content',
                                 backgroundColor: '#ffffff',
                             }}
