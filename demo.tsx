@@ -2,13 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import './demo.css';
 import { createRoot } from 'react-dom/client';
 import { Config, DEFAULT_CONFIG, PRESETS } from './demo-components/types';
-import {
-    PresetControls,
-    TextControls,
-    ColorControls,
-    LayoutControls,
-    CompactConfiguration,
-} from './demo-components/ConfigurationControls';
+import { CompactConfiguration } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { Section, CopyBlock } from './demo-components/UI';
 
@@ -33,10 +27,14 @@ function buildUrl(cfg: Config): string {
 const DemoApp: React.FC = () => {
     const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG);
     const [animKey, setAnimKey] = useState(0);
-    const [activeTab, setActiveTab] = useState<'preset' | 'text' | 'colors' | 'layout' | 'share'>(
-        'preset'
-    );
     const sloganRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Handle mobile default scale (0.75) if on a small screen
+        if (window.innerWidth < 900) {
+            setCfg((prev) => ({ ...prev, scale: 0.75 }));
+        }
+    }, []);
 
     const set = useCallback(<K extends keyof Config>(key: K, value: Config[K]) => {
         setCfg((prev) => ({ ...prev, [key]: value }));
@@ -77,16 +75,28 @@ const DemoApp: React.FC = () => {
     );
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div
+            style={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                minWidth: 'fit-content', // This guarantees the container (and its sticky header) expands with horizontally scrolling content
+            }}
+        >
             <header
                 style={{
                     background: 'rgba(255,255,255,0.93)',
                     backdropFilter: 'blur(12px)',
                     borderBottom: '1px solid #e2e8f0',
-                    position: 'sticky',
+                    position: 'sticky', // Sticky is better for horizontal content width synchronization
                     top: 0,
-                    zIndex: 100,
+                    zIndex: 200,
                     padding: '0.45rem 1rem',
+                    width: '100%', // Expand with container
+                    minWidth: '100vw', // Ensure it covers at least the viewport
+                    left: 0,
+                    boxSizing: 'border-box',
                 }}
             >
                 <div className="header-inner" style={{ display: 'flex', alignItems: 'center' }}>
@@ -103,6 +113,9 @@ const DemoApp: React.FC = () => {
                             className="header-link-btn"
                             style={{ background: '#cb3837' }}
                         >
+                            <svg width="14" height="14" viewBox="0 0 576 512" fill="currentColor">
+                                <path d="M288 288h-32v-64h32v64zm288-128v192H288v32H160v-32H0V160h576zm-416 32H32v128h64v-96h32v96h32V192zm160 0H192v160h64v-32h64V192zm224 0H352v128h64v-96h32v96h32v-96h32v96h32V192z"></path>
+                            </svg>
                             NPM
                         </a>
                         <a
@@ -112,49 +125,27 @@ const DemoApp: React.FC = () => {
                             className="header-link-btn"
                             style={{ background: '#24292f' }}
                         >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                            </svg>
                             GitHub
                         </a>
                     </div>
                 </div>
             </header>
 
-            <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem' }}>
+            <main
+                style={{
+                    maxWidth: '1600px',
+                    margin: '0 auto',
+                    padding: '1rem',
+                }}
+            >
                 <div className="demo-layout">
-                    {/* PC View: Left, Mobile View: Bottom (Tab Contents) */}
+                    {/* Unified Configuration Column (PC & Mobile) */}
                     <div className="control-col">
-                        {/* Compact view only for Desktop */}
-                        <div className="desktop-compact">
-                            <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
-                        </div>
-
-                        {/* Mobile Tabs & Content (Hidden on Desktop) */}
-                        <div className="mobile-tabs">
-                            {(['preset', 'text', 'colors', 'layout', 'share'] as const).map((t) => (
-                                <button
-                                    key={t}
-                                    className={`tab-btn ${activeTab === t ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(t)}
-                                >
-                                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className={`tab-content ${activeTab === 'preset' ? 'active' : ''}`}>
-                            <PresetControls cfg={cfg} applyPreset={applyPreset} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'text' ? 'active' : ''}`}>
-                            <TextControls cfg={cfg} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'colors' ? 'active' : ''}`}>
-                            <ColorControls cfg={cfg} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'layout' ? 'active' : ''}`}>
-                            <LayoutControls cfg={cfg} set={set} />
-                        </div>
-                        <div
-                            className={`tab-content mobile-share ${activeTab === 'share' ? 'active' : ''}`}
-                        >
+                        <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
+                        <div className="mobile-only-share" style={{ marginTop: '1.5rem' }}>
                             {shareContent}
                         </div>
                     </div>
@@ -167,9 +158,12 @@ const DemoApp: React.FC = () => {
                                 cfg={cfg}
                                 animKey={animKey}
                                 replayAnim={replayAnim}
+                                set={set}
                             />
                         </div>
-                        <div className="desktop-share">{shareContent}</div>
+                        <div className="desktop-only-share" style={{ marginTop: '1.5rem' }}>
+                            {shareContent}
+                        </div>
                     </div>
                 </div>
             </main>

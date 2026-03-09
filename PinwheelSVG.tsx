@@ -128,9 +128,15 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
             });
     }, [colors]);
 
+    const animationClass = animate
+        ? reverse
+            ? 'k-pinwheel-animated-reverse'
+            : 'k-pinwheel-animated'
+        : '';
+
     return (
         <div
-            className={`k-celebrate-pinwheel ${className || ''}`}
+            className={`k-celebrate-pinwheel ${animationClass} ${className || ''}`}
             data-reverse={reverse ? 'true' : 'false'}
             style={{
                 position: className ? undefined : 'absolute',
@@ -140,19 +146,9 @@ const PinwheelSVG: React.FC<PinwheelProps> = ({
                 left: className ? undefined : 0,
                 width: className ? undefined : '100%',
                 height: className ? undefined : '100%',
-                animation: animate
-                    ? `pinwheel-spin 4s linear infinite ${reverse ? 'reverse' : ''}`
-                    : 'none',
+                // No inline style animation, using class for better capture preservation
             }}
         >
-            <style>
-                {`
-                @keyframes pinwheel-spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                `}
-            </style>
             <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
                 <g transform={flipped ? 'translate(100 0) scale(-1 1)' : ''}>
                     {blades.map(({ i, fill }) => (

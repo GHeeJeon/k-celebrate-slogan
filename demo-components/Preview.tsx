@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import * as htmlToImage from 'html-to-image';
+import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
-import { saveAs } from 'file-saver';
 import { Config, ACCENT, ACCENT_DARK } from './types';
 import { Section } from './UI';
+import { executeDownloadOrShare } from './exportUtils';
 import KCelebrateSlogan from '../KCelebrateSlogan';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
 
@@ -73,13 +74,15 @@ interface Props {
     cfg: Config;
     animKey: number;
     replayAnim: () => void;
+    set: <K extends keyof Config>(key: K, value: Config[K]) => void;
 }
 
 export const Preview = React.forwardRef<HTMLDivElement, Props>(
-    ({ cfg, animKey, replayAnim }, ref) => {
+    ({ cfg, animKey, replayAnim, set }, ref) => {
         const exportRef = React.useRef<HTMLDivElement>(null);
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
+        const [gifFps, setGifFps] = useState<number>(10);
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
             const node = exportRef.current;
@@ -88,12 +91,19 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             setIsExporting(format);
             setExportProgress(0);
 
-            // Wait for React to apply 'isExporting' rules to the DOM (like removing padding and restoring scale: 1)
-            await new Promise((r) => setTimeout(r, 150));
+            // Use requestAnimationFrame to let React apply 'isExporting' to the DOM instead of setTimeout (which kills Share API gesture tokens)
+            await new Promise<void>((r) =>
+                requestAnimationFrame(() => requestAnimationFrame(() => r()))
+            );
+            // Ensure fonts and styles are loaded
+            await document.fonts.ready;
 
             try {
                 const filename = `slogan.${format}`;
-                const filter = (el: HTMLElement) => !el.classList?.contains('no-export');
+                const filter = (el: Node) => {
+                    if (!(el instanceof HTMLElement)) return true;
+                    return !el.classList?.contains('no-export');
+                };
 
                 // Explicitly embed critical fonts to bypass CORS issues with html-to-image scanning stylesheets
                 const joseonPalaceCSS = `
@@ -101,14 +111,19 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         font-family: 'JoseonPalace';
                         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
                         font-weight: normal;
-                        font-display: swap;
+                        font-display: block;
+                    }
+
+                    @keyframes pinwheel-spin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
                     }
                 `;
 
                 let combinedCSS = joseonPalaceCSS;
                 try {
                     const fontRes = await fetch(
-                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap'
+                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=block'
                     );
                     if (fontRes.ok) {
                         combinedCSS += await fontRes.text();
@@ -128,41 +143,47 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 const commonOptions = {
                     backgroundColor: '#ffffff',
                     filter,
-                    pixelRatio: 1.5, // Balance quality and speed
+                    scale: 1.5,
+                    pixelRatio: 1.5, // modern-screenshot uses 'scale', html-to-image uses 'pixelRatio'
                     fontEmbedCSS: embeddedCSS,
+                    skipFonts: true,
                     width,
                     height,
                     style: { margin: '0' },
                 };
 
-                // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
-                // This prevents FOUT (Flash of Unstyled Text) across all export formats, not just GIF.
-                await htmlToImage.toCanvas(node, { ...commonOptions, pixelRatio: 1 });
+                // Dummy render to ensure fonts and styles are fully loaded
+                await domToCanvas(node, { ...commonOptions, scale: 1 });
+                // Another non-gestural-killing tick
+                await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
-                // Wait an extra tick to ensure the browser has fully processed the injected CSS from the dummy render
-                await new Promise((r) => setTimeout(r, 50));
+                // Handle saving with new utility
+                const handleSave = async (
+                    data: string | Blob | Uint8Array | ArrayBuffer,
+                    mimeType: string
+                ) => {
+                    await executeDownloadOrShare(data, filename, mimeType);
+                };
 
                 if (format === 'jpg') {
                     setExportProgress(30);
-                    const dataUrl = await htmlToImage.toJpeg(node, {
+                    const dataUrl = await domToJpeg(node, {
                         ...commonOptions,
                         quality: 0.95,
                     });
                     setExportProgress(100);
-                    saveAs(dataUrl, filename);
+                    await handleSave(dataUrl, 'image/jpeg');
                 } else if (format === 'png') {
                     setExportProgress(30);
-                    const dataUrl = await htmlToImage.toPng(node, commonOptions);
+                    const dataUrl = await domToPng(node, commonOptions);
                     setExportProgress(100);
-                    saveAs(dataUrl, filename);
+                    await handleSave(dataUrl, 'image/png');
                 } else if (format === 'svg') {
                     setExportProgress(50);
                     const dataUrl = await htmlToImage.toSvg(node, commonOptions);
 
-                    // Decode the URI component to handle Korean/UTF-8 characters properly
                     let svgData = decodeURIComponent(dataUrl.split(',')[1]);
 
-                    // QuickLook/Finder on macOS requires the XML UTF-8 declaration to not break Korean characters
                     if (!svgData.startsWith('<?xml')) {
                         svgData = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgData;
                     }
@@ -170,11 +191,12 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
 
                     setExportProgress(100);
+                    // Standard download for SVG regardless of OS (Share usually fails this)
+                    const { saveAs } = await import('file-saver');
                     saveAs(blob, filename);
                 } else if (format === 'gif') {
-                    // Smoother and longer GIF: 4s total @ 15fps
                     const durationMs = 4000;
-                    const fps = 15;
+                    const fps = gifFps;
                     const msPerFrame = 1000 / fps;
                     const frameCount = cfg.animate ? Math.floor(durationMs / msPerFrame) : 1;
 
@@ -183,30 +205,28 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     let height = 0;
 
                     // Lower pixel ratio for faster GIF encoding
-                    const gifOptions = { ...commonOptions, pixelRatio: 1 };
+                    const gifOptions = { ...commonOptions, scale: 1 };
 
-                    // Find pinwheels to manually rotate them since html-to-image freezes CSS animations on clone
+                    // Find pinwheels to manually rotate them
                     const pinwheels = node.querySelectorAll(
                         '.k-celebrate-pinwheel'
                     ) as NodeListOf<HTMLElement>;
 
-                    // Backup original animations before overriding them for manual frame advancing
-                    const originalAnims: string[] = [];
-                    pinwheels.forEach((pw) => {
-                        originalAnims.push(pw.style.animation);
-                    });
-
                     for (let i = 0; i < frameCount; i++) {
                         const progress = i / frameCount;
-                        const degrees = cfg.animate ? progress * 360 : 0; // Fix Issue 2: respect animate off
+                        const degrees = cfg.animate ? progress * 360 : 0;
 
                         pinwheels.forEach((pw) => {
                             const isReverse = pw.getAttribute('data-reverse') === 'true';
-                            pw.style.animation = 'none'; // Disable CSS
+                            // Remove classes to ensure CSS transition/animation doesn't override manual transform
+                            pw.classList.remove(
+                                'k-pinwheel-animated',
+                                'k-pinwheel-animated-reverse'
+                            );
                             pw.style.transform = `rotate(${isReverse ? -degrees : degrees}deg)`;
                         });
 
-                        const canvas = await htmlToImage.toCanvas(node, gifOptions);
+                        const canvas = await domToCanvas(node, gifOptions);
                         if (i === 0) {
                             width = canvas.width;
                             height = canvas.height;
@@ -214,13 +234,19 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         framesData.push({ data: canvas, delay: msPerFrame });
                         setExportProgress(Math.floor((i / frameCount) * 85));
 
-                        // Small wait to unblock UI thread occasionally
-                        if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10));
+                        // Yield thread purely with RequestAnimationFrame instead of setTimeout to attempt preserving user activation token
+                        if (i % 5 === 0)
+                            await new Promise<void>((r) => requestAnimationFrame(() => r()));
                     }
 
-                    // Restore pinwheels
-                    pinwheels.forEach((pw, idx) => {
-                        pw.style.animation = originalAnims[idx] || '';
+                    // Restore pinwheels for potential subsequent exports or if node reused
+                    pinwheels.forEach((pw) => {
+                        const isReverse = pw.getAttribute('data-reverse') === 'true';
+                        if (cfg.animate) {
+                            pw.classList.add(
+                                isReverse ? 'k-pinwheel-animated-reverse' : 'k-pinwheel-animated'
+                            );
+                        }
                         pw.style.transform = '';
                     });
 
@@ -231,8 +257,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             height,
                             frames: framesData,
                         });
-                        const blob = new Blob([buffer], { type: 'image/gif' });
-                        saveAs(blob, filename);
+                        await handleSave(buffer, 'image/gif');
                     }
                     setExportProgress(100);
                 }
@@ -249,7 +274,39 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             <Section
                 title="👁️ Preview"
                 id="preview"
-                style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+                headerExtra={
+                    <label
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            cursor: 'pointer',
+                            padding: '0.3rem 0.6rem',
+                            background: '#f1f5f9',
+                            borderRadius: '2rem',
+                            fontSize: '0.68rem',
+                            fontWeight: 600,
+                            userSelect: 'none',
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={cfg.animate}
+                            onChange={(e) => set('animate', e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ color: cfg.animate ? ACCENT : '#64748b' }}>
+                            Animation {cfg.animate ? 'ON' : 'OFF'}
+                        </span>
+                    </label>
+                }
+                style={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: 0, // Prevents flex container from expanding past viewport
+                    maxWidth: '100%',
+                }}
             >
                 <div
                     style={{
@@ -258,12 +315,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         borderRadius: '0.75rem',
                         padding: '2rem 1rem',
                         position: 'relative',
-                        overflowX: 'auto',
+                        overflowX: 'auto', // Triggers local scrollbar
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         minHeight: '220px',
+                        width: '100%', // Prevents inner content from pushing parent
                     }}
                 >
                     <div
@@ -277,6 +335,53 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             borderRadius: '0.75rem',
                         }}
                     />
+
+                    {isExporting && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                background: 'rgba(255,255,255,0.85)',
+                                backdropFilter: 'blur(4px)',
+                                zIndex: 100,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '0.75rem',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    border: `3px solid ${ACCENT}22`,
+                                    borderTop: `3px solid ${ACCENT}`,
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite',
+                                    marginBottom: '1rem',
+                                }}
+                            />
+                            <style>{`
+                                @keyframes spin {
+                                    from { transform: rotate(0deg); }
+                                    to { transform: rotate(360deg); }
+                                }
+                            `}</style>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: ACCENT }}>
+                                Exporting {isExporting.toUpperCase()}...
+                            </span>
+                            <span
+                                style={{
+                                    fontSize: '0.75rem',
+                                    color: '#64748b',
+                                    marginTop: '0.25rem',
+                                }}
+                            >
+                                {exportProgress}%
+                            </span>
+                        </div>
+                    )}
 
                     {/* Slogan Container (Display - Normal View) */}
                     <div
@@ -324,7 +429,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         <div
                             ref={exportRef}
                             style={{
-                                padding: '1.5rem',
+                                padding: 0, // Removed 1.5rem padding to avoid blank space outside the border
                                 width: 'max-content',
                                 backgroundColor: '#ffffff',
                             }}
@@ -427,44 +532,71 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     }}
                 >
                     {(['jpg', 'png', 'svg', 'gif'] as const).map((fmt) => (
-                        <button
+                        <div
                             key={fmt}
-                            onClick={() => handleExport(fmt)}
-                            disabled={isExporting !== null}
-                            className="export-btn"
-                            style={{
-                                padding: '0.4rem 0.6rem',
-                                background: isExporting === fmt ? '#f1f5f9' : '#fff',
-                                color: isExporting === fmt ? '#94a3b8' : ACCENT,
-                                border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
-                                borderRadius: '0.4rem',
-                                fontSize: '0.68rem',
-                                fontWeight: 600,
-                                cursor: isExporting !== null ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.15s ease',
-                                fontFamily: 'inherit',
-                                textTransform: 'uppercase',
-                                minWidth: '70px',
-                                flexShrink: 0,
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isExporting) {
-                                    e.currentTarget.style.background = ACCENT;
-                                    e.currentTarget.style.color = '#fff';
-                                    e.currentTarget.style.borderColor = ACCENT;
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isExporting) {
-                                    e.currentTarget.style.background = '#fff';
-                                    e.currentTarget.style.color = ACCENT;
-                                    e.currentTarget.style.borderColor = ACCENT + '44';
-                                }
-                            }}
+                            style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
                         >
-                            {isExporting === fmt ? '...' : `Save ${fmt}`}
-                        </button>
+                            <button
+                                onClick={() => handleExport(fmt)}
+                                disabled={isExporting !== null}
+                                className="export-btn"
+                                style={{
+                                    padding: '0.4rem 0.6rem',
+                                    background: isExporting === fmt ? '#f1f5f9' : '#fff',
+                                    color: isExporting === fmt ? '#94a3b8' : ACCENT,
+                                    border: `1px solid ${isExporting === fmt ? '#e2e8f0' : ACCENT + '44'}`,
+                                    borderRadius: '0.4rem',
+                                    fontSize: '0.68rem',
+                                    fontWeight: 600,
+                                    cursor: isExporting !== null ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.15s ease',
+                                    fontFamily: 'inherit',
+                                    textTransform: 'uppercase',
+                                    minWidth: '70px',
+                                    flexShrink: 0,
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isExporting) {
+                                        e.currentTarget.style.background = ACCENT;
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.borderColor = ACCENT;
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isExporting) {
+                                        e.currentTarget.style.background = '#fff';
+                                        e.currentTarget.style.color = ACCENT;
+                                        e.currentTarget.style.borderColor = ACCENT + '44';
+                                    }
+                                }}
+                            >
+                                {isExporting === fmt ? '...' : `Save ${fmt}`}
+                            </button>
+                            {fmt === 'gif' && (
+                                <select
+                                    value={gifFps}
+                                    onChange={(e) => setGifFps(Number(e.target.value))}
+                                    disabled={isExporting !== null}
+                                    style={{
+                                        fontSize: '0.6rem',
+                                        padding: '0.1rem',
+                                        borderRadius: '0.2rem',
+                                        border: '1px solid #e2e8f0',
+                                        color: '#64748b',
+                                        background: '#fff',
+                                        cursor: 'pointer',
+                                    }}
+                                    title="GIF FPS"
+                                >
+                                    {[20, 15, 10, 5].map((fps) => (
+                                        <option key={fps} value={fps}>
+                                            {fps} FPS
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </div>
                     ))}
                 </div>
             </Section>

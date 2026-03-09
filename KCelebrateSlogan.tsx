@@ -84,7 +84,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-family: 'JoseonPalace';
                     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
                     font-weight: normal;
-                    font-display: swap;
+                    font-display: ${exportMode ? 'block' : 'swap'};
                 }
 
                 .k-celebrate-slogan-container {
@@ -151,6 +151,18 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-weight: 600;
                     white-space: nowrap;
                 }
+
+                @keyframes pinwheel-spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                .k-pinwheel-animated {
+                    animation: pinwheel-spin 4s linear infinite !important;
+                }
+                .k-pinwheel-animated-reverse {
+                    animation: pinwheel-spin 4s linear infinite reverse !important;
+                }
                 `}
             </style>
 
@@ -165,8 +177,9 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         alignItems: 'stretch',
                         justifyContent: 'space-between',
                         gap: 'var(--main-gap)',
-                        boxShadow:
-                            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        boxShadow: exportMode
+                            ? 'none'
+                            : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                         userSelect: 'none',
                         borderRadius: '0.125rem',
                         minHeight: 'calc(140px * var(--active-scale))',

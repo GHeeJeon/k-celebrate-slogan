@@ -270,7 +270,8 @@ export const Section: React.FC<{
     children: React.ReactNode;
     id?: string;
     style?: React.CSSProperties;
-}> = ({ title, children, id, style }) => (
+    headerExtra?: React.ReactNode;
+}> = ({ title, children, id, style, headerExtra }) => (
     <section
         id={id}
         style={{
@@ -282,21 +283,125 @@ export const Section: React.FC<{
             ...style,
         }}
     >
-        <h2
+        <div
             style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: ACCENT,
-                marginBottom: '1.25rem',
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                gap: '0.5rem',
+                marginBottom: '1.25rem',
             }}
         >
-            {title}
-        </h2>
+            <h2
+                style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: ACCENT,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    margin: 0,
+                }}
+            >
+                {title}
+            </h2>
+            {headerExtra}
+        </div>
         {children}
     </section>
 );
+
+export interface LongPressModalProps {
+    isOpen: boolean;
+    imageUrl: string;
+    onClose: () => void;
+}
+
+export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div
+            style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                backdropFilter: 'blur(5px)',
+                WebkitBackdropFilter: 'blur(5px)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1.5rem',
+            }}
+            onClick={onClose}
+        >
+            <div
+                style={{
+                    backgroundColor: '#ffffff',
+                    padding: '1rem',
+                    borderRadius: '1rem',
+                    maxWidth: '100%',
+                    boxShadow:
+                        '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '1rem',
+                }}
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inner modal box
+            >
+                <div style={{ textAlign: 'center' }}>
+                    <p style={{ margin: 0, fontWeight: 700, color: '#0f172a', fontSize: '1.1rem' }}>
+                        이미지 저장하기
+                    </p>
+                    <p style={{ margin: '0.4rem 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                        아래 이미지를 <strong>길게 눌러</strong> 갤러리/사진 앱에 저장하세요.
+                    </p>
+                </div>
+
+                <div
+                    style={{
+                        position: 'relative',
+                        borderRadius: '0.5rem',
+                        overflow: 'hidden',
+                        border: '1px solid #e2e8f0',
+                        backgroundColor: '#f8fafc',
+                    }}
+                >
+                    <img
+                        src={imageUrl}
+                        alt="Generated Slogan"
+                        style={{
+                            maxWidth: '100%',
+                            maxHeight: '60vh',
+                            display: 'block',
+                            WebkitTouchCallout: 'default', // Extremely important for iOS Safari menu
+                            userSelect: 'none',
+                        }}
+                    />
+                </div>
+
+                <button
+                    onClick={onClose}
+                    style={{
+                        padding: '0.6rem 1.5rem',
+                        backgroundColor: '#f1f5f9',
+                        color: '#334155',
+                        border: 'none',
+                        borderRadius: '2rem',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        marginTop: '0.5rem',
+                        width: '100%',
+                    }}
+                >
+                    닫기
+                </button>
+            </div>
+        </div>
+    );
+};
