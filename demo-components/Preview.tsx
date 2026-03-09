@@ -3,7 +3,7 @@ import * as htmlToImage from 'html-to-image';
 import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
 import { Config, ACCENT, ACCENT_DARK } from './types';
-import { Section } from './UI';
+import { Section, LongPressModal } from './UI';
 import { executeDownloadOrShare } from './exportUtils';
 import KCelebrateSlogan from '../KCelebrateSlogan';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
@@ -83,6 +83,18 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
         const [gifFps, setGifFps] = useState<number>(10);
+        const [fallbackModalUrl, setFallbackModalUrl] = useState<string | null>(null);
+
+        const handleSave = async (
+            data: string | Blob | Uint8Array | ArrayBuffer,
+            filename: string,
+            mime: string
+        ) => {
+            const res = await executeDownloadOrShare(data, filename, mime);
+            if (res.requiresFallback && res.fallbackUrl) {
+                setFallbackModalUrl(res.fallbackUrl);
+            }
+        };
 
         const handleExport = async (format: 'jpg' | 'png' | 'svg' | 'gif') => {
             const node = exportRef.current;
@@ -157,14 +169,6 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 // Another non-gestural-killing tick
                 await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
-                // Handle saving with new utility
-                const handleSave = async (
-                    data: string | Blob | Uint8Array | ArrayBuffer,
-                    mimeType: string
-                ) => {
-                    await executeDownloadOrShare(data, filename, mimeType);
-                };
-
                 if (format === 'jpg') {
                     setExportProgress(30);
                     const dataUrl = await domToJpeg(node, {
@@ -172,12 +176,12 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         quality: 0.95,
                     });
                     setExportProgress(100);
-                    await handleSave(dataUrl, 'image/jpeg');
+                    await handleSave(dataUrl, 'slogan.jpg', 'image/jpeg');
                 } else if (format === 'png') {
                     setExportProgress(30);
                     const dataUrl = await domToPng(node, commonOptions);
                     setExportProgress(100);
-                    await handleSave(dataUrl, 'image/png');
+                    await handleSave(dataUrl, 'slogan.png', 'image/png');
                 } else if (format === 'svg') {
                     setExportProgress(50);
                     const dataUrl = await htmlToImage.toSvg(node, commonOptions);
@@ -257,7 +261,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             height,
                             frames: framesData,
                         });
-                        await handleSave(buffer, 'image/gif');
+                        await handleSave(buffer, 'slogan.gif', 'image/gif');
                     }
                     setExportProgress(100);
                 }
@@ -334,6 +338,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             pointerEvents: 'none',
                             borderRadius: '0.75rem',
                         }}
+                    />
+
+                    {/* Mobile Fallback Modal for Image Saving */}
+                    <LongPressModal
+                        isOpen={!!fallbackModalUrl}
+                        imageUrl={fallbackModalUrl || ''}
+                        onClose={() => setFallbackModalUrl(null)}
                     />
 
                     {isExporting && (
