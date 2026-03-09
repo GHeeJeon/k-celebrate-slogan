@@ -227,23 +227,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         charFontSize="var(--char-size)"
                         activeScale={activeScale}
                     />
-
-                    {/* Texture Overlay */}
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            left: 0,
-                            opacity: 0.04,
-                            pointerEvents: 'none',
-                            mixBlendMode: 'multiply',
-                            borderRadius: '0.125rem',
-                            backgroundImage:
-                                'url("https://www.transparenttextures.com/patterns/paper-fibers.png")',
-                        }}
-                    />
                 </div>
             </div>
         </motion.div>
