@@ -94,7 +94,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontFamily: '"Nanum Myeongjo", serif',
-                            fontWeight: 800,
+                            fontWeight: 900,
                             fontSize: charFontSize,
                             WebkitTextStroke: `${Math.max(0.6, 1.2 * activeScale)}px #000`,
                             textShadow:

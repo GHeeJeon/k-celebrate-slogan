@@ -96,8 +96,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-size: var(--fs-1);
                     color: var(--text1-color);
                     font-family: "Nanum Myeongjo", serif;
-                    font-weight: 800;
-                    text-shadow: ${0.5 * activeScale}px ${0.5 * activeScale}px 0px rgba(0,0,0,0.1);
+                    font-weight: 900;
+                    text-shadow: ${Math.max(0.3, 0.5 * activeScale)}px ${Math.max(0.3, 0.5 * activeScale)}px 0px rgba(0,0,0,0.1);
                     display: inline-block;
                     transform: scaleX(1.2);
                     white-space: nowrap;
