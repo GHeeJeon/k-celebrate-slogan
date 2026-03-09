@@ -81,7 +81,7 @@ const DemoApp: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                minWidth: 'fit-content', // This guarantees the container (and its sticky header) expands with horizontally scrolling content
+                overflowX: 'hidden', // Restricts layout stretching, forcing horizontal scroll strictly within the Preview block
             }}
         >
             <header

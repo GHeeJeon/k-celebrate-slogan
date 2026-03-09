@@ -218,7 +218,7 @@ input[type='range'] {
 
     .demo-layout {
         display: grid !important;
-        grid-template-columns: 340px 1fr;
+        grid-template-columns: 340px minmax(0, 1fr);
         gap: 1.5rem;
         align-items: flex-start;
     }
