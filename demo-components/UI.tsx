@@ -359,7 +359,7 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                 position: 'fixed',
                 inset: 0,
                 zIndex: 9999,
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                backgroundColor: 'rgba(0, 0, 0, 0.25)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
                 display: 'flex',
@@ -372,10 +372,10 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
             <div
                 style={{
                     backgroundColor: '#ffffff',
-                    padding: '1.5rem',
+                    padding: '2rem',
                     borderRadius: '1.5rem',
-                    width: '90%',
-                    maxWidth: '420px',
+                    width: '80%',
+                    maxWidth: '800px',
                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                     display: 'flex',
                     flexDirection: 'column',
@@ -390,17 +390,17 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                             margin: 0,
                             fontWeight: 800,
                             color: '#0f172a',
-                            fontSize: '1.25rem',
+                            fontSize: '2rem',
                         }}
                     >
                         🎉 Success!
                     </p>
                     <p
                         style={{
-                            margin: '0.5rem 0 0',
+                            margin: '0.75rem 0 0',
                             color: '#475569',
-                            fontSize: '0.9rem',
-                            lineHeight: 1.5,
+                            fontSize: '1.5rem',
+                            lineHeight: 1.6,
                         }}
                     >
                         Tap <strong>Save</strong> or <strong>Long Press</strong> the image
@@ -424,7 +424,7 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                         alt="Generated Slogan"
                         style={{
                             width: '100%',
-                            maxHeight: '50vh',
+                            maxHeight: '65vh',
                             display: 'block',
                             WebkitTouchCallout: 'default',
                             userSelect: 'none',
@@ -438,18 +438,20 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                         flexDirection: 'column',
                         gap: '0.75rem',
                         width: '100%',
+                        alignItems: 'center',
                     }}
                 >
                     <button
                         onClick={handleShare}
                         disabled={isSharing}
                         style={{
-                            padding: '0.8rem 1.5rem',
+                            width: '50%',
+                            padding: '1rem 1.5rem',
                             backgroundColor: ACCENT,
                             color: '#ffffff',
                             border: 'none',
-                            borderRadius: '2rem',
-                            fontSize: '0.95rem',
+                            borderRadius: '0.4rem',
+                            fontSize: '1.5rem',
                             fontWeight: 700,
                             cursor: 'pointer',
                             transition: 'opacity 0.2s',
@@ -467,12 +469,13 @@ export const LongPressModal: React.FC<LongPressModalProps> = ({ isOpen, imageUrl
                     <button
                         onClick={onClose}
                         style={{
-                            padding: '0.7rem 1.5rem',
+                            width: '50%',
+                            padding: '0.8rem 1.5rem',
                             backgroundColor: '#f1f5f9',
                             color: '#64748b',
                             border: 'none',
-                            borderRadius: '2rem',
-                            fontSize: '0.9rem',
+                            borderRadius: '0.4rem',
+                            fontSize: '1.5rem',
                             fontWeight: 600,
                             cursor: 'pointer',
                         }}

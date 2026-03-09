@@ -72,7 +72,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   text-size-adjust: none;
                   --active-scale: ${activeScale};
                   --emblem-size: calc(13rem * ${emblemScale} * var(--active-scale));
-                  --char-size: calc(var(--emblem-size) * 0.35);
+                  --char-size: calc(var(--emblem-size) * 0.3);
                   --fs-1: calc(3rem * var(--active-scale));
                   --fs-2: calc(3.75rem * var(--active-scale));
                   --fs-3: calc(1.25rem * var(--active-scale));
