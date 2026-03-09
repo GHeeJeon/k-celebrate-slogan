@@ -73,14 +73,16 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         width: '55%',
                         height: '55%',
                         backgroundColor: '#E11D48',
-                        borderRadius: '50%', // 50% is more stable for canvas rendering than 9999px
+                        borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10,
                         border: `${3 * activeScale}px solid rgba(255,255,255,0.9)`,
-                        // Remove complex inset shadows that cause black stains on mobile canvas
-                        boxShadow: `0 ${2 * activeScale}px 0 rgba(0,0,0,0.12)`,
+                        // box-shadow often fails on mobile canvas (black squares).
+                        // We use a multi-point text-shadow/filter drop-shadow alternative or simplify it.
+                        // Here we use a standard drop-shadow filter which is more robust in modern-screenshot
+                        filter: `drop-shadow(0 ${2 * activeScale}px ${1 * activeScale}px rgba(0,0,0,0.15))`,
                     }}
                 >
                     {/* Use a div instead of a span to remove the baseline alignment space of inline elements */}
@@ -94,7 +96,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                             fontFamily: '"Nanum Myeongjo", serif',
                             fontWeight: 900,
                             fontSize: charFontSize,
-                            WebkitTextStroke: `${0.5 * activeScale}px #000`, // Better browser fallback
+                            WebkitTextStroke: `${0.5 * activeScale}px #000`,
                             textShadow:
                                 `-${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +
                                 `${1 * activeScale}px -${1 * activeScale}px 0 #000, ` +

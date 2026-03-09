@@ -2,13 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import './demo.css';
 import { createRoot } from 'react-dom/client';
 import { Config, DEFAULT_CONFIG, PRESETS } from './demo-components/types';
-import {
-    PresetControls,
-    TextControls,
-    ColorControls,
-    LayoutControls,
-    CompactConfiguration,
-} from './demo-components/ConfigurationControls';
+import { CompactConfiguration } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { Section, CopyBlock } from './demo-components/UI';
 
@@ -33,9 +27,6 @@ function buildUrl(cfg: Config): string {
 const DemoApp: React.FC = () => {
     const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG);
     const [animKey, setAnimKey] = useState(0);
-    const [activeTab, setActiveTab] = useState<'preset' | 'text' | 'colors' | 'layout' | 'share'>(
-        'preset'
-    );
     const sloganRef = useRef<HTMLDivElement>(null);
 
     const set = useCallback(<K extends keyof Config>(key: K, value: Config[K]) => {
@@ -120,43 +111,11 @@ const DemoApp: React.FC = () => {
 
             <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '1rem' }}>
                 <div className="demo-layout">
-                    {/* PC View: Left, Mobile View: Bottom (Tab Contents) */}
+                    {/* Unified Configuration Column (PC & Mobile) */}
                     <div className="control-col">
-                        {/* Compact view only for Desktop */}
-                        <div className="desktop-compact">
-                            <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
-                        </div>
+                        <CompactConfiguration cfg={cfg} set={set} applyPreset={applyPreset} />
 
-                        {/* Mobile Tabs & Content (Hidden on Desktop) */}
-                        <div className="mobile-tabs">
-                            {(['preset', 'text', 'colors', 'layout', 'share'] as const).map((t) => (
-                                <button
-                                    key={t}
-                                    className={`tab-btn ${activeTab === t ? 'active' : ''}`}
-                                    onClick={() => setActiveTab(t)}
-                                >
-                                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className={`tab-content ${activeTab === 'preset' ? 'active' : ''}`}>
-                            <PresetControls cfg={cfg} applyPreset={applyPreset} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'text' ? 'active' : ''}`}>
-                            <TextControls cfg={cfg} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'colors' ? 'active' : ''}`}>
-                            <ColorControls cfg={cfg} set={set} />
-                        </div>
-                        <div className={`tab-content ${activeTab === 'layout' ? 'active' : ''}`}>
-                            <LayoutControls cfg={cfg} set={set} />
-                        </div>
-                        <div
-                            className={`tab-content mobile-share ${activeTab === 'share' ? 'active' : ''}`}
-                        >
-                            {shareContent}
-                        </div>
+                        <div className="share-section-wrapper">{shareContent}</div>
                     </div>
 
                     {/* PC View: Right, Mobile View: Top (Sticky Preview) */}
@@ -170,7 +129,6 @@ const DemoApp: React.FC = () => {
                                 set={set}
                             />
                         </div>
-                        <div className="desktop-share">{shareContent}</div>
                     </div>
                 </div>
             </main>
