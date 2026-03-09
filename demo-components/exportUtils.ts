@@ -136,11 +136,47 @@ export const exportAnimatedSvg = async (
             'JoseonPalace'
         );
 
-        // 5. [Crucial] Convert HTML to XML-compatible format
+        // 5. [Crucial] Inline Google Fonts (Nanum Myeongjo, Outfit)
+        // SVGs often block external network requests, so we must Base64 these as well.
+        const inlineGoogleFonts = async (googleFontsUrl: string) => {
+            try {
+                const response = await fetch(googleFontsUrl, {
+                    headers: {
+                        // Using a specific User-Agent to ensure we get a consistent format (woff)
+                        'User-Agent':
+                            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+                    },
+                });
+                let cssText = await response.text();
+                const fontUrls = cssText.match(/url\([^)]+\)/g) || [];
+
+                for (const urlMatch of fontUrls) {
+                    const url = urlMatch.replace(/url\(["']?([^"']+)["']?\)/, '$1');
+                    const fontRes = await fetch(url);
+                    const fontBlob = await fontRes.blob();
+                    const reader = new FileReader();
+                    const base64 = await new Promise<string>((resolve) => {
+                        reader.onloadend = () => resolve(reader.result as string);
+                        reader.readAsDataURL(fontBlob);
+                    });
+                    cssText = cssText.replace(url, base64);
+                }
+                return cssText;
+            } catch (err) {
+                console.error('Google Fonts inlining failed:', err);
+                return `@import url('${googleFontsUrl}');`; // Fallback
+            }
+        };
+
+        const googleFontsCss = await inlineGoogleFonts(
+            'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800;900&family=Outfit:wght@100..900&display=swap'
+        );
+
+        // 6. [Crucial] Convert HTML to XML-compatible format
         const serializer = new XMLSerializer();
         const xhtmlContent = serializer.serializeToString(clone);
 
-        // 6. [Crucial] Construct SVG String using CDATA for styles
+        // 7. [Crucial] Construct SVG String using CDATA for styles
         const svgString = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <foreignObject width="100%" height="100%">
@@ -148,10 +184,7 @@ export const exportAnimatedSvg = async (
             <style type="text/css">
             /* <![CDATA[ */
                 ${joseonBase64}
-                
-                /* Standard Google Fonts (External) */
-                @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&display=swap');
-                
+                ${googleFontsCss}
                 ${cssRules}
                 
                 /* Layout Fixes for SVG Context */
