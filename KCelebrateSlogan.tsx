@@ -109,15 +109,18 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     text-align: center;
                     font-size: var(--fs-2);
                     color: var(--text2-color);
-                    font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
+                    fill: var(--text2-color); /* Explicit fill for SVG/CSS stroke properties */
                     font-weight: 400;
-                    /* Using SVG properties within CSS for perfect rendering in ForeignObject & Browsers */
+                    
+                    /* Main stroke logic for both preview and export */
+                    -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
+                    
+                    /* Standard SVG/CSS properties for browsers that support paint-order (prevents eating into text) */
                     stroke: var(--stroke-color);
                     stroke-width: var(--stroke-width);
-                    /* paint-order puts the stroke BEHIND the fill, preventing the 'eating away' look */
+                    fill: var(--text2-color);
                     paint-order: stroke fill;
-                    /* Fallback for older browsers or non-SVG contexts */
-                    -webkit-text-stroke: 0; 
+                    
                     white-space: nowrap;
                     letter-spacing: 0.3em;
                     text-rendering: optimizeLegibility;
