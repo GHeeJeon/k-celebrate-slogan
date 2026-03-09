@@ -64,7 +64,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-family: 'JoseonPalace';
                     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
                     font-weight: normal;
-                    font-display: swap;
+                    font-display: ${exportMode ? 'block' : 'swap'};
                 }
 
                 .k-celebrate-slogan-container {

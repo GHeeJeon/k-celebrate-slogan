@@ -101,14 +101,14 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         font-family: 'JoseonPalace';
                         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
                         font-weight: normal;
-                        font-display: swap;
+                        font-display: block;
                     }
                 `;
 
                 let combinedCSS = joseonPalaceCSS;
                 try {
                     const fontRes = await fetch(
-                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap'
+                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=block'
                     );
                     if (fontRes.ok) {
                         combinedCSS += await fontRes.text();
@@ -130,6 +130,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     filter,
                     pixelRatio: 1.5, // Balance quality and speed
                     fontEmbedCSS: embeddedCSS,
+                    skipFonts: true, // Bypass async stylesheet iterations, we manually injected robust CSS
                     width,
                     height,
                     style: { margin: '0' },
@@ -313,6 +314,9 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             position: 'absolute',
                             top: 0,
                             left: 0,
+                            width: 0,
+                            height: 0,
+                            overflow: 'hidden',
                             opacity: 0.001,
                             zIndex: -1,
                             pointerEvents: 'none',
