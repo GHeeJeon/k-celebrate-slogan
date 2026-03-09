@@ -105,24 +105,10 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
 
                 .text2-style {
                     margin: 0;
-                    line-height: 1.25;
-                    text-align: center;
-                    font-size: var(--fs-2);
-                    color: var(--text2-color);
-                    fill: var(--text2-color); /* Explicit fill for SVG/CSS stroke properties */
-                    font-weight: 400;
-                    
-                    /* Main stroke logic for both preview and export */
-                    -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
-                    
-                    /* Standard SVG/CSS properties for browsers that support paint-order (prevents eating into text) */
-                    stroke: var(--stroke-color);
-                    stroke-width: var(--stroke-width);
-                    fill: var(--text2-color);
-                    paint-order: stroke fill;
-                    
+                    /* Base properties for the SVG container */
+                    width: 100%;
+                    overflow: visible;
                     white-space: nowrap;
-                    letter-spacing: 0.3em;
                     text-rendering: optimizeLegibility;
                     -webkit-font-smoothing: antialiased;
                     -moz-osx-font-smoothing: grayscale;
@@ -183,10 +169,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         activeScale={activeScale}
                     />
 
-                    {/* Main Text Area:
-                        minWidth: max-content ensures this column is always AT LEAST
-                        as wide as the longest text line. Since the outer div is
-                        width: fit-content, the whole card stretches automatically. */}
                     <div
                         style={{
                             flex: '1 1 0%',
@@ -203,7 +185,38 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         }}
                     >
                         <span className="text1-style">{text1}</span>
-                        <h1 className="text2-style">{text2}</h1>
+
+                        {/* Main Text Area using Inline SVG for perfect Stroke support */}
+                        <svg
+                            className="text2-style"
+                            style={{
+                                width: '100%',
+                                height: 'var(--fs-2)',
+                                overflow: 'visible',
+                                filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.1))',
+                            }}
+                        >
+                            <text
+                                x="50%"
+                                y="50%"
+                                dominantBaseline="central"
+                                textAnchor="middle"
+                                style={{
+                                    fill: 'var(--text2-color)',
+                                    stroke: 'var(--stroke-color)',
+                                    strokeWidth: 'var(--stroke-width)',
+                                    paintOrder: 'stroke fill',
+                                    fontFamily:
+                                        "'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif",
+                                    fontSize: 'var(--fs-2)',
+                                    fontWeight: 400,
+                                    letterSpacing: '0.3em',
+                                }}
+                            >
+                                {text2}
+                            </text>
+                        </svg>
+
                         <span className="text3-style">ㅡ {text3} ㅡ</span>
                     </div>
 
