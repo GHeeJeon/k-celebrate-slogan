@@ -111,8 +111,6 @@ export const exportAnimatedSvg = async (
         }
 
         // 4. Inline Web Fonts (Base64 encoding for reliability in SVG)
-        // For Google Fonts (Nanum Myeongjo, Outfit), we ideally fetch their WOFF2,
-        // but for now we focus on the most critical custom font: JoseonPalace.
         const embedFont = async (url: string, name: string) => {
             try {
                 const res = await fetch(url);
@@ -138,31 +136,35 @@ export const exportAnimatedSvg = async (
             'JoseonPalace'
         );
 
-        // 5. Construct SVG String
+        // 5. [Crucial] Convert HTML to XML-compatible format
+        const serializer = new XMLSerializer();
+        const xhtmlContent = serializer.serializeToString(clone);
+
+        // 6. [Crucial] Construct SVG String using CDATA for styles
         const svgString = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;">
-            <style>
-                /* Embedded Font */
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; margin: 0; padding: 0;">
+            <style type="text/css">
+            /* <![CDATA[ */
                 ${joseonBase64}
                 
                 /* Standard Google Fonts (External) */
-                /* Escaped & to &amp; for XML parsing compatibility */
-                @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;family=Outfit:wght@100..900&amp;display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&display=swap');
                 
                 ${cssRules}
                 
                 /* Layout Fixes for SVG Context */
                 .k-celebrate-slogan-container { width: 100% !important; height: 100% !important; margin: 0 !important; }
                 .k-celebrate-slogan-container > div { border: none !important; box-shadow: none !important; }
+            /* ]]> */
             </style>
-            ${clone.outerHTML}
+            ${xhtmlContent}
         </div>
     </foreignObject>
 </svg>`.trim();
 
-        // 6. Create Blob and Download
+        // 7. Create Blob and Download
         const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         return await executeDownloadOrShare(blob, filename, 'image/svg+xml');
     } catch (err) {
