@@ -270,7 +270,8 @@ export const Section: React.FC<{
     children: React.ReactNode;
     id?: string;
     style?: React.CSSProperties;
-}> = ({ title, children, id, style }) => (
+    headerExtra?: React.ReactNode;
+}> = ({ title, children, id, style, headerExtra }) => (
     <section
         id={id}
         style={{
@@ -282,21 +283,31 @@ export const Section: React.FC<{
             ...style,
         }}
     >
-        <h2
+        <div
             style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: ACCENT,
-                marginBottom: '1.25rem',
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                gap: '0.5rem',
+                marginBottom: '1.25rem',
             }}
         >
-            {title}
-        </h2>
+            <h2
+                style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: ACCENT,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    margin: 0,
+                }}
+            >
+                {title}
+            </h2>
+            {headerExtra}
+        </div>
         {children}
     </section>
 );

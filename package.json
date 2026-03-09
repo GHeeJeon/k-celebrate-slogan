@@ -71,6 +71,7 @@
     "dependencies": {
         "file-saver": "^2.0.5",
         "html-to-image": "^1.11.13",
-        "modern-gif": "^2.0.4"
+        "modern-gif": "^2.0.4",
+        "modern-screenshot": "^4.6.8"
     }
 }

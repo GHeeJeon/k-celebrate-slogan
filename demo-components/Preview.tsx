@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as htmlToImage from 'html-to-image';
+import { domToCanvas, domToJpeg, domToPng } from 'modern-screenshot';
 import { encode } from 'modern-gif';
 import { saveAs } from 'file-saver';
 import { Config, ACCENT, ACCENT_DARK } from './types';
@@ -73,10 +74,11 @@ interface Props {
     cfg: Config;
     animKey: number;
     replayAnim: () => void;
+    set: <K extends keyof Config>(key: K, value: Config[K]) => void;
 }
 
 export const Preview = React.forwardRef<HTMLDivElement, Props>(
-    ({ cfg, animKey, replayAnim }, ref) => {
+    ({ cfg, animKey, replayAnim, set }, ref) => {
         const exportRef = React.useRef<HTMLDivElement>(null);
         const [isExporting, setIsExporting] = useState<string | null>(null);
         const [exportProgress, setExportProgress] = useState<number>(0);
@@ -93,7 +95,10 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
 
             try {
                 const filename = `slogan.${format}`;
-                const filter = (el: HTMLElement) => !el.classList?.contains('no-export');
+                const filter = (el: Node) => {
+                    if (!(el instanceof HTMLElement)) return true;
+                    return !el.classList?.contains('no-export');
+                };
 
                 // Explicitly embed critical fonts to bypass CORS issues with html-to-image scanning stylesheets
                 const joseonPalaceCSS = `
@@ -102,6 +107,11 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
                         font-weight: normal;
                         font-display: block;
+                    }
+
+                    @keyframes pinwheel-spin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
                     }
                 `;
 
@@ -128,24 +138,24 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 const commonOptions = {
                     backgroundColor: '#ffffff',
                     filter,
-                    pixelRatio: 1.5, // Balance quality and speed
+                    scale: 1.5,
+                    pixelRatio: 1.5, // modern-screenshot uses 'scale', html-to-image uses 'pixelRatio'
                     fontEmbedCSS: embeddedCSS,
-                    skipFonts: true, // Bypass async stylesheet iterations, we manually injected robust CSS
+                    skipFonts: true,
                     width,
                     height,
                     style: { margin: '0' },
                 };
 
-                // Dummy render to ensure fonts and styles are fully loaded and cached in html-to-image
-                // This prevents FOUT (Flash of Unstyled Text) across all export formats, not just GIF.
-                await htmlToImage.toCanvas(node, { ...commonOptions, pixelRatio: 1 });
+                // Dummy render to ensure fonts and styles are fully loaded
+                await domToCanvas(node, { ...commonOptions, scale: 1 });
 
                 // Wait an extra tick to ensure the browser has fully processed the injected CSS from the dummy render
                 await new Promise((r) => setTimeout(r, 50));
 
                 if (format === 'jpg') {
                     setExportProgress(30);
-                    const dataUrl = await htmlToImage.toJpeg(node, {
+                    const dataUrl = await domToJpeg(node, {
                         ...commonOptions,
                         quality: 0.95,
                     });
@@ -153,7 +163,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     saveAs(dataUrl, filename);
                 } else if (format === 'png') {
                     setExportProgress(30);
-                    const dataUrl = await htmlToImage.toPng(node, commonOptions);
+                    const dataUrl = await domToPng(node, commonOptions);
                     setExportProgress(100);
                     saveAs(dataUrl, filename);
                 } else if (format === 'svg') {
@@ -184,30 +194,28 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     let height = 0;
 
                     // Lower pixel ratio for faster GIF encoding
-                    const gifOptions = { ...commonOptions, pixelRatio: 1 };
+                    const gifOptions = { ...commonOptions, scale: 1 };
 
-                    // Find pinwheels to manually rotate them since html-to-image freezes CSS animations on clone
+                    // Find pinwheels to manually rotate them
                     const pinwheels = node.querySelectorAll(
                         '.k-celebrate-pinwheel'
                     ) as NodeListOf<HTMLElement>;
 
-                    // Backup original animations before overriding them for manual frame advancing
-                    const originalAnims: string[] = [];
-                    pinwheels.forEach((pw) => {
-                        originalAnims.push(pw.style.animation);
-                    });
-
                     for (let i = 0; i < frameCount; i++) {
                         const progress = i / frameCount;
-                        const degrees = cfg.animate ? progress * 360 : 0; // Fix Issue 2: respect animate off
+                        const degrees = cfg.animate ? progress * 360 : 0;
 
                         pinwheels.forEach((pw) => {
                             const isReverse = pw.getAttribute('data-reverse') === 'true';
-                            pw.style.animation = 'none'; // Disable CSS
+                            // Remove classes to ensure CSS transition/animation doesn't override manual transform
+                            pw.classList.remove(
+                                'k-pinwheel-animated',
+                                'k-pinwheel-animated-reverse'
+                            );
                             pw.style.transform = `rotate(${isReverse ? -degrees : degrees}deg)`;
                         });
 
-                        const canvas = await htmlToImage.toCanvas(node, gifOptions);
+                        const canvas = await domToCanvas(node, gifOptions);
                         if (i === 0) {
                             width = canvas.width;
                             height = canvas.height;
@@ -215,13 +223,17 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         framesData.push({ data: canvas, delay: msPerFrame });
                         setExportProgress(Math.floor((i / frameCount) * 85));
 
-                        // Small wait to unblock UI thread occasionally
                         if (i % 5 === 0) await new Promise((r) => setTimeout(r, 10));
                     }
 
-                    // Restore pinwheels
-                    pinwheels.forEach((pw, idx) => {
-                        pw.style.animation = originalAnims[idx] || '';
+                    // Restore pinwheels for potential subsequent exports or if node reused
+                    pinwheels.forEach((pw) => {
+                        const isReverse = pw.getAttribute('data-reverse') === 'true';
+                        if (cfg.animate) {
+                            pw.classList.add(
+                                isReverse ? 'k-pinwheel-animated-reverse' : 'k-pinwheel-animated'
+                            );
+                        }
                         pw.style.transform = '';
                     });
 
@@ -250,6 +262,32 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             <Section
                 title="👁️ Preview"
                 id="preview"
+                headerExtra={
+                    <label
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            cursor: 'pointer',
+                            padding: '0.3rem 0.6rem',
+                            background: '#f1f5f9',
+                            borderRadius: '2rem',
+                            fontSize: '0.68rem',
+                            fontWeight: 600,
+                            userSelect: 'none',
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={cfg.animate}
+                            onChange={(e) => set('animate', e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ color: cfg.animate ? ACCENT : '#64748b' }}>
+                            Animation {cfg.animate ? 'ON' : 'OFF'}
+                        </span>
+                    </label>
+                }
                 style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
             >
                 <div

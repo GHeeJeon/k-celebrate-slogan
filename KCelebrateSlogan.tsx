@@ -128,6 +128,18 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-weight: 600;
                     white-space: nowrap;
                 }
+
+                @keyframes pinwheel-spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                .k-pinwheel-animated {
+                    animation: pinwheel-spin 4s linear infinite !important;
+                }
+                .k-pinwheel-animated-reverse {
+                    animation: pinwheel-spin 4s linear infinite reverse !important;
+                }
                 `}
             </style>
 

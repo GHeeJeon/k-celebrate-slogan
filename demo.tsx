@@ -167,6 +167,7 @@ const DemoApp: React.FC = () => {
                                 cfg={cfg}
                                 animKey={animKey}
                                 replayAnim={replayAnim}
+                                set={set}
                             />
                         </div>
                         <div className="desktop-share">{shareContent}</div>
