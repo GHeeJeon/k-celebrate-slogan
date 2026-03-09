@@ -42,7 +42,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     }, [scale]);
 
     const activeScale = exportMode ? scale : autoScale;
-    const numericStroke = parseInt(text2StrokeWidth.replace(/[^0-9]/g, '')) || 3;
+    const numericStroke = parseFloat(text2StrokeWidth.replace(/[^0-9.]/g, '')) || 3;
 
     return (
         <motion.div
@@ -111,7 +111,13 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     color: var(--text2-color);
                     font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
                     font-weight: 400;
-                    -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
+                    /* Using SVG properties within CSS for perfect rendering in ForeignObject & Browsers */
+                    stroke: var(--stroke-color);
+                    stroke-width: var(--stroke-width);
+                    /* paint-order puts the stroke BEHIND the fill, preventing the 'eating away' look */
+                    paint-order: stroke fill;
+                    /* Fallback for older browsers or non-SVG contexts */
+                    -webkit-text-stroke: 0; 
                     white-space: nowrap;
                     letter-spacing: 0.3em;
                     text-rendering: optimizeLegibility;

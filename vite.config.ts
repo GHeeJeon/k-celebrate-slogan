@@ -64,6 +64,7 @@ export default defineConfig(({ mode: _mode }) => {
                 input: {
                     main: 'index.html',
                     svgPreview: 'svg-preview.html',
+                    compare: 'compare.html',
                 },
             },
         },

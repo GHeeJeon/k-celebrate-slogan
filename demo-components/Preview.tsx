@@ -196,20 +196,25 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                     await handleSave(dataUrl, 'slogan.png', 'image/png');
                 } else if (format === 'svg') {
                     setExportProgress(50);
-                    const dataUrl = await htmlToImage.toSvg(node, commonOptions);
+                    const { exportAnimatedSvg } = await import('./exportUtils');
+                    const firstSlogan = node.querySelector(
+                        '.k-celebrate-slogan-container'
+                    ) as HTMLElement;
 
-                    let svgData = decodeURIComponent(dataUrl.split(',')[1]);
-
-                    if (!svgData.startsWith('<?xml')) {
-                        svgData = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgData;
+                    if (firstSlogan) {
+                        await exportAnimatedSvg(firstSlogan, filename);
+                    } else {
+                        // Fallback to htmlToImage if complex selector fails
+                        const dataUrl = await htmlToImage.toSvg(node, commonOptions);
+                        let svgData = decodeURIComponent(dataUrl.split(',')[1]);
+                        if (!svgData.startsWith('<?xml')) {
+                            svgData = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgData;
+                        }
+                        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                        const { saveAs } = await import('file-saver');
+                        saveAs(blob, filename);
                     }
-
-                    const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-
                     setExportProgress(100);
-                    // Standard download for SVG regardless of OS (Share usually fails this)
-                    const { saveAs } = await import('file-saver');
-                    saveAs(blob, filename);
                 } else if (format === 'gif') {
                     const durationMs = 4000;
                     const fps = gifFps;
