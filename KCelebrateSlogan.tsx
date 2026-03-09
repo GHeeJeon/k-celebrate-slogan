@@ -44,6 +44,21 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     const activeScale = exportMode ? scale : autoScale;
     const numericStroke = parseInt(text2StrokeWidth.replace(/[^0-9]/g, '')) || 3;
 
+    // Create an 8-point text-shadow for a solid border fallback (essential for mobile SVG export)
+    // -webkit-text-stroke is drawn centered (half inside, half outside).
+    // We limit shadow offset to ~0.7x to closely emulate the outer thickness.
+    const shadowD = numericStroke * activeScale * 0.7;
+    const fallbackShadow = `
+        -${shadowD}px -${shadowD}px 0 ${strokeColor},
+         0px -${shadowD}px 0 ${strokeColor},
+         ${shadowD}px -${shadowD}px 0 ${strokeColor},
+         ${shadowD}px 0px 0 ${strokeColor},
+         ${shadowD}px ${shadowD}px 0 ${strokeColor},
+         0px ${shadowD}px 0 ${strokeColor},
+        -${shadowD}px ${shadowD}px 0 ${strokeColor},
+        -${shadowD}px 0px 0 ${strokeColor}
+    `;
+
     return (
         <motion.div
             initial={animate ? { y: -50, opacity: 0 } : { y: 0, opacity: 1 }}
@@ -82,6 +97,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                   --text3-color: ${text3Color};
                   --stroke-color: ${strokeColor};
                   --stroke-width: ${numericStroke * activeScale}px;
+                  --fallback-shadow: ${fallbackShadow};
                   
                   --main-gap: calc(1.5rem * var(--active-scale));
                   --padding-tb: calc(0.5rem * var(--active-scale));
@@ -111,6 +127,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                     font-family: 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif;
                     font-weight: 400;
                     -webkit-text-stroke: var(--stroke-width) var(--stroke-color);
+                    text-shadow: var(--fallback-shadow);
                     white-space: nowrap;
                     letter-spacing: 0.3em;
                     text-rendering: optimizeLegibility;

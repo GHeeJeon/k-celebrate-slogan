@@ -88,6 +88,10 @@ input[type='range'] {
     gap: 0.35rem;
     margin-left: auto;
     flex-shrink: 0;
+    position: sticky;
+    right: 1rem;
+    z-index: 10;
+    /* Ensure it floats above the title if they overlap on very small screens */
 }
 
 .header-link-btn {
