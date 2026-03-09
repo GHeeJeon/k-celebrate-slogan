@@ -154,8 +154,9 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         alignItems: 'stretch',
                         justifyContent: 'space-between',
                         gap: 'var(--main-gap)',
-                        boxShadow:
-                            '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        boxShadow: exportMode
+                            ? 'none'
+                            : '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                         userSelect: 'none',
                         borderRadius: '0.125rem',
                         minHeight: 'calc(140px * var(--active-scale))',
