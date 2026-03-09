@@ -78,7 +78,7 @@ const EmblemSection: React.FC<EmblemSectionProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10,
-                        border: `${5 * activeScale}px solid rgba(255,255,255,0.9)`,
+                        border: `${Math.max(2, 5 * activeScale)}px solid rgba(255,255,255,0.9)`,
                         // box-shadow often fails on mobile canvas (black squares).
                         // We use a multi-point text-shadow/filter drop-shadow alternative or simplify it.
                         // Here we use a standard drop-shadow filter which is more robust in modern-screenshot
