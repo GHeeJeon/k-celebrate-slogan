@@ -1,21 +1,21 @@
-## 브랜치 유형
+## Branch Type
 
-- [ ] `feat/lib/*` — 라이브러리 기능 추가 (minor 버전 업 필요)
-- [ ] `fix/lib/*` — 라이브러리 버그 수정 (patch 버전 업 필요)
-- [ ] `demo/*` — 데모 페이지 변경 (버전 업 없음)
-- [ ] `chore/*` — 설정·문서·의존성 변경 (버전 업 없음)
+- [ ] `feat/lib/*` — Library feature addition (Requires minor version bump)
+- [ ] `fix/lib/*` — Library bug fix (Requires patch version bump)
+- [ ] `demo/*` — Demo page changes (No version bump)
+- [ ] `chore/*` — Configuration, documentation, or dependency changes (No version bump)
 
-## 변경 내용
+## Changes
 
-<!-- 무엇을 왜 변경했는지 간략히 설명해주세요 -->
+<!-- Briefly explain what was changed and why -->
 
-## 체크리스트
+## Checklist
 
-**라이브러리 변경 시**
+**For Library Changes**
 
-- [ ] `package.json` 버전을 올렸다
-- [ ] 테스트 통과 (`npm run test`)
+- [ ] Updated `package.json` version
+- [ ] Passed tests (`npm run test`)
 
-**데모/기타 변경 시**
+**For Demo or Other Changes**
 
-- [ ] `package.json` 버전을 변경하지 않았다
+- [ ] Did not change `package.json` version
