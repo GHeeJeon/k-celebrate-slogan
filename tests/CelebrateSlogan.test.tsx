@@ -8,7 +8,7 @@ describe('CelebrateSlogan', () => {
     it('renders default texts correctly', () => {
         render(<KCelebrateSlogan />);
         expect(screen.getByText('축하합니다')).toBeInTheDocument();
-        expect(screen.getByText('김준호')).toBeInTheDocument();
+        expect(screen.getAllByText('김준호')).toHaveLength(2);
         expect(screen.getByText('ㅡ 아무 이유 없음 ㅡ')).toBeInTheDocument();
         expect(screen.getByText('경')).toBeInTheDocument();
         expect(screen.getByText('축')).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('CelebrateSlogan', () => {
             <KCelebrateSlogan text1="Happy Anniversary" text2="Company Launch" text3="10th Year" />
         );
         expect(screen.getByText('Happy Anniversary')).toBeInTheDocument();
-        expect(screen.getByText('Company Launch')).toBeInTheDocument();
+        expect(screen.getAllByText('Company Launch')).toHaveLength(2);
         expect(screen.getByText('ㅡ 10th Year ㅡ')).toBeInTheDocument();
     });
 
