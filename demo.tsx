@@ -5,6 +5,7 @@ import { Config, DEFAULT_CONFIG, PRESETS } from './demo-components/types';
 import { CompactConfiguration } from './demo-components/ConfigurationControls';
 import { Preview } from './demo-components/Preview';
 import { Section, CopyBlock } from './demo-components/UI';
+import { KCelebrateSlogan } from './index';
 
 function buildUrl(cfg: Config): string {
     const base = 'https://k-celebrate-slogan.vercel.app/api';
