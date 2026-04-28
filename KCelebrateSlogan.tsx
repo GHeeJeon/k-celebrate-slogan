@@ -235,6 +235,9 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                 justifyContent: 'center',
                                 zIndex: 10,
                                 minWidth: 'max-content',
+                                paddingTop: 'calc(0.5rem * var(--active-scale))',
+                                paddingBottom: 'calc(0.5rem * var(--active-scale))',
+                                gap: 'calc(0.5rem * var(--active-scale))',
                             }}
                         >
                             <div

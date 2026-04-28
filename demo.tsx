@@ -21,6 +21,13 @@ function buildUrl(cfg: Config): string {
         scale: String(cfg.scale),
         emblemScale: String(cfg.emblemScale),
         theme: cfg.pinwheelTheme,
+        char1: cfg.char1,
+        char2: cfg.char2,
+        backgroundColor: cfg.backgroundColor,
+        borderColor: cfg.borderColor,
+        borderWidth: cfg.borderWidth,
+        borderRadius: cfg.borderRadius,
+        interactive: String(cfg.interactive),
     });
     return `${base}?${params.toString()}`;
 }

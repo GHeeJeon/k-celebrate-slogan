@@ -440,6 +440,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             emblemScale={cfg.emblemScale}
                             animate={cfg.animate}
                             pinwheelColors={getPinwheelColors(cfg.pinwheelTheme)}
+                            char1={cfg.char1}
+                            char2={cfg.char2}
+                            backgroundColor={cfg.backgroundColor}
+                            borderColor={cfg.borderColor}
+                            borderWidth={cfg.borderWidth}
+                            borderRadius={cfg.borderRadius}
+                            interactive={cfg.interactive}
                             exportMode={false} // NEVER export mode on the display version
                         />
                     </div>
@@ -479,6 +486,13 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                                 emblemScale={cfg.emblemScale}
                                 animate={cfg.animate} // Pinwheel spins via CSS!
                                 pinwheelColors={getPinwheelColors(cfg.pinwheelTheme)}
+                                char1={cfg.char1}
+                                char2={cfg.char2}
+                                backgroundColor={cfg.backgroundColor}
+                                borderColor={cfg.borderColor}
+                                borderWidth={cfg.borderWidth}
+                                borderRadius={cfg.borderRadius}
+                                // Don't pass interactive to export version
                                 exportMode={true} // Forces exact scale proportions
                             />
                         </div>
