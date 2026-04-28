@@ -14,6 +14,13 @@ export interface Config {
     emblemScale: number;
     animate: boolean;
     pinwheelTheme: 'default' | 'pastel' | 'neon';
+    char1: string;
+    char2: string;
+    backgroundColor: string;
+    borderColor: string;
+    borderWidth: string;
+    borderRadius: string;
+    interactive: boolean;
 }
 
 export const PRESETS: Record<string, Partial<Config>> = {
@@ -27,6 +34,13 @@ export const PRESETS: Record<string, Partial<Config>> = {
         text2StrokeColor: '#222222',
         text2StrokeWidth: '3px',
         pinwheelTheme: 'default',
+        char1: '경',
+        char2: '축',
+        backgroundColor: '#ffffff',
+        borderColor: '#f3f4f6',
+        borderWidth: '2px',
+        borderRadius: '0.125rem',
+        interactive: false,
     },
     pastel: {
         text1: 'Happy Birthday',
@@ -38,6 +52,13 @@ export const PRESETS: Record<string, Partial<Config>> = {
         text2StrokeColor: '#4ECDC4',
         text2StrokeWidth: '3px',
         pinwheelTheme: 'pastel',
+        char1: 'H',
+        char2: 'B',
+        backgroundColor: '#f0fdfa',
+        borderColor: '#ccfbf1',
+        borderWidth: '2px',
+        borderRadius: '1rem',
+        interactive: false,
     },
     neon: {
         text1: 'GRAND OPENING',
@@ -49,6 +70,13 @@ export const PRESETS: Record<string, Partial<Config>> = {
         text2StrokeColor: '#00FFFF',
         text2StrokeWidth: '2px',
         pinwheelTheme: 'neon',
+        char1: '★',
+        char2: '★',
+        backgroundColor: '#0f172a',
+        borderColor: '#FF00FF',
+        borderWidth: '3px',
+        borderRadius: '0.5rem',
+        interactive: false,
     },
 };
 

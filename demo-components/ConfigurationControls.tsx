@@ -41,6 +41,26 @@ const PresetContent: React.FC<
 
 const TextContent: React.FC<BaseProps> = ({ cfg, set }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div>
+                <Label htmlFor="char1">Left Char</Label>
+                <TextInput
+                    id="char1"
+                    value={cfg.char1}
+                    onChange={(v) => set('char1', v.slice(0, 2))}
+                    placeholder="경"
+                />
+            </div>
+            <div>
+                <Label htmlFor="char2">Right Char</Label>
+                <TextInput
+                    id="char2"
+                    value={cfg.char2}
+                    onChange={(v) => set('char2', v.slice(0, 2))}
+                    placeholder="축"
+                />
+            </div>
+        </div>
         <div>
             <Label htmlFor="text1">Top Text (text1)</Label>
             <TextInput
@@ -101,40 +121,134 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
             onChange={(v) => set('text2StrokeColor', v)}
             fallbackValue={DEFAULT_CONFIG.text2StrokeColor}
         />
+        <ColorRow
+            id="backgroundColor"
+            label="Background"
+            value={cfg.backgroundColor}
+            onChange={(v) => set('backgroundColor', v)}
+            fallbackValue={DEFAULT_CONFIG.backgroundColor}
+        />
+        <ColorRow
+            id="borderColor"
+            label="Border Color"
+            value={cfg.borderColor}
+            onChange={(v) => set('borderColor', v)}
+            fallbackValue={DEFAULT_CONFIG.borderColor}
+        />
     </div>
 );
 
-const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        <SliderRow
-            id="strokeWidth"
-            label="Stroke Width (px)"
-            value={parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0}
-            min={0}
-            max={10}
-            step={0.1}
-            onChange={(v) => set('text2StrokeWidth', `${v}px`)}
-        />
-        <SliderRow
-            id="scale"
-            label="Scale"
-            value={cfg.scale}
-            min={0.3}
-            max={2}
-            step={0.05}
-            onChange={(v) => set('scale', v)}
-        />
-        <SliderRow
-            id="emblemScale"
-            label="Emblem Scale"
-            value={cfg.emblemScale}
-            min={0.3}
-            max={1.5}
-            step={0.05}
-            onChange={(v) => set('emblemScale', v)}
-        />
-    </div>
-);
+const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <span
+                    style={{
+                        fontSize: '0.6rem',
+                        color: '#94a3b8',
+                        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
+                        display: 'inline-block',
+                    }}
+                >
+                    ▶
+                </span>
+                <span
+                    style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        color: '#64748b',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                    }}
+                >
+                    Layout Settings
+                </span>
+            </div>
+
+            {isOpen && (
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.6rem',
+                        marginTop: '0.2rem',
+                    }}
+                >
+                    <SliderRow
+                        id="strokeWidth"
+                        label="Stroke Width (px)"
+                        value={parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0}
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        onChange={(v) => set('text2StrokeWidth', `${v}px`)}
+                    />
+                    <SliderRow
+                        id="scale"
+                        label="Scale"
+                        value={cfg.scale}
+                        min={0.3}
+                        max={2}
+                        step={0.05}
+                        onChange={(v) => set('scale', v)}
+                    />
+                    <SliderRow
+                        id="emblemScale"
+                        label="Emblem Scale"
+                        value={cfg.emblemScale}
+                        min={0.3}
+                        max={1.5}
+                        step={0.05}
+                        onChange={(v) => set('emblemScale', v)}
+                    />
+                    <SliderRow
+                        id="borderWidth"
+                        label="Border Width (px)"
+                        value={parseFloat(cfg.borderWidth.replace(/[^0-9.]/g, '')) || 0}
+                        min={0}
+                        max={20}
+                        step={1}
+                        onChange={(v) => set('borderWidth', `${v}px`)}
+                    />
+                    <SliderRow
+                        id="borderRadius"
+                        label="Border Radius (rem)"
+                        value={parseFloat(cfg.borderRadius.replace(/[^0-9.]/g, '')) || 0}
+                        min={0}
+                        max={3}
+                        step={0.125}
+                        onChange={(v) => set('borderRadius', `${v}rem`)}
+                    />
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            marginTop: '0.5rem',
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            id="interactive"
+                            checked={cfg.interactive}
+                            onChange={(e) => set('interactive', e.target.checked)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <Label htmlFor="interactive" style={{ marginBottom: 0, cursor: 'pointer' }}>
+                            Interactive Mode (Enable Clicks)
+                        </Label>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 // ── Exported Components ────────────────────────────────────────────────────
 
