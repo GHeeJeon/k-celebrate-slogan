@@ -24,16 +24,13 @@ describe('CelebrateSlogan', () => {
     });
 
     it('applies custom text colors', () => {
-        render(<KCelebrateSlogan text1Color="#ff0000" text2Color="#00ff00" text3Color="#0000ff" />);
-
-        const text1 = screen.getByText('축하합니다');
-        expect(text1).toHaveStyle({ color: '#ff0000' });
-
-        const text2 = screen.getByText('김준호');
-        expect(text2).toHaveStyle({ color: '#00ff00' });
-
-        const text3 = screen.getByText('ㅡ 아무 이유 없음 ㅡ');
-        expect(text3).toHaveStyle({ color: '#0000ff' });
+        const { container } = render(
+            <KCelebrateSlogan text1Color="#ff0000" text2Color="#00ff00" text3Color="#0000ff" />
+        );
+        const styleTag = container.querySelector('style');
+        expect(styleTag?.textContent).toContain('--text1-color: #ff0000');
+        expect(styleTag?.textContent).toContain('--text2-color: #00ff00');
+        expect(styleTag?.textContent).toContain('--text3-color: #0000ff');
     });
 
     it('renders without crashing even with custom themes', () => {
@@ -44,7 +41,9 @@ describe('CelebrateSlogan', () => {
 
     it('renders without animation when animate prop is false', () => {
         const { container } = render(<KCelebrateSlogan animate={false} />);
-        const nonAnimatedDivs = container.querySelectorAll('div[style*="animation: none"]');
-        expect(nonAnimatedDivs.length).toBeGreaterThanOrEqual(2);
+        const animatedElements = container.querySelectorAll(
+            '.k-pinwheel-animated, .k-pinwheel-animated-reverse'
+        );
+        expect(animatedElements.length).toBe(0);
     });
 });

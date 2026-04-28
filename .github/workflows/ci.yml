@@ -1,0 +1,81 @@
+name: CI
+
+on:
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    ci:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.x'
+
+            - name: Install Dependencies
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Test
+              run: npm run test
+
+            - name: Build
+              run: npm run build
+
+    check-version-bump:
+        runs-on: ubuntu-latest
+        if: startsWith(github.head_ref, 'feat/lib/') || startsWith(github.head_ref, 'fix/lib/')
+
+        steps:
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+
+            - name: Checkout main branch
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+                  path: main-branch
+
+            - name: Verify version was bumped
+              run: |
+                  PR_VERSION=$(node -p "require('./package.json').version")
+                  MAIN_VERSION=$(node -p "require('./main-branch/package.json').version")
+                  echo "main: $MAIN_VERSION → PR: $PR_VERSION"
+                  if [ "$PR_VERSION" = "$MAIN_VERSION" ]; then
+                    echo "❌ feat/lib/* 또는 fix/lib/* 브랜치는 package.json 버전을 올려야 합니다."
+                    exit 1
+                  fi
+                  echo "✅ 버전이 올바르게 변경되었습니다."
+
+    check-no-version-bump:
+        runs-on: ubuntu-latest
+        if: startsWith(github.head_ref, 'demo/') || startsWith(github.head_ref, 'chore/')
+
+        steps:
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+
+            - name: Checkout main branch
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+                  path: main-branch
+
+            - name: Verify version was NOT bumped
+              run: |
+                  PR_VERSION=$(node -p "require('./package.json').version")
+                  MAIN_VERSION=$(node -p "require('./main-branch/package.json').version")
+                  echo "main: $MAIN_VERSION, PR: $PR_VERSION"
+                  if [ "$PR_VERSION" != "$MAIN_VERSION" ]; then
+                    echo "❌ demo/* 또는 chore/* 브랜치는 package.json 버전을 변경하면 안 됩니다."
+                    exit 1
+                  fi
+                  echo "✅ 버전이 올바르게 유지되었습니다."
