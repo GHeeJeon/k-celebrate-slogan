@@ -1,4 +1,5 @@
 import React from 'react';
+import type { CSSProperties } from 'react';
 import type { KCelebrateSloganProps } from '../types';
 
 interface CoachellaLayoutProps extends KCelebrateSloganProps {
@@ -8,24 +9,129 @@ interface CoachellaLayoutProps extends KCelebrateSloganProps {
 const NUM_LAYERS = 5;
 const TEXT1_BOTTOM_BRIGHT_HOLD = '75%';
 const TEXT2_TOP_BRIGHT_HOLD = '65%';
+const CARD_BACKGROUND_COLOR = '#160505';
+const CARD_SHADOW = '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)';
+const TEXT_FACE_GOLD = '#E8B55D';
+const TEXT_FACE_STRIPE = '#EA9527';
+const TEXT_FACE_DARK = '#5A2000';
+const DEPTH_TEXT_COLOR = '#EFE7D5';
+const TEXT_STROKE_COLOR = '#FFFFF8';
+const TEXT_GLITTER_OPACITY = 0.9;
+const TEXT_GLITTER_TEXTURE_URL = "url('/textures/text_texture_optimized.webp')";
+const BACKGROUND_BOKEH_TEXTURE_URL = "url('/textures/background_texture_optimized.webp')";
+const FACE_STRIPE_TEXTURE = `repeating-linear-gradient(90deg,
+    ${TEXT_FACE_GOLD} 0px, ${TEXT_FACE_GOLD} 1px,
+    ${TEXT_FACE_STRIPE} 1px, ${TEXT_FACE_STRIPE} 2px)`;
+const TEXT_LINE_STYLE: CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    zIndex: 20,
+};
+const CHARACTER_WRAPPER_STYLE: CSSProperties = {
+    position: 'relative',
+    display: 'inline-block',
+};
+const SPACE_STYLE: CSSProperties = {
+    display: 'inline-block',
+    width: '0.25em',
+};
 
-// Precomputed per-layer props (d=1: shallowest extrusion, d=NUM_LAYERS: deepest)
-const DEPTH_LAYERS = Array.from({ length: NUM_LAYERS }, (_, i) => {
-    const d = i + 1;
-    const t = d / NUM_LAYERS; // 0 → 1 (front → back)
-    return {
-        d,
-        // Color: match the current gold face color uniformly through the depth layers.
-        r: 232,
-        g: 181,
-        b: 93,
-        opacity: 1,
-        // No blur so all layers look identical and crisp
-        blur: 0,
-        // z-index: deepest = lowest (1), shallowest back layer = highest (NUM_LAYERS)
-        zIndex: NUM_LAYERS - d + 1,
-    };
+const getSeededValue = (seed: number, min: number, max: number): number => {
+    const raw = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+    const normalized = raw - Math.floor(raw);
+    return min + normalized * (max - min);
+};
+
+const buildFaceGradient = (isText1: boolean): string =>
+    isText1
+        ? `linear-gradient(to bottom, ${TEXT_FACE_DARK} 0%, ${TEXT_FACE_GOLD} ${TEXT1_BOTTOM_BRIGHT_HOLD}, ${TEXT_FACE_GOLD} 100%)`
+        : `linear-gradient(to bottom, ${TEXT_FACE_GOLD} 0%, ${TEXT_FACE_GOLD} ${TEXT2_TOP_BRIGHT_HOLD}, ${TEXT_FACE_DARK} 100%)`;
+
+const buildTextFaceStyle = (isText1: boolean, strokeWidth: string): CSSProperties => ({
+    position: 'relative',
+    zIndex: NUM_LAYERS + 1,
+    display: 'inline-block',
+    backgroundImage: [FACE_STRIPE_TEXTURE, buildFaceGradient(isText1)].join(', '),
+    backgroundBlendMode: 'soft-light, normal',
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+    color: 'transparent',
+    WebkitTextFillColor: 'transparent',
+    WebkitTextStroke: `${strokeWidth} ${TEXT_STROKE_COLOR}`,
 });
+
+const buildDepthTextureStyle = (charIndex: number, activeScale: number): CSSProperties => {
+    const seedBase = charIndex * 19 + NUM_LAYERS * 23 + 101;
+    const textureWidth = Math.round(
+        Math.max(156, 210 * activeScale + getSeededValue(seedBase + 1, -12, 14))
+    );
+    const textureOffsetX = Math.round(getSeededValue(seedBase + 2, 0, textureWidth - 1));
+    const textureOffsetY = Math.round(getSeededValue(seedBase + 3, 0, textureWidth * 1.25));
+
+    return {
+        backgroundImage: [
+            TEXT_GLITTER_TEXTURE_URL,
+            `linear-gradient(to bottom, ${DEPTH_TEXT_COLOR} 0%, #FFF6E9 100%)`,
+        ].join(', '),
+        backgroundSize: [`${textureWidth}px auto`, '100% 100%'].join(', '),
+        backgroundPosition: [`${textureOffsetX}px ${textureOffsetY}px`, '0 0'].join(', '),
+        backgroundRepeat: 'repeat, no-repeat',
+        backgroundBlendMode: 'screen, normal',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
+        color: 'transparent',
+        WebkitTextFillColor: 'transparent',
+        opacity: 1,
+        filter: 'brightness(1.02) contrast(1.08) saturate(0.96)',
+    };
+};
+
+const buildTextGlitterStyle = (
+    isText1: boolean,
+    charIndex: number,
+    activeScale: number,
+    exportMode?: boolean
+): CSSProperties => {
+    const seedBase = charIndex * 17 + (isText1 ? 11 : 29);
+    const textureWidth = Math.round(
+        Math.max(168, 235 * activeScale + getSeededValue(seedBase + 1, -16, 18))
+    );
+    const textureOffsetX = Math.round(getSeededValue(seedBase + 2, 0, textureWidth - 1));
+    const textureOffsetY = Math.round(getSeededValue(seedBase + 3, 0, textureWidth * 1.35));
+    const twinkleDuration = getSeededValue(seedBase + 4, 3.8, 6.4).toFixed(2);
+    const twinkleDelay = `-${getSeededValue(seedBase + 5, 0.4, 4.2).toFixed(2)}s`;
+    const highlightMask = isText1
+        ? 'linear-gradient(to bottom, rgba(255,255,255,0.01) 0%, rgba(255,242,191,0.12) 36%, rgba(255,249,225,0.34) 100%)'
+        : 'linear-gradient(to bottom, rgba(255,249,225,0.36) 0%, rgba(255,242,191,0.14) 42%, rgba(255,255,255,0.01) 100%)';
+
+    return {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: NUM_LAYERS + 2,
+        display: 'inline-block',
+        pointerEvents: 'none',
+        userSelect: 'none',
+        opacity: TEXT_GLITTER_OPACITY,
+        backgroundImage: [highlightMask, TEXT_GLITTER_TEXTURE_URL].join(', '),
+        backgroundSize: [`100% 100%`, `${textureWidth}px auto`].join(', '),
+        backgroundPosition: ['0 0', `${textureOffsetX}px ${textureOffsetY}px`].join(', '),
+        backgroundRepeat: 'no-repeat, repeat',
+        backgroundBlendMode: 'screen, normal',
+        WebkitBackgroundClip: 'text',
+        backgroundClip: 'text',
+        color: 'transparent',
+        WebkitTextFillColor: 'transparent',
+        mixBlendMode: 'screen',
+        filter: 'brightness(1.04) contrast(1.34) saturate(1.18)',
+        animation: exportMode
+            ? undefined
+            : `coachella-text-glitter-twinkle ${twinkleDuration}s ease-in-out infinite`,
+        animationDelay: exportMode ? undefined : twinkleDelay,
+    };
+};
 
 const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
     text1 = '안녕하세요',
@@ -39,102 +145,66 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
     activeScale,
     exportMode,
 }) => {
-    // Edge stroke scales with activeScale but never renders below 0.5px
     const strokeWidth = `${Math.max(0.5, 0.7 * activeScale).toFixed(1)}px`;
 
     const renderLine = (text: string, isText1: boolean) => {
-        const chars = text.split('');
-        const n = chars.length;
+        const chars = Array.from(text);
+        const charCount = chars.length;
 
         return (
-            <div
-                className="coachella-text"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-                {chars.map((char, ci) => {
+            <div className="coachella-text" style={TEXT_LINE_STYLE}>
+                {chars.map((char, charIndex) => {
                     if (char === ' ') {
-                        return (
-                            <span key={ci} style={{ display: 'inline-block', width: '0.25em' }} />
-                        );
+                        return <span key={`space-${charIndex}`} style={SPACE_STYLE} />;
                     }
 
-                    // Normalised horizontal position within this line: -1 (left) → 0 (center) → +1 (right)
-                    // Used to compute the radial extrusion direction for each character.
-                    const relX = n <= 1 ? 0 : (ci - (n - 1) / 2) / ((n - 1) / 2);
+                    const relativeX =
+                        charCount <= 1
+                            ? 0
+                            : (charIndex - (charCount - 1) / 2) / ((charCount - 1) / 2);
+                    const shadowOffsetX = -relativeX * 0.012 * NUM_LAYERS;
+                    const shadowOffsetY = 0;
+                    const shadowRefract =
+                        NUM_LAYERS > 2.5 ? (NUM_LAYERS - 2.5) * 0.004 * -relativeX : 0;
 
                     return (
-                        <span key={ci} style={{ position: 'relative', display: 'inline-block' }}>
-                            {/* ── Depth layers ── painted deepest first (lowest DOM order, lowest z-index) */}
-                            {[...DEPTH_LAYERS]
-                                .reverse()
-                                .map(({ d, r, g, b, opacity, blur, zIndex }) => {
-                                    // Horizontal: radiates outward from line center, proportional to depth
-                                    const offsetX = -relX * 0.012 * d;
-                                    // Vertical: text1 extrudes down-and-out; text2 has no vertical extrusion
-                                    const offsetY = isText1 ? 0.01 * d : 0;
-                                    // Fake refraction: the deepest half of layers shift extra horizontally,
-                                    // simulating light bending as it passes through the acrylic thickness.
-                                    const refract =
-                                        d > NUM_LAYERS / 2
-                                            ? (d - NUM_LAYERS / 2) * 0.004 * -relX
-                                            : 0;
-
-                                    // Use uniform bright color for all depth layers
-                                    const finalR = r;
-                                    const finalG = g;
-                                    const finalB = b;
-
-                                    const isDeepest = d === NUM_LAYERS;
-                                    const strokeStyle = isDeepest
-                                        ? {
-                                              WebkitTextStroke: `${strokeWidth} rgba(255, 248, 168, 0.88)`,
-                                          }
-                                        : {};
-
-                                    return (
-                                        <span
-                                            key={d}
-                                            aria-hidden="true"
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0,
-                                                left: 0,
-                                                zIndex,
-                                                transform: `translate(${(offsetX + refract).toFixed(4)}em, ${offsetY.toFixed(4)}em)`,
-                                                color: '#EFE7D5',
-                                                filter: blur > 0 ? `blur(${blur}px)` : undefined,
-                                                pointerEvents: 'none',
-                                                userSelect: 'none',
-                                                ...strokeStyle,
-                                            }}
-                                        >
-                                            {char}
-                                        </span>
-                                    );
-                                })}
-
-                            {/* ── Front face ── stripe texture + semi-transparent gold gradient, clipped to text */}
+                        <span key={`${char}-${charIndex}`} style={CHARACTER_WRAPPER_STYLE}>
                             <span
+                                aria-hidden="true"
                                 style={{
-                                    position: 'relative',
-                                    zIndex: NUM_LAYERS + 1,
-                                    display: 'inline-block',
-                                    // Vertical stripe texture alternating between #E8B55D and #EA9527
-                                    backgroundImage: [
-                                        `repeating-linear-gradient(90deg,
-                                            #E8B55D 0px, #E8B55D 1px,
-                                            #EA9527 1px, #EA9527 2px)`,
-                                        isText1
-                                            ? `linear-gradient(to bottom, #5A2000 0%, #E8B55D ${TEXT1_BOTTOM_BRIGHT_HOLD}, #E8B55D 100%)`
-                                            : `linear-gradient(to bottom, #E8B55D 0%, #E8B55D ${TEXT2_TOP_BRIGHT_HOLD}, #5A2000 100%)`,
-                                    ].join(', '),
-                                    backgroundBlendMode: 'soft-light, normal',
-                                    WebkitBackgroundClip: 'text',
-                                    backgroundClip: 'text',
-                                    color: 'transparent',
-                                    WebkitTextFillColor: 'transparent',
-                                    WebkitTextStroke: `${strokeWidth} rgba(255, 248, 168, 0.88)`,
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    zIndex: 1,
+                                    transform: `translate(${(shadowOffsetX + shadowRefract).toFixed(4)}em, ${shadowOffsetY.toFixed(4)}em)`,
+                                    pointerEvents: 'none',
+                                    userSelect: 'none',
+                                    ...buildDepthTextureStyle(
+                                        isText1,
+                                        charIndex,
+                                        activeScale,
+                                        strokeWidth
+                                    ),
                                 }}
+                            >
+                                {char}
+                            </span>
+
+                            <span
+                                className="coachella-text-face"
+                                style={buildTextFaceStyle(isText1, strokeWidth)}
+                            >
+                                {char}
+                            </span>
+                            <span
+                                aria-hidden="true"
+                                className="coachella-text-glitter"
+                                style={buildTextGlitterStyle(
+                                    isText1,
+                                    charIndex,
+                                    activeScale,
+                                    exportMode
+                                )}
                             >
                                 {char}
                             </span>
@@ -169,32 +239,63 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                     text-align: center;
                     margin-top: -0.25em;
                 }
+                @keyframes coachella-text-glitter-twinkle {
+                    0%, 100% {
+                        opacity: 0.54;
+                        filter: brightness(1.02) contrast(1.2) saturate(1.08);
+                    }
+                    45% {
+                        opacity: 0.74;
+                        filter: brightness(1.1) contrast(1.42) saturate(1.2);
+                    }
+                    70% {
+                        opacity: 0.62;
+                        filter: brightness(1.06) contrast(1.3) saturate(1.14);
+                    }
+                }
             `}</style>
 
             <div className="coachella-container" style={{ width: '100%' }}>
                 <div
                     style={{
                         position: 'relative',
-                        backgroundColor: '#160505',
+                        backgroundColor: CARD_BACKGROUND_COLOR,
                         border: 'none',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: 0,
-                        boxShadow: exportMode
-                            ? 'none'
-                            : '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
+                        boxShadow: exportMode ? 'none' : CARD_SHADOW,
                         userSelect: 'none',
                         borderRadius,
                         width: '100%',
+                        overflow: 'hidden',
+                        isolation: 'isolate',
                     }}
                 >
+                    <div
+                        aria-hidden="true"
+                        className="coachella-background-bokeh"
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            zIndex: 1,
+                            pointerEvents: 'none',
+                            borderRadius,
+                            backgroundImage: BACKGROUND_BOKEH_TEXTURE_URL,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center center',
+                            backgroundRepeat: 'no-repeat',
+                            opacity: 0.9,
+                            filter: 'brightness(0.94) contrast(1.02) saturate(0.94)',
+                        }}
+                    />
                     {renderLine(text1, true)}
                     {renderLine(text2, false)}
 
-                    {/* Vignette overlay */}
                     <div
+                        aria-hidden="true"
                         style={{
                             position: 'absolute',
                             inset: 0,
@@ -209,7 +310,6 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                 </div>
             </div>
 
-            {/* Debug: Vignette Range Visualizer */}
             {!exportMode && (
                 <div style={{ marginTop: '24px', width: '100%' }}>
                     <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
@@ -218,8 +318,8 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                     <div
                         style={{
                             width: '100%',
-                            height: '250px', // Approximate height of the main banner
-                            backgroundColor: '#fff', // White background to clearly see the multiply gradient
+                            height: '250px',
+                            backgroundColor: '#fff',
                             position: 'relative',
                             borderRadius,
                             border: '1px dashed #ccc',

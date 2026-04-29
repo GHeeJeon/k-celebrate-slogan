@@ -46,4 +46,13 @@ describe('CelebrateSlogan', () => {
         );
         expect(animatedElements.length).toBe(0);
     });
+
+    it('renders separate background and text glitter layers for the coachella variant', () => {
+        const { container } = render(
+            <KCelebrateSlogan variant="coachella" text1="환영" text2="테스트" />
+        );
+
+        expect(container.querySelectorAll('.coachella-background-bokeh')).toHaveLength(1);
+        expect(container.querySelectorAll('.coachella-text-glitter').length).toBeGreaterThan(0);
+    });
 });
