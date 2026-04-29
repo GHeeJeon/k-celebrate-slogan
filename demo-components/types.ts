@@ -2,6 +2,8 @@ export const ACCENT = '#1c89bf';
 export const ACCENT_DARK = '#1570a0';
 
 export interface Config {
+    // Layout
+    variant: 'classic' | 'coachella';
     text1: string;
     text2: string;
     text3: string;
@@ -82,7 +84,20 @@ export const PRESETS: Record<string, Partial<Config>> = {
 
 export const DEFAULT_CONFIG: Config = {
     ...PRESETS.default,
+    variant: 'classic',
     scale: 1,
     emblemScale: 0.75,
     animate: true,
 } as Config;
+
+export const PASTEL_CONFIG: Config = {
+    ...DEFAULT_CONFIG,
+    ...PRESETS.pastel,
+    variant: 'classic',
+};
+
+export const NEON_CONFIG: Config = {
+    ...DEFAULT_CONFIG,
+    ...PRESETS.neon,
+    variant: 'classic',
+};

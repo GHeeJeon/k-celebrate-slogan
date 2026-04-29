@@ -9,6 +9,48 @@ interface BaseProps {
 
 // ── Shared Content Blocks ──────────────────────────────────────────────────
 
+const VariantContent: React.FC<BaseProps> = ({ cfg, set }) => {
+    const handleVariantChange = (name: 'classic' | 'coachella') => {
+        if (cfg.variant === name) return;
+        set('variant', name);
+        if (name === 'coachella') {
+            set('text1', '안녕하세요');
+            set('text2', '대성입니다');
+        } else {
+            set('text1', '축하합니다');
+            set('text2', '김준호');
+        }
+    };
+
+    return (
+        <div style={{ display: 'flex', gap: '0.4rem' }}>
+            {(['classic', 'coachella'] as const).map((name) => (
+                <button
+                    key={name}
+                    onClick={() => handleVariantChange(name)}
+                    style={{
+                        flex: 1,
+                        padding: '0.45rem',
+                        background: cfg.variant === name ? ACCENT : '#f8fafc',
+                        color: cfg.variant === name ? '#fff' : '#475569',
+                        border: '1px solid',
+                        borderColor: cfg.variant === name ? ACCENT : '#e2e8f0',
+                        borderRadius: '0.4rem',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        textTransform: 'capitalize',
+                        transition: 'all 0.15s',
+                        fontFamily: 'inherit',
+                    }}
+                >
+                    {name}
+                </button>
+            ))}
+        </div>
+    );
+};
+
 const PresetContent: React.FC<
     BaseProps & { applyPreset: (name: 'default' | 'pastel' | 'neon') => void }
 > = ({ cfg, applyPreset }) => (
@@ -41,26 +83,28 @@ const PresetContent: React.FC<
 
 const TextContent: React.FC<BaseProps> = ({ cfg, set }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-            <div>
-                <Label htmlFor="char1">Left Char</Label>
-                <TextInput
-                    id="char1"
-                    value={cfg.char1}
-                    onChange={(v) => set('char1', v.slice(0, 2))}
-                    placeholder="경"
-                />
+        {cfg.variant === 'classic' && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                <div>
+                    <Label htmlFor="char1">Left Char</Label>
+                    <TextInput
+                        id="char1"
+                        value={cfg.char1}
+                        onChange={(v) => set('char1', v.slice(0, 2))}
+                        placeholder="경"
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="char2">Right Char</Label>
+                    <TextInput
+                        id="char2"
+                        value={cfg.char2}
+                        onChange={(v) => set('char2', v.slice(0, 2))}
+                        placeholder="축"
+                    />
+                </div>
             </div>
-            <div>
-                <Label htmlFor="char2">Right Char</Label>
-                <TextInput
-                    id="char2"
-                    value={cfg.char2}
-                    onChange={(v) => set('char2', v.slice(0, 2))}
-                    placeholder="축"
-                />
-            </div>
-        </div>
+        )}
         <div>
             <Label htmlFor="text1">Top Text (text1)</Label>
             <TextInput
@@ -79,15 +123,17 @@ const TextContent: React.FC<BaseProps> = ({ cfg, set }) => (
                 placeholder="Name"
             />
         </div>
-        <div>
-            <Label htmlFor="text3">Sub Text (text3)</Label>
-            <TextInput
-                id="text3"
-                value={cfg.text3}
-                onChange={(v) => set('text3', v)}
-                placeholder="No reason at all"
-            />
-        </div>
+        {cfg.variant === 'classic' && (
+            <div>
+                <Label htmlFor="text3">Sub Text (text3)</Label>
+                <TextInput
+                    id="text3"
+                    value={cfg.text3}
+                    onChange={(v) => set('text3', v)}
+                    placeholder="No reason at all"
+                />
+            </div>
+        )}
     </div>
 );
 
@@ -107,20 +153,24 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
             onChange={(v) => set('text2Color', v)}
             fallbackValue={DEFAULT_CONFIG.text2Color}
         />
-        <ColorRow
-            id="text3Color"
-            label="text3 Color"
-            value={cfg.text3Color}
-            onChange={(v) => set('text3Color', v)}
-            fallbackValue={DEFAULT_CONFIG.text3Color}
-        />
-        <ColorRow
-            id="text2StrokeColor"
-            label="text2 Stroke"
-            value={cfg.text2StrokeColor}
-            onChange={(v) => set('text2StrokeColor', v)}
-            fallbackValue={DEFAULT_CONFIG.text2StrokeColor}
-        />
+        {cfg.variant === 'classic' && (
+            <>
+                <ColorRow
+                    id="text3Color"
+                    label="text3 Color"
+                    value={cfg.text3Color}
+                    onChange={(v) => set('text3Color', v)}
+                    fallbackValue={DEFAULT_CONFIG.text3Color}
+                />
+                <ColorRow
+                    id="text2StrokeColor"
+                    label="text2 Stroke"
+                    value={cfg.text2StrokeColor}
+                    onChange={(v) => set('text2StrokeColor', v)}
+                    fallbackValue={DEFAULT_CONFIG.text2StrokeColor}
+                />
+            </>
+        )}
         <ColorRow
             id="backgroundColor"
             label="Background"
@@ -128,13 +178,15 @@ const ColorContent: React.FC<BaseProps> = ({ cfg, set }) => (
             onChange={(v) => set('backgroundColor', v)}
             fallbackValue={DEFAULT_CONFIG.backgroundColor}
         />
-        <ColorRow
-            id="borderColor"
-            label="Border Color"
-            value={cfg.borderColor}
-            onChange={(v) => set('borderColor', v)}
-            fallbackValue={DEFAULT_CONFIG.borderColor}
-        />
+        {cfg.variant !== 'coachella' && (
+            <ColorRow
+                id="borderColor"
+                label="Border Color"
+                value={cfg.borderColor}
+                onChange={(v) => set('borderColor', v)}
+                fallbackValue={DEFAULT_CONFIG.borderColor}
+            />
+        )}
     </div>
 );
 
@@ -180,15 +232,30 @@ const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => {
                         marginTop: '0.2rem',
                     }}
                 >
-                    <SliderRow
-                        id="strokeWidth"
-                        label="Stroke Width (px)"
-                        value={parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0}
-                        min={0}
-                        max={10}
-                        step={0.1}
-                        onChange={(v) => set('text2StrokeWidth', `${v}px`)}
-                    />
+                    {cfg.variant === 'classic' && (
+                        <>
+                            <SliderRow
+                                id="strokeWidth"
+                                label="Stroke Width (px)"
+                                value={
+                                    parseFloat(cfg.text2StrokeWidth.replace(/[^0-9.]/g, '')) || 0
+                                }
+                                min={0}
+                                max={10}
+                                step={0.1}
+                                onChange={(v) => set('text2StrokeWidth', `${v}px`)}
+                            />
+                            <SliderRow
+                                id="emblemScale"
+                                label="Emblem Scale"
+                                value={cfg.emblemScale}
+                                min={0.3}
+                                max={1.5}
+                                step={0.05}
+                                onChange={(v) => set('emblemScale', v)}
+                            />
+                        </>
+                    )}
                     <SliderRow
                         id="scale"
                         label="Scale"
@@ -198,24 +265,17 @@ const LayoutContent: React.FC<BaseProps> = ({ cfg, set }) => {
                         step={0.05}
                         onChange={(v) => set('scale', v)}
                     />
-                    <SliderRow
-                        id="emblemScale"
-                        label="Emblem Scale"
-                        value={cfg.emblemScale}
-                        min={0.3}
-                        max={1.5}
-                        step={0.05}
-                        onChange={(v) => set('emblemScale', v)}
-                    />
-                    <SliderRow
-                        id="borderWidth"
-                        label="Border Width (px)"
-                        value={parseFloat(cfg.borderWidth.replace(/[^0-9.]/g, '')) || 0}
-                        min={0}
-                        max={20}
-                        step={1}
-                        onChange={(v) => set('borderWidth', `${v}px`)}
-                    />
+                    {cfg.variant !== 'coachella' && (
+                        <SliderRow
+                            id="borderWidth"
+                            label="Border Width (px)"
+                            value={parseFloat(cfg.borderWidth.replace(/[^0-9.]/g, '')) || 0}
+                            min={0}
+                            max={20}
+                            step={1}
+                            onChange={(v) => set('borderWidth', `${v}px`)}
+                        />
+                    )}
                     <SliderRow
                         id="borderRadius"
                         label="Border Radius (rem)"
@@ -284,11 +344,20 @@ export const CompactConfiguration: React.FC<
     BaseProps & { applyPreset: (name: 'default' | 'pastel' | 'neon') => void }
 > = ({ cfg, set, applyPreset }) => (
     <Section title="⚙️ Configuration" style={{ height: '100%', boxSizing: 'border-box' }}>
-        <Label>Presets</Label>
+        <Label>Variant</Label>
         <div style={{ marginBottom: '1rem' }}>
-            <PresetContent cfg={cfg} set={set} applyPreset={applyPreset} />
+            <VariantContent cfg={cfg} set={set} />
         </div>
-
+        {cfg.variant === 'classic' && (
+            <>
+                <Label>Presets</Label>
+                <div style={{ marginBottom: '1rem' }}>
+                    <PresetContent cfg={cfg} set={set} applyPreset={applyPreset} />
+                </div>
+            </>
+        )}
+        <div style={{ height: '0.5rem' }} />
+        <Label>Text Settings</Label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
             <TextContent cfg={cfg} set={set} />
             <hr style={{ border: 'none', borderTop: '1px dashed #e2e8f0', margin: '0' }} />

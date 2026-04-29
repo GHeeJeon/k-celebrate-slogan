@@ -428,6 +428,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                         }}
                     >
                         <KCelebrateSlogan
+                            variant={cfg.variant}
                             text1={cfg.text1 || undefined}
                             text2={cfg.text2 || undefined}
                             text3={cfg.text3 || undefined}
@@ -474,6 +475,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                             }}
                         >
                             <KCelebrateSlogan
+                                variant={cfg.variant}
                                 text1={cfg.text1 || undefined}
                                 text2={cfg.text2 || undefined}
                                 text3={cfg.text3 || undefined}

@@ -2,6 +2,12 @@ import type { CSSProperties } from 'react';
 
 export interface KCelebrateSloganProps {
     /**
+     * Component layout variant.
+     * @default "classic"
+     */
+    variant?: 'classic' | 'coachella';
+
+    /**
      * Top small text
      * @default "축하합니다"
      */
