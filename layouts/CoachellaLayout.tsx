@@ -6,6 +6,8 @@ interface CoachellaLayoutProps extends KCelebrateSloganProps {
 }
 
 const NUM_LAYERS = 5;
+const TEXT1_BOTTOM_BRIGHT_HOLD = '75%';
+const TEXT2_TOP_BRIGHT_HOLD = '65%';
 
 // Precomputed per-layer props (d=1: shallowest extrusion, d=NUM_LAYERS: deepest)
 const DEPTH_LAYERS = Array.from({ length: NUM_LAYERS }, (_, i) => {
@@ -13,10 +15,10 @@ const DEPTH_LAYERS = Array.from({ length: NUM_LAYERS }, (_, i) => {
     const t = d / NUM_LAYERS; // 0 → 1 (front → back)
     return {
         d,
-        // Color: match the original top text color uniformly to create a solid block (Brighter, less red: #FFF2C8)
-        r: 255,
-        g: 242,
-        b: 200,
+        // Color: match the current gold face color uniformly through the depth layers.
+        r: 232,
+        g: 181,
+        b: 93,
         opacity: 1,
         // No blur so all layers look identical and crisp
         blur: 0,
@@ -67,7 +69,7 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                                 .reverse()
                                 .map(({ d, r, g, b, opacity, blur, zIndex }) => {
                                     // Horizontal: radiates outward from line center, proportional to depth
-                                    const offsetX = -relX * 0.016 * d;
+                                    const offsetX = -relX * 0.012 * d;
                                     // Vertical: text1 extrudes down-and-out; text2 has no vertical extrusion
                                     const offsetY = isText1 ? 0.01 * d : 0;
                                     // Fake refraction: the deepest half of layers shift extra horizontally,
@@ -99,7 +101,7 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                                                 left: 0,
                                                 zIndex,
                                                 transform: `translate(${(offsetX + refract).toFixed(4)}em, ${offsetY.toFixed(4)}em)`,
-                                                color: `rgba(${finalR},${finalG},${finalB},${opacity})`,
+                                                color: '#EFE7D5',
                                                 filter: blur > 0 ? `blur(${blur}px)` : undefined,
                                                 pointerEvents: 'none',
                                                 userSelect: 'none',
@@ -117,14 +119,14 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                                     position: 'relative',
                                     zIndex: NUM_LAYERS + 1,
                                     display: 'inline-block',
-                                    // Vertical stripe texture alternating between brighter colors #FFCC80 and #FFB74D
+                                    // Vertical stripe texture alternating between #E8B55D and #EA9527
                                     backgroundImage: [
                                         `repeating-linear-gradient(90deg,
-                                            #FFCC80 0px, #FFCC80 1px,
-                                            #FFB74D 1px, #FFB74D 2px)`,
+                                            #E8B55D 0px, #E8B55D 1px,
+                                            #EA9527 1px, #EA9527 2px)`,
                                         isText1
-                                            ? `linear-gradient(to bottom, #5A2000 0%, #FFCC80 100%)`
-                                            : `linear-gradient(to bottom, #FFCC80 0%, #5A2000 100%)`,
+                                            ? `linear-gradient(to bottom, #5A2000 0%, #E8B55D ${TEXT1_BOTTOM_BRIGHT_HOLD}, #E8B55D 100%)`
+                                            : `linear-gradient(to bottom, #E8B55D 0%, #E8B55D ${TEXT2_TOP_BRIGHT_HOLD}, #5A2000 100%)`,
                                     ].join(', '),
                                     backgroundBlendMode: 'soft-light, normal',
                                     WebkitBackgroundClip: 'text',
@@ -198,7 +200,7 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                             inset: 0,
                             pointerEvents: 'none',
                             background:
-                                'radial-gradient(50% 75% at center, rgba(255,255,255,0) 40%, rgba(218, 117, 67, 0.3) 60%, rgba(120, 38, 38, 0.6) 120%)',
+                                'radial-gradient(50% 75% at center, rgba(255,255,255,0) 40%, rgba(218, 117, 67, 0.3) 60%, rgba(120, 38, 38, 0.3) 120%)',
                             mixBlendMode: 'multiply',
                             borderRadius,
                             zIndex: 100,
@@ -229,7 +231,7 @@ const CoachellaLayout: React.FC<CoachellaLayoutProps> = ({
                                 inset: 0,
                                 pointerEvents: 'none',
                                 background:
-                                    'radial-gradient(50% 75% at center, rgba(255,255,255,0) 40%, rgba(218, 132, 67, 0.3) 60%, rgba(120, 47, 38, 0.6) 120%)',
+                                    'radial-gradient(50% 75% at center, rgba(255,255,255,0) 40%, rgba(218, 132, 67, 0.3) 60%, rgba(120, 47, 38, 0.3) 120%)',
                                 mixBlendMode: 'multiply',
                                 borderRadius,
                             }}
