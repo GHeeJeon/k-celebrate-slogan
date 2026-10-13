@@ -5,6 +5,7 @@ import { encode } from 'modern-gif';
 import { Config, ACCENT, ACCENT_DARK } from './types';
 import { Section, LongPressModal } from './UI';
 import KCelebrateSlogan from '../KCelebrateSlogan';
+import { waitForSloganFonts } from '../fontUtils';
 import { PASTEL_THEME, NEON_THEME } from '../themes';
 
 function getPinwheelColors(theme: Config['pinwheelTheme']): string[] | undefined {
@@ -12,6 +13,19 @@ function getPinwheelColors(theme: Config['pinwheelTheme']): string[] | undefined
     if (theme === 'neon') return NEON_THEME;
     return undefined;
 }
+
+export const getExportFontTexts = ({
+    char1,
+    char2,
+    text1,
+    text2,
+    text3,
+}: Pick<Config, 'char1' | 'char2' | 'text1' | 'text2' | 'text3'>) => ({
+    emblems: `${char1}${char2}`,
+    text1,
+    text2,
+    text3: `ㅡ ${text3} ㅡ`,
+});
 
 // Global cache for font base64 to avoid refetching on every export
 const fontBase64Cache = new Map<string, string>();
@@ -119,8 +133,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
             await new Promise<void>((r) =>
                 requestAnimationFrame(() => requestAnimationFrame(() => r()))
             );
-            // Ensure fonts and styles are loaded
-            await document.fonts.ready;
+            await waitForSloganFonts(getExportFontTexts(cfg));
 
             try {
                 const filename = `slogan.${format}`;
@@ -147,7 +160,7 @@ export const Preview = React.forwardRef<HTMLDivElement, Props>(
                 let combinedCSS = joseonPalaceCSS;
                 try {
                     const fontRes = await fetch(
-                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=block'
+                        'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@600&family=Outfit:wght@100..900&family=Inter:wght@300;400;500;600;700&display=block'
                     );
                     if (fontRes.ok) {
                         combinedCSS += await fontRes.text();

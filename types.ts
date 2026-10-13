@@ -86,8 +86,8 @@ export interface KCelebrateSloganProps {
     autoFit?: boolean;
 
     /**
-     * Inject Nanum Myeongjo and Outfit fonts from Google Fonts automatically.
-     * Set to false if you load these fonts yourself to avoid duplicate requests.
+     * Inject the default Nanum Myeongjo, Outfit, Noto Sans KR, and JoseonPalace fonts.
+     * Set to false when your application loads or self-hosts its own font files.
      * @default true
      */
     loadFonts?: boolean;

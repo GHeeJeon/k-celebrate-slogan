@@ -3,10 +3,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import { motion } from 'framer-motion';
 import EmblemSection from './EmblemSection';
+import { ensureSloganFonts } from './fontUtils';
 import type { KCelebrateSloganProps } from './types';
-
-const GOOGLE_FONTS_URL =
-    'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Outfit:wght@400;600&display=swap';
 
 const computeScaleFromWidth = (containerWidth: number, baseScale: number): number => {
     if (containerWidth < 320) return baseScale * 0.28;
@@ -47,13 +45,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
     const [autoScale, setAutoScale] = useState(scale);
 
     useEffect(() => {
-        if (!loadFonts || typeof document === 'undefined') return;
-        if (!document.querySelector(`link[href="${GOOGLE_FONTS_URL}"]`)) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = GOOGLE_FONTS_URL;
-            document.head.appendChild(link);
-        }
+        if (loadFonts) ensureSloganFonts();
     }, [loadFonts]);
 
     useIsomorphicLayoutEffect(() => {
@@ -119,13 +111,6 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
             >
                 <style>
                     {`
-                    @font-face {
-                        font-family: 'JoseonPalace';
-                        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGs.woff') format('woff');
-                        font-weight: normal;
-                        font-display: ${exportMode ? 'block' : 'swap'};
-                    }
-
                     .k-celebrate-slogan-container {
                         -webkit-text-size-adjust: none;
                         text-size-adjust: none;
@@ -153,8 +138,8 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         text-align: center;
                         font-size: var(--fs-1);
                         color: var(--text1-color);
-                        font-family: "Nanum Myeongjo", serif;
-                        font-weight: 900;
+                        font-family: var(--kcs-font-emblem, "Nanum Myeongjo", serif);
+                        font-weight: 800;
                         text-shadow: ${Math.max(0.3, 0.5 * activeScale)}px ${Math.max(0.3, 0.5 * activeScale)}px 0px rgba(0,0,0,0.1);
                         display: inline-block;
                         transform: scaleX(1.2);
@@ -177,7 +162,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                         text-align: center;
                         font-size: var(--fs-3);
                         color: var(--text3-color);
-                        font-family: 'Outfit', sans-serif;
+                        font-family: var(--kcs-font-tagline, 'Outfit', 'Noto Sans KR', sans-serif);
                         font-weight: 600;
                         white-space: nowrap;
                     }
@@ -258,7 +243,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                     style={{
                                         visibility: 'hidden',
                                         fontFamily:
-                                            "'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif",
+                                            "var(--kcs-font-title, 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif)",
                                         fontSize: 'var(--fs-2)',
                                         fontWeight: 400,
                                         letterSpacing: '0.3em',
@@ -293,7 +278,7 @@ const KCelebrateSlogan: React.FC<KCelebrateSloganProps> = ({
                                             strokeWidth: 'var(--stroke-width)',
                                             paintOrder: 'stroke fill',
                                             fontFamily:
-                                                "'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif",
+                                                "var(--kcs-font-title, 'JoseonPalace', '궁서', '궁서체', 'Gungsuh', serif)",
                                             fontSize: 'var(--fs-2)',
                                             fontWeight: 400,
                                             letterSpacing: '0.3em',
