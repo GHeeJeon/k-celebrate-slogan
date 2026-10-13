@@ -85,4 +85,34 @@ describe('slogan font utilities', () => {
         await vi.advanceTimersByTimeAsync(3000);
         await expect(wait).resolves.toBeUndefined();
     });
+
+    it('continues export when a font request is rejected', async () => {
+        const load = vi.fn().mockRejectedValue(new Error('font unavailable'));
+        Object.defineProperty(document, 'fonts', {
+            configurable: true,
+            value: { load },
+        });
+
+        await expect(
+            waitForSloganFonts({
+                emblems: '경축',
+                text1: '축하합니다',
+                text2: '김준호',
+                text3: 'ㅡ 아무 이유 없음 ㅡ',
+            })
+        ).resolves.toBeUndefined();
+    });
+
+    it('continues export when the Font Loading API is unavailable', async () => {
+        Reflect.deleteProperty(document, 'fonts');
+
+        await expect(
+            waitForSloganFonts({
+                emblems: '경축',
+                text1: '축하합니다',
+                text2: '김준호',
+                text3: 'ㅡ 아무 이유 없음 ㅡ',
+            })
+        ).resolves.toBeUndefined();
+    });
 });
