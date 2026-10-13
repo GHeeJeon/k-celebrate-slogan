@@ -55,6 +55,46 @@ function App() {
 | `animate`          | `boolean`  | `true`             | Whether to animate the entrance and spin.                                         |
 | `scale`            | `number`   | `1`                | Overall scale factor.                                                             |
 | `emblemScale`      | `number`   | `0.75`             | Scale factor for the emblem sections.                                             |
+| `loadFonts`        | `boolean`  | `true`             | Load the component's default fonts once per document.                             |
+
+## Font loading and overrides
+
+By default, each document receives one Google Fonts stylesheet and one JoseonPalace
+`@font-face` rule when the first slogan is mounted. The component uses the following
+font stacks:
+
+| Slogan part         | Default font stack                                      | Weight |
+| ------------------- | ------------------------------------------------------- | ------ |
+| Emblems and `text1` | Nanum Myeongjo                                          | 800    |
+| `text2`             | JoseonPalace, Korean serif fallbacks                    | 400    |
+| `text3`             | Outfit for Latin glyphs, Noto Sans KR for Korean glyphs | 600    |
+
+JoseonPalace is currently served as a 3.6 MB WOFF file. If your application has a
+subsetted or self-hosted alternative, disable automatic loading and provide the font
+files yourself:
+
+```tsx
+<KCelebrateSlogan loadFonts={false} className="my-slogan" />
+```
+
+```css
+@font-face {
+    font-family: 'JoseonPalaceSlogan';
+    src: url('/fonts/joseon-palace-subset.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+
+.my-slogan {
+    --kcs-font-emblem: 'My Nanum Myeongjo', serif;
+    --kcs-font-title: 'JoseonPalaceSlogan', serif;
+    --kcs-font-tagline: 'My Tagline Font', sans-serif;
+}
+```
+
+When `loadFonts={false}`, the library makes no font requests. Your application must
+load every font used in the override stacks. CSS custom properties inherit from the
+component root, so no `!important` rule is needed.
 
 ## Themes
 
