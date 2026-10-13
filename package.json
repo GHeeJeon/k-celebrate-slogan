@@ -14,6 +14,7 @@
         "demo": "vite --open /",
         "svg:preview": "vite --open /svg-preview.html",
         "build:demo": "vite build",
+        "prepack": "npm run build",
         "lint": "eslint .",
         "format": "prettier --write .",
         "prepare": "husky"
