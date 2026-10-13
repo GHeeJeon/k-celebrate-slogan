@@ -1,8 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { KCelebrateSlogan } from '../index';
 import { NEON_THEME } from '../themes';
+import { GOOGLE_FONTS_ELEMENT_ID, JOSEON_PALACE_STYLE_ELEMENT_ID } from '../fontUtils';
+
+afterEach(() => {
+    document.getElementById(GOOGLE_FONTS_ELEMENT_ID)?.remove();
+    document.getElementById(JOSEON_PALACE_STYLE_ELEMENT_ID)?.remove();
+});
 
 describe('CelebrateSlogan', () => {
     it('renders default texts correctly', () => {
@@ -45,5 +51,42 @@ describe('CelebrateSlogan', () => {
             '.k-pinwheel-animated, .k-pinwheel-animated-reverse'
         );
         expect(animatedElements.length).toBe(0);
+    });
+
+    it('loads default fonts once when multiple slogan instances mount', () => {
+        render(
+            <>
+                <KCelebrateSlogan />
+                <KCelebrateSlogan />
+                <KCelebrateSlogan />
+            </>
+        );
+
+        expect(document.querySelectorAll(`#${GOOGLE_FONTS_ELEMENT_ID}`)).toHaveLength(1);
+        expect(document.querySelectorAll(`#${JOSEON_PALACE_STYLE_ELEMENT_ID}`)).toHaveLength(1);
+    });
+
+    it('does not inject font resources when loadFonts is false', () => {
+        render(<KCelebrateSlogan loadFonts={false} />);
+
+        expect(document.getElementById(GOOGLE_FONTS_ELEMENT_ID)).not.toBeInTheDocument();
+        expect(document.getElementById(JOSEON_PALACE_STYLE_ELEMENT_ID)).not.toBeInTheDocument();
+    });
+
+    it('uses overrideable font stacks with loaded font weights', () => {
+        const { container } = render(<KCelebrateSlogan />);
+        const styleTag = container.querySelector('style');
+        const emblem = Array.from(container.querySelectorAll('text')).find(
+            (element) => element.textContent === '경'
+        );
+        const title = Array.from(container.querySelectorAll('text')).find(
+            (element) => element.textContent === '김준호'
+        );
+
+        expect(styleTag).toHaveTextContent('var(--kcs-font-emblem');
+        expect(styleTag).toHaveTextContent('var(--kcs-font-tagline');
+        expect(styleTag).toHaveTextContent('font-weight: 800');
+        expect(emblem?.getAttribute('style')).toContain('font-family: var(--kcs-font-emblem');
+        expect(title?.getAttribute('style')).toContain('font-family: var(--kcs-font-title');
     });
 });
