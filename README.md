@@ -77,6 +77,13 @@ files yourself:
 <KCelebrateSlogan loadFonts={false} className="my-slogan" />
 ```
 
+```html
+<link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@800&family=Noto+Sans+KR:wght@600&family=Outfit:wght@600&display=swap"
+/>
+```
+
 ```css
 @font-face {
     font-family: 'JoseonPalaceSlogan';
